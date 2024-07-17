@@ -40,7 +40,7 @@ const Login = () => {
             {/* <p className="cursor-pointer text-center text-sm md:text-base">
               Don't have an account? Sign In
             </p> */}
-            <button className="w-full bg-green-500 p-2 md:p-3 font-semibold text-sm md:text-lg text-white hover:bg-green-600 rounded-md">
+            <button className="w-full bg-black p-2 md:p-3 font-semibold text-sm md:text-lg text-white rounded-md">
               CONTINUE
             </button>
             <button className="w-full border-2 p-2 md:p-3 font-semibold text-sm md:text-lg flex justify-center items-center gap-2 md:gap-4 rounded-md">

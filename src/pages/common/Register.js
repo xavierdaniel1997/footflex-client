@@ -59,7 +59,7 @@ const Register = () => {
                 Forgot password ?
               </p> */}
             </div>
-            <button className="w-full bg-green-500 p-2 md:p-3 font-semibold text-sm md:text-lg text-white hover:bg-green-600 rounded-md">
+            <button className="w-full bg-black p-2 md:p-3 font-semibold text-sm md:text-lg text-white rounded-md">
               REGISTER
             </button>
             {/* <button className="w-full border-2 p-2 md:p-3 font-semibold text-sm md:text-lg flex justify-center items-center gap-2 md:gap-4 rounded-md">
