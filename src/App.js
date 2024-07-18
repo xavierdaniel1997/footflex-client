@@ -1,20 +1,20 @@
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import Login from "./pages/common/Login";
 import OTPVerification from "./pages/common/OTPVerification";
-import Register from "./pages/common/Register";
 import UserLayout from "./layout/UserLayout";
 import HomePage from "./pages/user/HomePage";
 import AdminLayout from "./layout/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import Products from "./pages/admin/Product/Products";
 import Orders from "./pages/admin/Order/Orders";
+import RegisterForm from "./pages/common/RegisterForm";
+import LoginForm from "./pages/common/LoginForm";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<RegisterForm />} />
+        <Route path="/login" element={<LoginForm />} />
         <Route path="/otp" element={<OTPVerification />} />
 
         {/* user routes */}
