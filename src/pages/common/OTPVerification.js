@@ -1,9 +1,22 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FiRefreshCw } from "react-icons/fi";
+import api from "../../config/axiosConfig";
+import { toast, Toaster } from 'react-hot-toast';
+import { useNavigate } from "react-router-dom";
 
 const OTPVerification = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [timer, setTimer] = useState(60);
   const inputs = useRef([]);
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimer((prevTimer) => (prevTimer > 0 ? prevTimer - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleChange = (e, index) => {
     const value = e.target.value;
@@ -38,19 +51,40 @@ const OTPVerification = () => {
     setOtp(newOtp);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {   
     const otpValue = otp.join("");
-    console.log("Entered OTP:", otpValue);
-    // You can now send the otpValue to your backend for verification
+    try{
+      const response = await api.post("/users/verify-otp", {otp: otpValue})
+      console.log("otp respones", response)
+      toast.success(response.data.message)
+      if(response.status === 200){
+        navigate("/login")
+        sessionStorage.removeItem("userEmail")
+      }
+      
+    }catch(error){
+      console.log(error)
+      toast.error(error.response.data.message)
+    }
   };
 
-  const handleResendOTP = () => {
-    console.log("OTP resent");
-    // Add your logic to resend the OTP here
+  const handleResendOTP = async () => {
+    
+    try{
+      const userEmail = sessionStorage.getItem("userEmail")
+      const response = await api.post("/users/resend-otp", {email: userEmail})
+      console.log("responser for resend", response)
+      toast.success(response.data.message)
+    }catch(error){
+      console.log(error)
+      toast.error(error.response.data.message)
+    }
+    setTimer(60); // Reset timer to 60 seconds
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
+      <Toaster position="top-right" reverseOrder={false} />
       <div className="w-full md:w-2/3 lg:w-1/2 xl:w-1/3 p-6 md:p-10">
         <div className="flex flex-col gap-3 justify-center items-center">
           <span className="font-bold text-xl md:text-2xl text-green-600 text-center">
@@ -66,7 +100,7 @@ const OTPVerification = () => {
               key={index}
               type="text"
               value={digit}
-              onChange={(e) => handleChange(e, index)}
+              onChange={(e) => handleChange(e, index)}    
               onKeyDown={(e) => handleKeyDown(e, index)}
               onPaste={handlePaste}
               maxLength="1"
@@ -78,17 +112,21 @@ const OTPVerification = () => {
         <div className="flex flex-col items-center gap-4 mt-4">
           <button
             onClick={handleSubmit}
-            className="flex items-center justify-center bg-green-500 p-2 md:py-2 md:px-5 font-semibold text-sm md:text-lg text-white hover:bg-green-600 rounded-md"
+            className="flex items-center justify-center bg-black p-2 md:py-2 md:px-5 font-semibold text-sm md:text-lg text-white hover:bg-gray-900 rounded-md"
           >
             Verify OTP
           </button>
-          <button
+           {!timer && <button
             onClick={handleResendOTP}
-            className="flex items-center justify-center gap-2 p-2 md:p-3 font-semibold text-sm md:text-lg text-green-500 "
+            disabled={timer > 0}
+            className={`flex items-center justify-center gap-2 p-2 md:p-3 font-semibold text-sm md:text-lg ${
+              timer > 0 ? "text-gray-400 cursor-not-allowed" : "text-black"
+            }`}
           >
             <FiRefreshCw className="text-xl md:text-2xl" />
             Resend OTP
-          </button>
+          </button>}
+            {timer > 0 && <p className="ml-2">validity ends in : {timer}s</p>}
         </div>
       </div>
     </div>
