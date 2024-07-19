@@ -33,14 +33,15 @@ const RegisterForm = () => {
     if (Object.keys(validateForm).length === 0) {
       try {
         const response = await api.post("/users/register", formData);
-        console.log(response?.data?.message)
+        // console.log(response?.data?.message)
+        toast.success(response?.data?.message)
         if(response.status === 200){
           sessionStorage.setItem("userEmail", formData.email)
           navigate("/otp")
         }
       } catch (error) {
         console.log(error);
-        toast.error(error.response.data.message)
+        toast.error(error?.response?.data?.message)
       }
     }
   };

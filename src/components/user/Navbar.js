@@ -24,7 +24,7 @@ const NavBar = () => {
         {/* Logo (Centered on Small Devices) */}
         <Link to="/">
           <div className="text-black text-2xl font-bold ">
-            FOOT<span className="text-green-500">FLEX</span>
+            FOOT<span className="text-blue-500">FLEX</span>
           </div>
         </Link>
 
@@ -76,7 +76,7 @@ const NavBar = () => {
             </div>
           </div>
           <div className="flex justify-around gap-10 text-xl">
-            <Link to="/profile">
+            <Link to="/userProfile">
               <button className="flex flex-col justify-center items-center text-2xl">
                 <BsPerson />
                 <span className="text-xs">Profile</span>

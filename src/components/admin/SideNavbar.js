@@ -37,7 +37,7 @@ const SideNavbar = () => {
           {navItems.map((item, index) => (
             <Link key={index} to={item.path}>
               <li
-                className={`px-4 py-3 flex items-center space-x-3 cursor-pointer ${
+                className={`px-4 py-3 flex items-center space-x-3 cursor-pointer mt-2 ${
                   location.pathname === item.path ? 'bg-blue-600 text-white rounded-md' : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >

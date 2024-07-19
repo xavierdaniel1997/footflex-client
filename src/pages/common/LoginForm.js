@@ -6,8 +6,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { validateLoginForm } from "../../utils/validateForms";
 import { toast, Toaster } from 'react-hot-toast';
 import api from "../../config/axiosConfig";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../redux/authSlice";
+
 
 const LoginForm = () => {
+  const dispatch = useDispatch()
   const [errors, setErrors] = useState({})
   const [formData, setFormData] = useState({
     email: "",
@@ -30,13 +34,11 @@ const LoginForm = () => {
     if(Object.keys(validateForm).length===0){
       try{
         const response = await api.post("users/login", formData)
-        console.log("this is the response form login ", response)
-        toast.success(response.data.message)
-        if(response.status===200){
-          setTimeout(()=>{
-            navigate("/")
-          },500)
-        }
+        dispatch(setUser(response.data.userData))
+        console.log("from the login page", response)
+          toast.success(response.data.message)
+          // navigate("/")
+          response.data.userData.role === true ? navigate("/dashboard") : navigate("/")
       }catch(error){
         console.log(error)
         toast.error(error.response.data.message)
