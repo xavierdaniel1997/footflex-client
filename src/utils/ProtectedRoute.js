@@ -15,7 +15,6 @@ const ProtectedRoute = () => {
       try {
         const response = await api.get("users/verify");
         dispatch(setUser(response.data.user));
-        console.log("from prt", status)
       } catch (error) {
         console.error("Token validation failed", error);
         dispatch(setUser(null));

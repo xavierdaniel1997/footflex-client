@@ -107,3 +107,210 @@ const App = () => {
 };
 
 export default App;
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState } from "react";
+import BreadCrumbWithButton from "../BreadCrumbWithButton";
+import {useLocation, useNavigate} from "react-router-dom";
+
+const ProductForm = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [productImage, setProductImage] = useState(null);
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProductImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleShowProducts = () => {
+    navigate("/dashboard/products");
+  };
+
+
+
+  return (
+    <div>
+      <BreadCrumbWithButton
+        componentLocation={"Add Product"}
+        location={location.pathname}
+        goback={"/dashboard/products"}
+        buttonName={"Show Products"}
+        buttonNavigate={handleShowProducts}
+      />
+    </div>
+  );
+};
+
+export default ProductForm;
+
+
+w-full md:w-1/2 bg-white py-10 px-5 rounded-md
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+******************************
+
+
+
+
+import React, { useState, useRef } from "react";
+import { FaImage, FaTimes } from "react-icons/fa";
+
+const ImageUploadSection = () => {
+  const [thumbnailImage, setThumbnailImage] = useState(null);
+  const [additionalImages, setAdditionalImages] = useState([]);
+  const thumbnailInputRef = useRef(null);
+  const additionalInputRef = useRef(null);
+
+  const handleThumbnailUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => setThumbnailImage(e.target.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleAdditionalImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) =>
+        setAdditionalImages((prev) => [...prev, e.target.result]);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeAdditionalImage = (index) => {
+    setAdditionalImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => setThumbnailImage(e.target.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  return (
+    <div className="p-6">
+      <h2 className="text-xl font-bold mb-4">Product Gallery</h2>
+
+      <div className="mb-6">
+        {thumbnailImage && (
+          <div className="relative mb-4">
+            <img
+              src={thumbnailImage}
+              alt="Thumbnail Preview"
+              className="w-full max-w-md rounded-lg mx-auto"
+            />
+            <button
+              onClick={() => setThumbnailImage(null)}
+              className="absolute top-2 right-2 bg-black text-white rounded-full p-1"
+            >
+              <FaTimes />
+            </button>
+          </div>
+        )}
+
+        <div
+          className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer"
+          onClick={() => thumbnailInputRef.current.click()}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+        >
+          {!thumbnailImage && (
+            <>
+              <FaImage className="text-3xl text-gray-400 mb-2" />
+              <p className="text-gray-400">Drag your image here, or click to browse</p>
+              <em className="text-gray-400">JPEG, PNG, SVG, or GIF (max. 800x400px)</em>
+            </>
+          )}
+          <input
+            type="file"
+            ref={thumbnailInputRef}
+            style={{ display: "none" }}
+            accept="image/*"
+            onChange={handleThumbnailUpload}
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        {[...Array(Math.max(4, additionalImages.length + 1))].map((_, index) => (
+          <div key={index} className="relative border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer">
+            {additionalImages[index] ? (
+              <div className="relative">
+                <img
+                  src={additionalImages[index]}
+                  alt={`Additional Preview ${index + 1}`}
+                  className="w-full max-w-xs rounded-lg"
+                />
+                <button
+                  onClick={() => removeAdditionalImage(index)}
+                  className="absolute top-2 right-2 bg-black text-white rounded-full p-1"
+                >
+                  <FaTimes />
+                </button>
+              </div>
+            ) : (
+              <>
+                <FaImage className="text-3xl text-gray-400 mb-2" />
+                <p className="text-gray-400">Product-thumbnail-{index + 1}.png</p>
+                <button
+                  onClick={() => additionalInputRef.current.click()}
+                  className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
+                >
+                  Upload
+                </button>
+              </>
+            )}
+          </div>
+        ))}
+        <input
+          type="file"
+          ref={additionalInputRef}
+          style={{ display: "none" }}
+          accept="image/*"
+          onChange={handleAdditionalImageUpload}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default ImageUploadSection;

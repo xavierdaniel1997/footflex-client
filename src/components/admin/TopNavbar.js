@@ -4,7 +4,7 @@ import { FaBell } from 'react-icons/fa6';
 
 const TopNavbar = () => {
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-white shadow-md px-6 py-3 flex items-center justify-end space-x-6 gap-3">
+    <nav className=" top-0 left-0 right-0 bg-white shadow-md px-16 py-3 flex items-center justify-end space-x-6 gap-3">
       <div className="relative">
         <input
           type="text"
