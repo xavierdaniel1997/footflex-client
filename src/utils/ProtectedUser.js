@@ -5,7 +5,7 @@ import { Navigate, Outlet } from 'react-router-dom'
 const ProtectedUser = () => {
     const {user} = useSelector(state => state.auth)
   return (
-    user.role===false ? <Outlet/> : <Navigate to="/login"/>
+    user?.role===false ? <Outlet/> : <Navigate to="/login"/>
   )
 }
 

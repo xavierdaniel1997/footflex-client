@@ -12,18 +12,27 @@ import UserProfilePage from "./pages/user/UserProfilePage";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import ProtectedAdmin from "./utils/ProtectedAdmin";
 import ProtectedUser from "./utils/ProtectedUser";
+import Category from "./pages/admin/Category";
+import {Toaster} from "react-hot-toast";
+import BrandPage from "./pages/admin/BrandPage";
+import ProductForm from "./components/admin/ProductComponent/ProductForm";
+
 
 function App() {
   return (
     <BrowserRouter>
+      <Toaster position="top-right" reverseOrder={false} />
       <Routes>
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/otp" element={<OTPVerification />} />
+
+        <Route path="/" element={<UserLayout />}>
+          <Route index element={<HomePage />} />
+        </Route>
         {/* userRoutes */}
         <Route element={<ProtectedUser />}>
           <Route path="/" element={<UserLayout />}>
-            <Route index element={<HomePage />} />
             <Route element={<ProtectedRoute />}>
               <Route path="userProfile/*" element={<UserProfilePage />} />
             </Route>
@@ -35,7 +44,10 @@ function App() {
             <Route path="/dashboard" element={<AdminLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="products" element={<Products />} />
+              <Route path="addNewProduct" element={<ProductForm/>} />
               <Route path="orders" element={<Orders />} />
+              <Route path="category" element={<Category />} />
+              <Route path="brand" element={<BrandPage/>}/>
             </Route>
           </Route>
         </Route>
