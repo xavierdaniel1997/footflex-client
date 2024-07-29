@@ -16,6 +16,9 @@ import Category from "./pages/admin/Category";
 import {Toaster} from "react-hot-toast";
 import BrandPage from "./pages/admin/BrandPage";
 import ProductForm from "./components/admin/ProductComponent/ProductForm";
+import Customers from "./pages/admin/Customers/Customers";
+import ProductDetials from "./pages/user/ProductDetials";
+import ShopPage from "./pages/user/ShopPage";
 
 
 function App() {
@@ -29,10 +32,15 @@ function App() {
 
         <Route path="/" element={<UserLayout />}>
           <Route index element={<HomePage />} />
+          <Route path="/menshop" element={<ShopPage gender={"Men"}/>}/>
+          <Route path="/womenshop" element={<ShopPage gender={"Women"}/>}/>
+          <Route path="/kidshop" element={<ShopPage gender={"Kids"}/>}/>
+          <Route path="/productDetials/:id" element={<ProductDetials/>}/>
         </Route>
         {/* userRoutes */}
         <Route element={<ProtectedUser />}>
           <Route path="/" element={<UserLayout />}>
+            
             <Route element={<ProtectedRoute />}>
               <Route path="userProfile/*" element={<UserProfilePage />} />
             </Route>
@@ -45,6 +53,8 @@ function App() {
               <Route index element={<Dashboard />} />
               <Route path="products" element={<Products />} />
               <Route path="addNewProduct" element={<ProductForm/>} />
+              <Route path="editproduct/:productId" element={<ProductForm/>}/>
+              <Route path="customers" element={<Customers/>} />
               <Route path="orders" element={<Orders />} />
               <Route path="category" element={<Category />} />
               <Route path="brand" element={<BrandPage/>}/>

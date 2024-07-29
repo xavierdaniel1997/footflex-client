@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import {FaPlus} from "react-icons/fa";
 import ReusableTable from '../../components/admin/ReusableTable';
+import BrandForm from '../../components/admin/BrandComponent/BrandForm';
 
 
 const BrandPage = () => {
@@ -29,7 +30,7 @@ const BrandPage = () => {
           </button>
         </div>
       </div>
-      <ReusableTable/>
+      <BrandForm open={open} handleClose={handleClose}/>
     </div>
   )
 }

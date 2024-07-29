@@ -10,13 +10,16 @@ import {
   IconButton,
 } from '@mui/material';
 import { AiOutlineClose } from 'react-icons/ai';
-import { FaImage } from 'react-icons/fa'; 
+import { FaImage } from 'react-icons/fa';  
+import { toast, Toaster } from 'react-hot-toast';
+import api from "../../../config/axiosConfig"
+import { useSelector } from 'react-redux';
 
 const BrandForm = ({ open, handleClose }) => {
   const [brandName, setBrandName] = useState('');
   const [brandTitle, setBrandTitle] = useState('');
   const [brandLogo, setBrandLogo] = useState(null);
-
+  
   const handleLogoChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       const reader = new FileReader();
@@ -26,6 +29,30 @@ const BrandForm = ({ open, handleClose }) => {
       reader.readAsDataURL(e.target.files[0]);
     }
   };
+
+  const handleSaveBrand = async () => {
+    console.log("this is from the brandform brandLOgo", brandLogo)
+    try{
+      const response = await api.post("/brand/addNewBrand", {
+        brandName,
+        brandTitle,
+        logo: brandLogo
+      })
+      console.log("this is the resposne of addbrand", response)
+      if(response.status===200){
+        toast.success(response.data.message)
+        setBrandLogo(null)
+        setBrandName("")
+        setBrandTitle("")
+        handleClose()
+      }
+    }catch(error){
+      console.log(error);
+      toast.error(error.response.data.message)
+    }
+  }
+
+  
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
@@ -83,9 +110,7 @@ const BrandForm = ({ open, handleClose }) => {
       </DialogContent>
       <DialogActions className="justify-end pb-5 mr-5">
         <Button
-          onClick={() => {
-            handleClose();
-          }}
+          onClick={handleSaveBrand}
           sx={{
             backgroundColor: 'black',
             color: 'white',

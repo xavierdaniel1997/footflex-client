@@ -15,7 +15,7 @@ const ReusableTable = ({ columns, data }) => {
               <TableCell key={index} sx={{ fontWeight: 'bold' }}>
                 {column.label}
               </TableCell>
-            ))}
+            ))} 
           </TableRow>
         </TableHead>
         <TableBody>

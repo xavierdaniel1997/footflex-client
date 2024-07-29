@@ -7,7 +7,7 @@ const UserLayout = () => {
   return (
     <div>
         <NavBar/>
-        <div className='py-28 px-20 bg-slate-50'>
+        <div className='py-28 px-20'>
         <Outlet/>
         </div>
         <Footer/>

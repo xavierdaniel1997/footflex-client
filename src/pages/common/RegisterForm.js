@@ -34,7 +34,7 @@ const RegisterForm = () => {
       try {
         const response = await api.post("/users/register", formData);
         // console.log(response?.data?.message)
-        toast.success(response?.data?.message)
+        toast.success("Enter the otp")
         if(response.status === 200){
           sessionStorage.setItem("userEmail", formData.email)
           navigate("/otp")
@@ -126,7 +126,7 @@ const RegisterForm = () => {
               />
             </div>
             <div className="mb-6">
-            P@ssw0rd!{errors.cPassword && (
+            {errors.cPassword && (
                 <p className="text-red-500 text-sm px-2">{errors.cPassword}</p>
               )}
               <input
