@@ -12,7 +12,7 @@ const NavBar = () => {
     setMenuVisible(!menuVisible);
   };
   return (
-    <nav className=" fixed top-0 left-0 right-0 px-7 py-6 shadow-md lg:mx-auto lg:px-20 bg-white">
+    <nav className=" fixed top-0 left-0 right-0 px-7 py-6 shadow-md lg:mx-auto lg:px-20 bg-white z-10">
       <div className="container mx-auto flex justify-between items-center">
         {/* Hamburger Menu for Mobile */}
         <div className="lg:hidden">
@@ -39,7 +39,7 @@ const NavBar = () => {
         {menuVisible && (
           <div className="lg:hidden bg-white text-gray-600  absolute top-20 left-0 right-0 py-10 px-10">
             <ul className="flex flex-col gap-5 justify-center items-center font-semibold text-xl">
-              <Link to="menshop">
+              <Link to="/menshop">
                 <li>MENS</li>
               </Link>
               <Link to="womenshop">
@@ -55,13 +55,13 @@ const NavBar = () => {
         {/* Search Bar */}
         <div className="hidden lg:flex  text-gray-600 justify-center items-center gap-10">
           <ul className="flex justify-around gap-10 font-semibold text-xl">
-            <Link to="menshop">
+            <Link to="/menshop">
               <li>MENS</li>
             </Link>
-            <Link to="womenshop">
+            <Link to="/womenshop">
               <li>WOMENS</li>
             </Link>
-            <Link to="kidshop">
+            <Link to="/kidshop">
               <li>KIDS</li>
             </Link>
           </ul>

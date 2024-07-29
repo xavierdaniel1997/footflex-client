@@ -4,6 +4,7 @@ import api from "../../config/axiosConfig";
 import { toast, Toaster } from 'react-hot-toast';
 import { useNavigate } from "react-router-dom";
 
+
 const OTPVerification = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [timer, setTimer] = useState(60);
@@ -56,7 +57,7 @@ const OTPVerification = () => {
     try{
       const response = await api.post("/users/verify-otp", {otp: otpValue})
       console.log("otp respones", response)
-      toast.success(response.data.message)
+      toast.success("Register successfully")
       if(response.status === 200){
         navigate("/login")
         sessionStorage.removeItem("userEmail")

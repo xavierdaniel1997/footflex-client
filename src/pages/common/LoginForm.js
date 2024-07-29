@@ -70,7 +70,6 @@ const LoginForm = () => {
             </div>
 
             <div className="mb-4">
-            P@ssw0rd!
               {errors.password && (
                 <p className="text-red-500 text-sm px-2">{errors.password}</p>
               )}
