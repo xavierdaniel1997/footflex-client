@@ -66,11 +66,16 @@ const SideNavbar = () => {
         </button>
       </div> */}
       <div className="p-4 border-t border-gray-200 flex items-center">
-        <img
-          src="https://via.placeholder.com/40"
+        {user?.dpImage ? <img
+          src={user?.dpImage}
           alt="Avatar"
-          className="w-10 h-10 rounded-full mr-2"
-        />
+          className="w-10 h-10 rounded-full mr-2 object-cover"
+        /> : <img
+        src="https://via.placeholder.com/40"
+        alt="Avatar"
+        className="w-10 h-10 rounded-full mr-2"
+      />}
+        
         <span className="font-medium text-gray-600 mr-auto">{user?.firstName}</span>
         <button className="text-gray-600 hover:text-gray-800 font-medium flex items-center" onClick={handleLogout}>
           <MdLogout className="mr-1" />

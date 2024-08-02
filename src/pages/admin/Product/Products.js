@@ -2,15 +2,20 @@ import React, {useEffect, useState} from "react";
 import {FaPlus, FaRegEdit} from "react-icons/fa";
 import {BsThreeDotsVertical} from "react-icons/bs";
 import ReusableTable from "../../../components/admin/ReusableTable";
-import {MdDeleteOutline} from "react-icons/md";
+import {MdBlock, MdDeleteOutline} from "react-icons/md";
+import {CgUnblock} from "react-icons/cg";
 import {Link, useNavigate} from "react-router-dom";
 import api from "../../../config/axiosConfig";
 import ConfirmationModal from "../../../components/admin/ConfirmationModal";
+import BlockModal from "../../../components/admin/BlockModal";
 
 const Products = () => {
   const [getProducts, setGetProducts] = useState([]);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
+  const [openBlockModal, setOpenBlockModal] = useState(false);
+  const [productToBlock, setProductToBlock] = useState(null);
+  const [blockButtonName, setBlockButtonName] = useState("");
 
   const fetchProductDetials = async () => {
     try {
@@ -24,7 +29,10 @@ const Products = () => {
   useEffect(() => {
     fetchProductDetials();
   }, []);
-  console.log("this is frm the product detials page productdetial", getProducts)
+  console.log(
+    "this is frm the product detials page productdetial",
+    getProducts
+  );
 
   const columns = [
     {
@@ -67,16 +75,31 @@ const Products = () => {
     navigate(`/dashboard/editProduct/${productId}`);
   };
 
-  const handleToggleStatus = async (productId) => {
+
+  const handleBlockProduct = (productId) => {
+    const product = getProducts.find(product => product._id === productId);
+    setOpenBlockModal(true);
+    setProductToBlock(productId);
+    setBlockButtonName(product?.status ? "Block" : "Unblock");
+  };
+  
+  const confirmBlocking = async () => {
     try {
-      const response = await api.put(`product/activate-product/${productId}`);
+      const response = await api.put(
+        `product/activate-product/${productToBlock}`
+      );
       const updatedProduct = response?.data?.product;
-      setGetProducts(prevProducts => prevProducts?.map((product) => product._id === productId ? {...product, status: updatedProduct.status} : product))
-   
+      setGetProducts((prevProducts) =>
+        prevProducts?.map((product) =>
+          product._id === productToBlock
+            ? {...product, status: updatedProduct.status}
+            : product
+        )
+      );
+      setOpenBlockModal(false);
     } catch (error) {
       console.log(error);
     }
-    console.log("frm the toggle status product", productId);
   };
 
   const productDetials =
@@ -85,8 +108,7 @@ const Products = () => {
         <div>
           <input
             type="checkbox"
-            value={product?.status}
-            onChange={() => handleToggleStatus(product?._id)}
+            checked={product?.status}
             className="form-checkbox h-4 w-4 text-blue-600"
           />
         </div>
@@ -126,6 +148,17 @@ const Products = () => {
             className="text-red-500 cursor-pointer text-xl"
             onClick={() => handleDeleteProduct(product._id)}
           />
+          {product?.status ? (
+            <MdBlock
+              className="text-red-500 cursor-pointer text-xl"
+              onClick={() => handleBlockProduct(product?._id)}
+            />
+          ) : (
+            <CgUnblock
+              className="text-green-500 cursor-pointer text-xl"
+              onClick={() => handleBlockProduct(product?._id)}
+            />
+          )}
         </div>
       ),
     })) || [];
@@ -155,6 +188,14 @@ const Products = () => {
         onClose={() => setConfirmDelete(false)}
         message={"Are you sure you want to delete this product?"}
         onConfirm={confirmDeletion}
+      />
+
+      <BlockModal
+        open={openBlockModal}
+        onClose={() => setOpenBlockModal(false)}
+        message={"Are you sure you want to block this product?"}
+        buttonName={blockButtonName}
+        onConfirm={confirmBlocking}
       />
     </div>
   );

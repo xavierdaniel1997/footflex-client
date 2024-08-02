@@ -11,10 +11,10 @@ const FilterComponent = () => {
     'Rs. 2599 to Rs. 2999',
     'Rs. 2999 to Rs. 3999'
   ];
-  const colors = ['Black', 'Blue', 'Tan', 'Navy Blue', 'Red', 'Green', 'White'];
+  const category = ['Casual', 'Formal', 'Boots', 'Snekers', 'Street', 'Hip Hop'];
 
   return (
-    <div className="w-64 bg-white shadow-lg rounded-lg p-4">
+    <div className="w-64 bg-gray-50 shadow-lg rounded-lg p-4">
 
       <div className="mb-4">
         <h3 className="font-medium mb-2">BRAND</h3>
@@ -38,20 +38,12 @@ const FilterComponent = () => {
       </div>
 
       <div className=''>
-        <h3 className="font-medium mb-2">COLOR</h3>
-        {colors.map((color, index) => (
+        <h3 className="font-medium mb-2">TYPE OFF</h3>
+        {category.map((category, index) => (
           <div key={index} className="flex items-center mb-1">
-            <input type="checkbox" id={`color-${index}`} className="mr-2" />
-            <label htmlFor={`color-${index}`} className="flex items-center">
-              <span 
-                className={`w-4 h-4 rounded-full mr-2 ${
-                  color.toLowerCase() === 'white' ? 'border border-gray-300' : ''
-                }`} 
-                style={{ backgroundColor: color.toLowerCase() }}
-              ></span>
-              {color}
-            </label>
-          </div>
+          <input type="checkbox" id={`price-${index}`} className="mr-2" />
+          <label htmlFor={`price-${index}`}>{category}</label>
+        </div>
         ))}
         <button className="text-blue-500 text-sm mt-1">more</button>
       </div>
