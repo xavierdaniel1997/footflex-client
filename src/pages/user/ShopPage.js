@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
-import FilterComponent from "./FilterComponent";
 import ShoeCard from "../../components/user/ShoeCard";
 import {FaFilter} from "react-icons/fa";
 import api from "../../config/axiosConfig";
+import FilterComponent from "../../components/user/FilterComponent";
 
 const ShopPage = ({gender}) => {
   const [filter, setFilter] = useState(false);
@@ -24,6 +24,10 @@ const ShopPage = ({gender}) => {
 
   console.log("this is form the respons of product detials ", productDetials)
   return (
+    <div>
+      <div className="pl-8">
+      <span className="text-gray-600 font-semibold">Home / {gender}</span>
+      </div>
     <div className="px-4 py-6 sm:px-6 lg:px-8">
       {/* Filter and Sort Options */}
       <div className="flex justify-between items-center mb-6 border-b-2 border-gray-200 pb-2">
@@ -44,7 +48,7 @@ const ShopPage = ({gender}) => {
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row">
         {/* Filter Component */}
         {filter && (
           <div className="lg:w-1/4 w-full">
@@ -67,6 +71,7 @@ const ShopPage = ({gender}) => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };

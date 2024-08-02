@@ -9,7 +9,7 @@ const Footer = () => {
       <div className="py-20 flex flex-col gap-4 justify-center items-center text-center ">
         <h1 className="font-semibold text-2xl text-white">
           FOOT
-          <span className="font-semibold text-2xl text-green-600">FLEX</span>
+          <span className="font-semibold text-2xl text-blue-500">FLEX</span>
         </h1>
         <div>
           <h1 className="text-xl text-gray-200">Payment Methods</h1>

@@ -7,12 +7,14 @@ import api from "../../../config/axiosConfig";
 import {MdBlock} from "react-icons/md";
 import {CgUnblock} from "react-icons/cg";
 import ConfirmationModal from "../../../components/admin/ConfirmationModal";
+import BlockModal from "../../../components/admin/BlockModal";
 
 const Customers = () => {
   const location = useLocation();
   const [userDetials, setUserDetials] = useState([]);
   const [confirmBlock, setConfirmBlock] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
+  const [blockButtonName, setBlockButtonName] = useState("");
 
   const columns = [
     {
@@ -39,10 +41,12 @@ const Customers = () => {
     }
   };
 
-  const handleBlockUser = (id) => {
-    console.log("id", id)
-    setUserToDelete(id)
+  const handleBlockUser = (userId) => {
+    const customer = userDetials.find(user => user._id === userId)
+    console.log("this is from the customere page check customer", customer)
+    setUserToDelete(userId)
     setConfirmBlock(true)
+    setBlockButtonName(customer?.isVerified ? "Block" : "Unblock");
   }
 
   const confirmDeletion = async () => {
@@ -130,8 +134,9 @@ const Customers = () => {
         <ReusableTable columns={columns} data={usersData} />
       </div>
 
-      <ConfirmationModal open={confirmBlock} onClose={() => setConfirmBlock(false)} message={"Are you sure you want to modify this user?"}
-        onConfirm={confirmDeletion}/>
+      <BlockModal open={confirmBlock} onClose={() => setConfirmBlock(false)} message={"Are you sure you want to modify this user?"}
+        onConfirm={confirmDeletion}
+        buttonName={blockButtonName}/>
     </div>
   );
 };

@@ -59,7 +59,7 @@ const PopularBrands = () => {
         {brandDetials?.map((brand, index) => (
           <div
             key={index}
-            className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 bg-gray-200 rounded-full flex items-center justify-center"
+            className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 border-2 border-gray-500 rounded-full flex items-center justify-center"
           >
             <img
               src={brand?.logo}

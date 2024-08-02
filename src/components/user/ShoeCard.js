@@ -35,9 +35,11 @@ const ShoeCard = ({productData}) => {
         </div>
         <div className="text-gray-600 font-medium">
           {/* Displaying the rating */}
-          {rating.toFixed(1)}
+          {rating}
         </div>
       </div>
+
+      
     </div>
   );
 };
