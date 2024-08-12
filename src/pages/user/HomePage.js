@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react';
 import PopularBrands from '../../components/user/PopularBrands';
 import ShoeCard from '../../components/user/ShoeCard';
 import api from '../../config/axiosConfig';
+import { useDispatch } from 'react-redux';
+import { fetchWishList } from '../../redux/wishListSlice';
 
 const HomePage = () => {
+  const dispatch = useDispatch()
   const [newArrival, setNewArrival] = useState([])
 
   const fetchNewArrival = async () => {

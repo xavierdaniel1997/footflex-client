@@ -9,15 +9,17 @@ const BreadCrumbWithButton = ({componentLocation, location, goback, buttonName, 
           <h1 className="text-2xl font-bold">{componentLocation}</h1>
           <Link to={goback}><nav className="text-gray-600 text-sm">{location}</nav></Link>
         </div>
+        <Link to={buttonNavigate}>
         <div className="flex items-center">
           {noButton && <button
             className="bg-black text-white p-2 rounded-md flex items-center"
-            onClick={buttonNavigate}
+            // onClick={buttonNavigate}
           >
             <span className="mr-2">{buttonName}</span>
             <FaPlus />
           </button>}
         </div>
+        </Link>
       </div>
   )
 }

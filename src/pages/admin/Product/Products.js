@@ -4,10 +4,11 @@ import {BsThreeDotsVertical} from "react-icons/bs";
 import ReusableTable from "../../../components/admin/ReusableTable";
 import {MdBlock, MdDeleteOutline} from "react-icons/md";
 import {CgUnblock} from "react-icons/cg";
-import {Link, useNavigate} from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 import api from "../../../config/axiosConfig";
 import ConfirmationModal from "../../../components/admin/ConfirmationModal";
 import BlockModal from "../../../components/admin/BlockModal";
+import BreadCrumbWithButton from "../../../components/admin/BreadCrumbWithButton";
 
 const Products = () => {
   const [getProducts, setGetProducts] = useState([]);
@@ -17,22 +18,28 @@ const Products = () => {
   const [productToBlock, setProductToBlock] = useState(null);
   const [blockButtonName, setBlockButtonName] = useState("");
 
-  const fetchProductDetials = async () => {
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const limit = 10;
+
+  const fetchProductDetials = async (currentPage) => {
     try {
-      const response = await api.get("product/getProducts");
+      const response = await api.get(
+        `product/getProductsToAdmin?page=${currentPage}&limit=${limit}`
+      );
+      console.log("this is frm the product page", response);
       setGetProducts(response?.data?.products);
+      setTotalPages(response.data.totalPages);
+      setTotalCount(response.data.totalCount);
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    fetchProductDetials();
-  }, []);
-  console.log(
-    "this is frm the product detials page productdetial",
-    getProducts
-  );
+    fetchProductDetials(page);
+  }, [page]);
 
   const columns = [
     {
@@ -75,14 +82,13 @@ const Products = () => {
     navigate(`/dashboard/editProduct/${productId}`);
   };
 
-
   const handleBlockProduct = (productId) => {
-    const product = getProducts.find(product => product._id === productId);
+    const product = getProducts.find((product) => product._id === productId);
     setOpenBlockModal(true);
     setProductToBlock(productId);
     setBlockButtonName(product?.status ? "Block" : "Unblock");
   };
-  
+
   const confirmBlocking = async () => {
     try {
       const response = await api.put(
@@ -163,9 +169,14 @@ const Products = () => {
       ),
     })) || [];
 
+  const location = useLocation();
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
   return (
     <div className="flex flex-col">
-      <div className="flex justify-between items-center px-10 py-5 mb-4">
+      {/* <div className="flex justify-between items-center px-10 py-5 mb-4">
         <div>
           <h1 className="text-2xl font-bold">Popular Brands</h1>
           <nav className="text-gray-600 text-sm">Home &gt; Brand</nav>
@@ -179,9 +190,24 @@ const Products = () => {
             </button>
           </Link>
         </div>
-      </div>
+      </div> */}
+      <BreadCrumbWithButton
+        buttonName={"Add New Product"}
+        noButton={true}
+        buttonNavigate={"/dashboard/addNewProduct"}
+        componentLocation={"Popular Brands"}
+        location={location.pathname}
+      />
       <div className="px-10">
-        <ReusableTable columns={columns} data={productDetials} />
+        <ReusableTable
+          columns={columns}
+          data={productDetials}
+          page={page}
+          rowsPerPage={limit}
+          totalCount={totalCount}
+          onPageChange={handlePageChange}
+          isPagination={true}
+        />
       </div>
       <ConfirmationModal
         open={confirmDelete}

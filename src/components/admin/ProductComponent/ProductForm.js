@@ -16,7 +16,6 @@ const ProductForm = () => {
   const categories = useSelector((state) => state.category.categories);
 
   const {productId} = useParams();
-  console.log("checkign the product id from useParams", productId);
   const [isEditing, setIsEditing] = useState(false);
 
   const [errors, setErrors] = useState({});
@@ -61,9 +60,9 @@ const ProductForm = () => {
       setFormData({
         productName: product?.productName,
         description: product?.description,
-        category: product?.category,
-        brand: product?.brand,
-        gender: product?.gender,
+        category: product?.category?._id,
+        brand: product?.brand?._id,
+        gender: product?.gender,  
         regularPrice: product?.regularPrice,
         salePrice: product?.salePrice,
         stock: product?.stock,
@@ -73,7 +72,6 @@ const ProductForm = () => {
         thumbnail: product.thumbnail,
         galleryImages: product?.gallery,
       }) 
-      console.log("this is the product detials", product)
     } catch (error) {
       console.log(error);
     }
@@ -115,22 +113,12 @@ const ProductForm = () => {
   };
 
   const handleImageData = (data) => {
-    console.log("Received image data:", data);
     setImageData(data);
   };
 
   const {thumbnail, galleryImages} = imageData;
-  // const data = {
-  //   ...formData,
-  //   thumbnail,
-  //   galleryImages,
-  // };
-
+ 
   const submitProductForm = async () => {
-    // console.log("frm the product adding form", formData)
-
-    // const {thumbnail, galleryImages} = imageData;
-    // console.log("checking the thumbnail and galleryImage", thumbnail, galleryImages)
     const validateForm = validateProductForm(formData);
     setErrors(validateForm);
     if (Object.keys(validateForm).length === 0)
@@ -167,12 +155,6 @@ const ProductForm = () => {
       }
   };
 
-  console.log(
-    "this is frm product form isEditing",
-    isEditing,
-    "and ",
-    productId
-  );
   return (
     <div className="container mx-auto px-4">
       <BreadCrumbWithButton
@@ -273,7 +255,7 @@ const ProductForm = () => {
                     <img
                       src={getBrandLogo(formData.brand)}
                       alt={`${formData.brand} logo`}
-                      className="w-12 h-12 object-contain"
+                      className=" rounded-full object-contain"
                     />
                   ) : (
                     <FaImage className="w-8 h-8 text-gray-400" />

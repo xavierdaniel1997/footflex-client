@@ -19,10 +19,24 @@ import ProductForm from "./components/admin/ProductComponent/ProductForm";
 import Customers from "./pages/admin/Customers/Customers";
 import ProductDetials from "./pages/user/ProductDetials";
 import ShopPage from "./pages/user/ShopPage";
-
+import WishList from "./pages/user/WishList";
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { fetchWishList } from "./redux/wishListSlice";
+import CartPage from "./pages/user/CartPage";
+import { fetchCartDetails } from "./redux/cartSlice";
+import DeliveryDetails from "./pages/user/DeliveryDetails";
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchWishList());
+    dispatch(fetchCartDetails())
+  }, [dispatch]);
+
   return (
+    
     <BrowserRouter>
       <Toaster position="top-right" reverseOrder={false} />
       <Routes>
@@ -32,17 +46,19 @@ function App() {
 
         <Route path="/" element={<UserLayout />}>
           <Route index element={<HomePage />} />
-          <Route path="/menshop" element={<ShopPage gender={"Men"}/>}/>
-          <Route path="/womenshop" element={<ShopPage gender={"Women"}/>}/>
-          <Route path="/kidshop" element={<ShopPage gender={"Kids"}/>}/>
-          <Route path="/productDetials/:id" element={<ProductDetials/>}/>
+          <Route path="/menshop" element={<ShopPage gender={"Men"} />} />
+          <Route path="/womenshop" element={<ShopPage gender={"Women"} />} />
+          <Route path="/kidshop" element={<ShopPage gender={"Kids"} />} />
+          <Route path="/productDetials/:id" element={<ProductDetials />} />
         </Route>
         {/* userRoutes */}
         <Route element={<ProtectedUser />}>
           <Route path="/" element={<UserLayout />}>
-            
             <Route element={<ProtectedRoute />}>
               <Route path="userProfile/*" element={<UserProfilePage />} />
+              <Route path="/wishList" element={<WishList/>}/>
+              <Route path="/cart" element={<CartPage/>}/>
+              <Route path="/address" element={<DeliveryDetails/>} />
             </Route>
           </Route>
         </Route>
@@ -52,12 +68,12 @@ function App() {
             <Route path="/dashboard" element={<AdminLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="products" element={<Products />} />
-              <Route path="addNewProduct" element={<ProductForm/>} />
-              <Route path="editproduct/:productId" element={<ProductForm/>}/>
-              <Route path="customers" element={<Customers/>} />
+              <Route path="addNewProduct" element={<ProductForm />} />
+              <Route path="editproduct/:productId" element={<ProductForm />} />
+              <Route path="customers" element={<Customers />} />
               <Route path="orders" element={<Orders />} />
               <Route path="category" element={<Category />} />
-              <Route path="brand" element={<BrandPage/>}/>
+              <Route path="brand" element={<BrandPage />} />
             </Route>
           </Route>
         </Route>

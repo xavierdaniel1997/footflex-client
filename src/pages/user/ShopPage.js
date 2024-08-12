@@ -3,8 +3,11 @@ import ShoeCard from "../../components/user/ShoeCard";
 import {FaFilter} from "react-icons/fa";
 import api from "../../config/axiosConfig";
 import FilterComponent from "../../components/user/FilterComponent";
+import { useDispatch } from "react-redux";
+import { fetchWishList } from "../../redux/wishListSlice";
 
 const ShopPage = ({gender}) => {
+  const dispatch = useDispatch()
   const [filter, setFilter] = useState(false);
   const [productDetials, setProductDetials] = useState([])
   const [loading, setLoading] = useState(true);
