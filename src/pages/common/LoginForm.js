@@ -28,7 +28,6 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log("from login page", formData)
     const validateForm = validateLoginForm(formData)
     setErrors(validateForm)
     if(Object.keys(validateForm).length===0){

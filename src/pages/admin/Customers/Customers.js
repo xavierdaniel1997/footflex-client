@@ -16,6 +16,11 @@ const Customers = () => {
   const [userToDelete, setUserToDelete] = useState(null);
   const [blockButtonName, setBlockButtonName] = useState("");
 
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0)
+  const [totalCount, setTotalCount] = useState(0)
+  const limit = 10
+
   const columns = [
     {
       label: (
@@ -32,10 +37,12 @@ const Customers = () => {
     {label: "Action", field: "action"},
   ];
 
-  const fetchUserDetials = async () => {
+  const fetchUserDetials = async (currentPage) => {
     try {
-      const response = await api.get("users/customers");
+      const response = await api.get(`users/customers?page=${currentPage}&limit=${limit}`);
       setUserDetials(response?.data?.users);
+      setTotalPages(response.data.totalPages);
+      setTotalCount(response.data.totalCount);
     } catch (error) {
       console.log(error);
     }
@@ -59,18 +66,10 @@ const Customers = () => {
     }
   };
 
-//   const handleToggleStatus = async (id) => {
-//     try { 
-//       await api.put(`users/product-status/${id}`);
-//       fetchUserDetials();
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   };
 
   useEffect(() => {
-    fetchUserDetials();
-  }, []);
+    fetchUserDetials(page);
+  }, [page]);
 
   console.log("this is frm the customer page userDetials", userDetials)
   const usersData = userDetials?.map((userData) => ({
@@ -122,7 +121,10 @@ const Customers = () => {
     ),
   }));
 
-  console.log("this is from the customers pg", userDetials);
+  const handlePageChange = (event, value) => {
+    setPage(value)
+  }
+
   return (
     <div className="flex flex-col">
       <BreadCrumbWithButton
@@ -131,7 +133,11 @@ const Customers = () => {
         noButton={false}
       />
       <div className="px-10">
-        <ReusableTable columns={columns} data={usersData} />
+        <ReusableTable columns={columns} data={usersData} page={page}
+          rowsPerPage={limit}
+          totalCount={totalCount}
+          onPageChange={handlePageChange}
+          isPagination={true}/>
       </div>
 
       <BlockModal open={confirmBlock} onClose={() => setConfirmBlock(false)} message={"Are you sure you want to modify this user?"}

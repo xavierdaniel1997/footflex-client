@@ -1,14 +1,14 @@
-
 import React, {useState, useRef, useEffect, useCallback} from "react";
 import {FaImage, FaTimes} from "react-icons/fa";
 import {FaCropSimple} from "react-icons/fa6";
 import ImageCropper from "../ImageCropper";
 
 const ImageUploadSection = ({onImageData, editingImage}) => {
-  // const [thumbnail, setThumbnail] = useState(null);
-  // const [galleryImages, setGalleryImages] = useState([]);
   const [thumbnail, setThumbnail] = useState(editingImage?.thumbnail || null);
-const [galleryImages, setGalleryImages] = useState(editingImage?.galleryImages || []);
+  const [galleryImages, setGalleryImages] = useState(
+    editingImage?.galleryImages || []
+  );
+  const [newGalleryImages, setNewGalleryImages] = useState([]);
   const [imageError, setImageError] = useState("");
   const [galleryError, setGalleryError] = useState("");
   const thumbnailInputRef = useRef(null);
@@ -20,14 +20,12 @@ const [galleryImages, setGalleryImages] = useState(editingImage?.galleryImages |
 
   const validImageType = ["image/png", "image/jpeg"];
 
-  console.log("this is form the image upload editingImage", editingImage)
-
-  useEffect(()=> {
-    if(editingImage){
-      setThumbnail(editingImage?.thumbnail)
-      setGalleryImages(editingImage?.galleryImages)
+  useEffect(() => {
+    if (editingImage) {
+      setThumbnail(editingImage?.thumbnail);
+      setGalleryImages(editingImage?.galleryImages);
     }
-  }, [editingImage])
+  }, [editingImage]);
 
   const handleThumbnailUpload = (file) => {
     if (file && validImageType.includes(file.type)) {
@@ -40,8 +38,6 @@ const [galleryImages, setGalleryImages] = useState(editingImage?.galleryImages |
     }
   };
 
-
-
   const handleGalleryImageUpload = (files) => {
     const fileArray = Array.from(files);
     let validFiles = [];
@@ -52,6 +48,7 @@ const [galleryImages, setGalleryImages] = useState(editingImage?.galleryImages |
         const reader = new FileReader();
         reader.onload = (e) => {
           setGalleryImages((prev) => [...prev, e.target.result]);
+          // setNewGalleryImages((prev) => [...prev, file]);
         };
         reader.readAsDataURL(file);
         validFiles.push(file);
@@ -75,6 +72,7 @@ const [galleryImages, setGalleryImages] = useState(editingImage?.galleryImages |
 
   const removeGalleryImage = (index) => {
     setGalleryImages((prev) => prev.filter((_, i) => i !== index));
+    // setNewGalleryImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleDragOver = (event) => {
@@ -93,50 +91,17 @@ const [galleryImages, setGalleryImages] = useState(editingImage?.galleryImages |
     handleGalleryImageUpload(files);
   };
 
+  const startCropping = (image, index = null) => {
+    setCropImage(image);
+    setCropImageIndex(index);
+    setIsCropping(true);
+  };
 
-    const startCropping = (image, index = null) => {
-      setCropImage(image);
-      setCropImageIndex(index);
-      setIsCropping(true);
-    };
-  
-    // const handleCropComplete = useCallback((croppedAreaPixels) => {
-    //   const croppedImage = getCroppedImg(cropImage, croppedAreaPixels);
-    //   if (cropImageIndex === null) {
-    //     setThumbnail(croppedImage);
-    //   } else {
-    //     setGalleryImages(prev => 
-    //       prev.map((img, index) => index === cropImageIndex ? croppedImage : img)
-    //     );
-    //   }
-    //   setIsCropping(false);
-    // }, [cropImage, cropImageIndex]);
-  
-    // const getCroppedImg = (imageSrc, pixelCrop) => {
-    //   const image = new Image();
-    //   image.src = imageSrc;
-    //   const canvas = document.createElement('canvas');
-    //   canvas.width = pixelCrop.width;
-    //   canvas.height = pixelCrop.height;
-    //   const ctx = canvas.getContext('2d');
-  
-    //   ctx.drawImage(
-    //     image,
-    //     pixelCrop.x,
-    //     pixelCrop.y,
-    //     pixelCrop.width,
-    //     pixelCrop.height,
-    //     0,
-    //     0,
-    //     pixelCrop.width,
-    //     pixelCrop.height
-    //   );
-  
-    //   return canvas.toDataURL('image/jpeg');
-    // };
-  
   useEffect(() => {
-    onImageData({thumbnail, galleryImages});
+    onImageData({
+      thumbnail,
+      galleryImages,
+    });
   }, [thumbnail, galleryImages]);
 
   return (
@@ -188,7 +153,6 @@ const [galleryImages, setGalleryImages] = useState(editingImage?.galleryImages |
           </div>
         )}
       </div>
-
 
       <div className="mb-4">
         <h3 className="text-md font-medium mb-2">
@@ -246,33 +210,10 @@ const [galleryImages, setGalleryImages] = useState(editingImage?.galleryImages |
         </div>
       </div>
       {isCropping && (
-        <ImageCropper
-          image={cropImage}
-          onCancel={() => setIsCropping(false)}
-        />
+        <ImageCropper image={cropImage} onCancel={() => setIsCropping(false)} />
       )}
     </div>
   );
 };
 
 export default ImageUploadSection;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

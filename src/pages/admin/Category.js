@@ -145,8 +145,8 @@ const Category = () => {
         </div>
       </div>
       <div className="px-10">
-        <ReusableTable columns={columns} data={formattedData} />
-      </div>
+        <ReusableTable columns={columns} data={formattedData} isPagination={false}/>
+      </div> 
 
       <CategoryForm
         open={open}

@@ -1,14 +1,21 @@
 import React, {useEffect, useState} from "react";
 import ImageGallery from "../../components/user/ImageGallery";
-import {useLocation, useParams} from "react-router-dom";
+import {Link, useLocation, useParams} from "react-router-dom";
 import api from "../../config/axiosConfig";
 import {FaRegHeart} from "react-icons/fa";
 import RelatedProducts from "../../components/user/RelatedProducts";
+import {toast, Toaster} from "react-hot-toast";
+import {useDispatch, useSelector} from "react-redux";
+import {addToCart, fetchCartDetails} from "../../redux/cartSlice";
 
 const ProductDetails = () => {
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.cartItems);
   const [product, setProduct] = useState(null);
+  const [selectSize, setSelectSize] = useState(null);
+  const [error, setError] = useState("");
+  const [isInCart, setIsInCart] = useState(false);
   const location = useLocation();
-  console.log("this is from the product detials locatin", location);
   const {id} = useParams();
 
   const fetchProdctDetial = async () => {
@@ -20,11 +27,46 @@ const ProductDetails = () => {
     }
   };
 
+  const checkIfInCart = () => {
+    return cartItems.items?.some(item => item.productId._id === product?._id);
+  };
+
   useEffect(() => {
     fetchProdctDetial();
-  }, []);
+    dispatch(fetchCartDetails());
+  }, [dispatch]);
 
-  console.log("this is frm the product detials page", product);
+  useEffect(() => {
+    if (product && cartItems.items) {
+      setIsInCart(checkIfInCart());
+    }
+  }, [product, cartItems]);
+
+  const handleAddToCart = async () => {
+    if (!selectSize) {
+      setError("Please select a size");
+      return;
+    }
+    setError("");
+    try{
+      dispatch(addToCart({
+        productId: product._id,
+        size: selectSize
+      }))
+      toast.success("Added to cart successfully");
+      setIsInCart(!isInCart)
+    }catch(error){
+      console.log(error)
+      toast.error("Failed to add");
+    }
+  };
+
+ 
+ 
+  // const checkCart = cartItems.items?.some(
+  //   (item) => item?.productId?._id === product?._id
+  // );
+
   return (
     <div className="px-10">
       <div className="mb-8 ">
@@ -58,14 +100,20 @@ const ProductDetails = () => {
           </div>
 
           <div className="mt-4">
-            <p className="font-semibold">Size</p>
+            <div className="flex gap-3">
+              <p className="font-semibold">Size</p>
+              <div className="text-red-600">{error}</div>
+            </div>
             <div className="flex flex-wrap gap-2 mt-2">
               {product?.sizes?.map((size) => (
                 <div key={size._id} className="text-center">
                   <button
                     key={size}
-                    className="px-4 py-2 border rounded-lg focus:outline-none"
+                    className={`px-4 py-2 border rounded-lg focus:outline-none ${
+                      selectSize === size.size ? "bg-black text-white" : " "
+                    }`}
                     disabled={size.stock === 0}
+                    onClick={() => setSelectSize(size.size)}
                   >
                     {size?.size}
                   </button>
@@ -95,21 +143,36 @@ const ProductDetails = () => {
               {product?.status ? "Available" : "Unavailable"}
             </p>
           </div>
-          <div className="mt-4 flex items-center gap-2">
-            {/* <button className="flex-1 bg-black text-white py-2 rounded-lg mb-2" disabled={product?.status}>
-            Add to Cart
-          </button> */}
-            <button
-              className={`flex-1 py-2 rounded-lg mb-2 ${
-                product?.status
-                  ? "bg-black text-white hover:bg-gray-800"
-                  : "bg-gray-300 text-gray-800 cursor-not-allowed"
-              }`}
-              disabled={!product?.status}
-            >
-              Add to Cart
-            </button>
-          </div>
+
+          {!isInCart ? (
+            <div className="mt-4 flex items-center gap-2">
+              <button
+                className={`flex-1 py-2 rounded-lg mb-2 ${
+                  product?.status
+                    ? "bg-black text-white hover:bg-gray-800"
+                    : "bg-gray-300 text-gray-800 cursor-not-allowed"
+                }`}
+                disabled={!product?.status}
+                onClick={handleAddToCart}
+              >
+                Add to Cart
+              </button>
+            </div>
+          ) : (
+            <Link to="/cart"><div className="mt-4 flex items-center gap-2">
+              <button
+                className={`flex-1 py-2 rounded-lg mb-2 ${
+                  product?.status
+                    ? "bg-black text-white hover:bg-gray-800"
+                    : "bg-gray-300 text-gray-800 cursor-not-allowed"
+                }`}
+                disabled={!product?.status}
+              >
+                Go to Cart
+              </button>
+            </div>
+            </Link>
+          )}
 
           <button
             className={`w-full ${
@@ -160,7 +223,7 @@ const ProductDetails = () => {
         </div>
       </div>
       <div className="mt-10">
-        <RelatedProducts/>
+        <RelatedProducts />
       </div>
     </div>
   );
