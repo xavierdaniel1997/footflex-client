@@ -5,7 +5,7 @@ import { addItemToWishList, removeItemFromWishList } from "../../redux/wishListS
 import { useEffect, useState } from "react";
 
 
-const ShoeCard = ({productData}) => {
+const ShoeCard = ({productData, inUserProfile}) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const wishlistItems = useSelector((state) => state.wishList.items);
@@ -35,7 +35,7 @@ const ShoeCard = ({productData}) => {
   return (
     <div className="max-sm:mt-5">
       <div
-        className={`lg:w-auto p-8 bg-slate-100 rounded-xl md:w-60 max-sm:w-44`}
+        className={`${inUserProfile? "bg-gray-100 p-3 rounded-md" : "lg:w-auto p-8 bg-slate-100 rounded-md md:w-60 max-sm:w-44 "}`}
       >
         <div className="flex justify-end">
           <button className="bg-white p-2 text-xl rounded-full"
@@ -59,7 +59,8 @@ const ShoeCard = ({productData}) => {
       <div className="p-2 flex items-center justify-between">
         <div>
           <h1 className="text-gray-600 font-semibold">
-            {productData?.productName}
+            {inUserProfile ? productData?.productName.split(" ").slice(0, 2).join(" ") :  productData?.productName}
+            {/* {item?.productId?.productName.split(" ").slice(0, 4).join(" ")} */}
           </h1>
           <p className="text-gray-600">₹ {productData?.salePrice}</p>
         </div>

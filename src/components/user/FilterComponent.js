@@ -14,7 +14,7 @@ const FilterComponent = () => {
   const category = ['Casual', 'Formal', 'Boots', 'Snekers', 'Street', 'Hip Hop'];
 
   return (
-    <div className="w-64 bg-gray-50 shadow-lg rounded-lg p-4">
+    <div className="w-72 bg-gray-50 border shadow-lg rounded-sm px-6 py-4">
 
       <div className="mb-4">
         <h3 className="font-medium mb-2">BRAND</h3>

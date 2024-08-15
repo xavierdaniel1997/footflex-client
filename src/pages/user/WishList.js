@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {fetchWishList} from "../../redux/wishListSlice";
 import ShoeCard from "../../components/user/ShoeCard";
 
-const WishList = () => {
+const WishList = ({inUserProfile}) => {
   const dispatch = useDispatch();
   const {items, loading, error} = useSelector((state) => state.wishList);
 
@@ -24,6 +24,7 @@ const WishList = () => {
               <ShoeCard
                 key={productData?._id}
                 productData={productData}
+                inUserProfile={inUserProfile}
               />
             ))}
           </div>

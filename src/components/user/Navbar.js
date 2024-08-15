@@ -3,7 +3,7 @@ import { AiOutlineHome, AiOutlineSearch, AiOutlineDown } from "react-icons/ai";
 import { BsBag, BsCreditCard, BsPerson } from "react-icons/bs";
 import { BiHeart } from "react-icons/bi";
 import { FiMenu } from "react-icons/fi";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCartDetails } from "../../redux/cartSlice";
 import { BsCart3 } from "react-icons/bs";
@@ -36,6 +36,14 @@ const NavBar = () => {
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
   };
+
+  const navigate = useNavigate()
+  const handleNavgate = () => {
+    if(cartItemsCount>0){
+      navigate("/address")
+    }
+  }
+  
 
   return (
     <nav className="fixed top-0 left-0 right-0 px-7 py-6 shadow-md lg:mx-auto lg:px-20 bg-white z-10">
@@ -85,7 +93,7 @@ const NavBar = () => {
             {/* Flexbox container with centered breadcrumb */}
             
 
-            <div className="flex items-center gap-2 mx-auto">
+            <div className="flex items-center gap-2 mx-auto" >
               <Link to="/cart">
                 <div
                   className={`flex items-center gap-2 ${
@@ -96,18 +104,19 @@ const NavBar = () => {
                   <span>Cart</span>
                 </div>
               </Link>
-              <hr className="w-8 border-t-2 border-gray-300" />
-              <Link to="/address">
+              <hr className={`w-8 border-t-2 border-gray-300 ${currentStep >=1 ? "border-green-600" : "border-gray-300"}`} />
+              {/* <Link to="/address"> */}
                 <div
-                  className={`flex items-center gap-2 ${
+                  className={`flex items-center gap-2 cursor-pointer ${
                     currentStep >= 2 ? "text-green-600" : "text-gray-400"
                   }`}
+                  onClick={handleNavgate}
                 >
                   <AiOutlineHome className="text-2xl" />
                   <span>Delivery Details</span>
                 </div>
-              </Link>
-              <hr className="w-8 border-t-2 border-gray-300" />
+              {/* </Link> */}
+              <hr className={`w-8 border-t-2 border-gray-300 ${currentStep >=2 ? "border-green-600" : "border-gray-300"}`} />
               <Link to="/payment">
                 <div
                   className={`flex items-center gap-2 ${

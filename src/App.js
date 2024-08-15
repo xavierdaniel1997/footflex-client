@@ -26,6 +26,7 @@ import { fetchWishList } from "./redux/wishListSlice";
 import CartPage from "./pages/user/CartPage";
 import { fetchCartDetails } from "./redux/cartSlice";
 import DeliveryDetails from "./pages/user/DeliveryDetails";
+import PaymentPage from "./pages/user/PaymentPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -59,6 +60,7 @@ function App() {
               <Route path="/wishList" element={<WishList/>}/>
               <Route path="/cart" element={<CartPage/>}/>
               <Route path="/address" element={<DeliveryDetails/>} />
+              <Route path="/payment" element={<PaymentPage/>}/>
             </Route>
           </Route>
         </Route>
