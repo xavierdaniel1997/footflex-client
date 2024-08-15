@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import BreadCrumbWithButton from "../BreadCrumbWithButton";
-import {useLocation, useNavigate, useParams} from "react-router-dom";
+import {Link, useLocation, useNavigate, useParams} from "react-router-dom";
 import {FaImage, FaTimes, FaPlus} from "react-icons/fa";
 import ImageUploadSection from "./ImageUploadSection";
 import {useDispatch, useSelector} from "react-redux";
@@ -8,6 +8,7 @@ import {getCategoryItems} from "../../../redux/categorySlice";
 import api from "../../../config/axiosConfig";
 import {toast, Toaster} from "react-hot-toast";
 import {validateProductForm} from "../../../utils/validateForms";
+import {dotPulse} from "ldrs";
 
 const ProductForm = () => {
   const location = useLocation();
@@ -17,6 +18,7 @@ const ProductForm = () => {
 
   const {productId} = useParams();
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [errors, setErrors] = useState({});
   // const [totalStock, setTotalStock] = useState(0);
@@ -56,13 +58,13 @@ const ProductForm = () => {
   const fetchProductDetial = async (id) => {
     try {
       const response = await api.get(`product/product-detial/${id}`);
-      const product = response?.data?.productDetial
+      const product = response?.data?.productDetial;
       setFormData({
         productName: product?.productName,
         description: product?.description,
         category: product?.category?._id,
         brand: product?.brand?._id,
-        gender: product?.gender,  
+        gender: product?.gender,
         regularPrice: product?.regularPrice,
         salePrice: product?.salePrice,
         stock: product?.stock,
@@ -71,7 +73,7 @@ const ProductForm = () => {
       setImageData({
         thumbnail: product.thumbnail,
         galleryImages: product?.gallery,
-      }) 
+      });
     } catch (error) {
       console.log(error);
     }
@@ -117,43 +119,48 @@ const ProductForm = () => {
   };
 
   const {thumbnail, galleryImages} = imageData;
- 
+
   const submitProductForm = async () => {
     const validateForm = validateProductForm(formData);
     setErrors(validateForm);
-    if (Object.keys(validateForm).length === 0)
-      try {
-        const data = {...formData, ...imageData}
-        let response;
-        if(isEditing){
-          response = await api.put(`product/product-modify/${productId}`, data)
-        }else{
-          response = await api.post("product/addProduct", data);
-        }
-        if (response.status === 200) {
-          toast.success(response.data.message);
-          setFormData({
-            productName: "",
-            description: "",
-            category: "",
-            brand: "",
-            gender: "",
-            stock: "",
-            regularPrice: "",
-            salePrice: "",
-            sizes: [{size: "", stock: 0}],
-          });
-          setImageData({
-            thumbnail: null,
-            galleryImages: [],
-          });
-        }
-        console.log("rsp of Productadd", response);
-      } catch (error) {
-        console.log(error);
-        toast.error(error.response.data.message);
+    if (Object.keys(validateForm).length === 0) setIsLoading(true);
+    try {
+      const data = {...formData, ...imageData};
+      let response;
+      if (isEditing) {
+        response = await api.put(`product/product-modify/${productId}`, data);
+      } else {
+        response = await api.post("product/addProduct", data);
       }
+      if (response.status === 200) {
+        toast.success(response.data.message);
+        setFormData({
+          productName: "",
+          description: "",
+          category: "",
+          brand: "",
+          gender: "",
+          stock: "",
+          regularPrice: "",
+          salePrice: "",
+          sizes: [{size: "", stock: 0}],
+        });
+        setImageData({
+          thumbnail: null,
+          galleryImages: [],
+        });
+        setIsLoading(false);
+      }
+      console.log("rsp of Productadd", response);
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message);
+    }
   };
+
+  useEffect(() => {
+    dotPulse.register();
+  }, []);
 
   return (
     <div className="container mx-auto px-4">
@@ -442,31 +449,56 @@ const ProductForm = () => {
           </form>
         </div>
         <div className="w-full md:w-1/2 ">
-          <ImageUploadSection onImageData={handleImageData} editingImage={imageData}/>
+          <ImageUploadSection
+            onImageData={handleImageData}
+            editingImage={imageData}
+          />
         </div>
       </div>
       {/* Updated button container */}
       <div className="mt-6 px-20">
         <div className="flex justify-end space-x-3">
-          <button
+          {/* <button
             type="button"
             onClick={submitProductForm}
             className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-900"
           >
-            {isEditing? "Update" : "Save"}
-          </button>
+            {isLoading ? (
+              <>
+                <l-dot-pulse size="43" speed="1.3" color="white"></l-dot-pulse>
+              </>
+            ) : isEditing ? (
+              "Update"
+            ) : (
+              "Save"
+            )}
+          </button> */}
+
+
+          {isLoading ? (
+            <button className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-900">
+              <>
+                <l-dot-pulse size="43" speed="1.3" color="white"></l-dot-pulse>
+              </>
+            </button>
+          ) :  (
+            <button onClick={submitProductForm} className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-900">
+              {isEditing ?  "Update" : "Save"}
+            </button>
+          )}
           <button
             type="button"
             className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
           >
             Delete
           </button>
-          <button
+          <Link to="/dashboard/products"><button
             type="button"
             className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
           >
             Cancel
           </button>
+          </Link>
         </div>
       </div>
     </div>
@@ -474,3 +506,20 @@ const ProductForm = () => {
 };
 
 export default ProductForm;
+
+/*
+
+
+import { dotPulse } from 'ldrs'
+
+dotPulse.register()
+
+// Default values shown
+<l-dot-pulse
+  size="43"
+  speed="1.3" 
+  color="black" 
+></l-dot-pulse>
+
+
+*/

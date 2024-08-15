@@ -61,11 +61,6 @@ const ProductDetails = () => {
     }
   };
 
- 
- 
-  // const checkCart = cartItems.items?.some(
-  //   (item) => item?.productId?._id === product?._id
-  // );
 
   return (
     <div className="px-10">

@@ -54,31 +54,26 @@ export const validateProductForm = (inputField) => {
 
 
 
+export const validateAddressForm = (formData) => {
+  const errors = {};
+
+  const phoneRegex = /^\d{10}$/;
+  const pinCodeRegex = /^\d{6}$/;
+
+  if (!formData.customerName) errors.customerName = "Name is required*";
+  if (!formData.phone) errors.phone = "Phone number is required*";
+  if (!phoneRegex.test(formData.phone)) errors.phone = "Invalid phone number format*";
+  if (!formData.pinCode) errors.pinCode = "Pin code is required*";
+  if (!pinCodeRegex.test(formData.pinCode)) errors.pinCode = "Invalid pin code format*";
+  if (!formData.address) errors.address = "Address is required*";
+  if (!formData.locality) errors.locality = "Locality is required*";
+  if (!formData.city) errors.city = "City is required*";
+  if (!formData.state) errors.state = "State is required*";
+
+  return errors;
+};
 
 
 
 
-/*
 
-if (!inputField.sizes || inputField.sizes.length === 0) {
-  newError.sizes = "At least one size is required";
-} else {
-  const sizesErrors = [];
-  inputField.sizes.forEach((sizeObj, index) => {
-    if (!sizeObj.size) {
-      sizesErrors[index] = sizesErrors[index] || {};
-      sizesErrors[index].size = "Size is required";
-    }
-    if (!sizeObj.stock) {
-      sizesErrors[index] = sizesErrors[index] || {};
-      sizesErrors[index].stock = "Stock is required";
-    } else if (isNaN(sizeObj.stock) || sizeObj.stock < 0) {
-      sizesErrors[index] = sizesErrors[index] || {};
-      sizesErrors[index].stock = "Stock must be a non-negative number";
-    }
-  });
-
-  if (sizesErrors.length > 0) {
-    newError.sizes = sizesErrors;
-  }
-}*/

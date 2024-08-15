@@ -75,7 +75,6 @@ const CartCard = ({cartItem}) => {
               {cartItem?.productId?.brand?.brandName}
             </h2>
             <p className="text-gray-600">{cartItem?.productId?.productName}</p>
-            {/* <p className="mt-2">SIZE: {cartItem?.size}</p> */}
 
             {/* size and quatity updating */}
             <p className="text-yellow-600 font-semibold">Low in stock</p>

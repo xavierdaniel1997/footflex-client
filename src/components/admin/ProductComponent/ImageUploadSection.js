@@ -97,6 +97,19 @@ const ImageUploadSection = ({onImageData, editingImage}) => {
     setIsCropping(true);
   };
 
+  const handleCropComplete = (croppedImageUrl) => {
+    if (cropImageIndex === null) {
+      setThumbnail(croppedImageUrl);
+    } else {
+      setGalleryImages(prevImages => 
+        prevImages.map((img, index) => 
+          index === cropImageIndex ? croppedImageUrl : img
+        )
+      );
+    }
+    setIsCropping(false);
+  };
+
   useEffect(() => {
     onImageData({
       thumbnail,
@@ -210,7 +223,7 @@ const ImageUploadSection = ({onImageData, editingImage}) => {
         </div>
       </div>
       {isCropping && (
-        <ImageCropper image={cropImage} onCancel={() => setIsCropping(false)} />
+        <ImageCropper image={cropImage} onCancel={() => setIsCropping(false)} onCropComplete={handleCropComplete}/>
       )}
     </div>
   );

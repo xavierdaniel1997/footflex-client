@@ -22,7 +22,7 @@ const ProfileSideBar = () => {
   const menuItems = [
     {name: "Orders", icon: FaShoppingBag, path: "/userProfile/orders"},
     {name: "Wishlist", icon: FaHeart, path: "/userProfile/wishlist"},
-    {name: "Cart", icon: FaShoppingCart, path: "/userProfile/cart"},
+    {name: "Cart", icon: FaShoppingCart, path: "/cart"},
     {name: "FOOTFLEX Wallet", icon: FaWallet, path: "/userProfile/wallet"},
     {name: "Invite Friends", icon: FaUserFriends, path: "/userProfile/invite"},
     {name: "Edit Profile", icon: FaUser, path: "/userProfile/editProfile"},
@@ -31,11 +31,11 @@ const ProfileSideBar = () => {
 
   const handleLogout = async () => {
     await api.post("users/logout");
-    dispatch(logoutUser());
+    dispatch(logoutUser()); 
   };
 
   return (
-    <div className="w-72 bg-white shadow-md rounded-lg overflow-hidden">
+    <div className="w-72 bg-white shadow-md rounded-lg overflow-hidden ml-10">
       <div className="px-6 py-5">
         <h2 className="text-xl font-semibold text-gray-800">My Account</h2>
 
@@ -71,7 +71,7 @@ const ProfileSideBar = () => {
                   to={item.path}
                   className={`text-base flex items-center cursor-pointer hover:text-gray-800 ${
                     location.pathname === item.path
-                      ? "text-gray-800 font-semibold"
+                      ? "text-blue-600 font-semibold"
                       : "text-gray-600"
                   }`}
                 >
