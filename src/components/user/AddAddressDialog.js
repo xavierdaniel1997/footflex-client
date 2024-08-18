@@ -111,7 +111,6 @@ const AddAddressDialog = ({open, onClose, addressData, editMode}) => {
     }
   };
 
-  console.log("this is frm the add address modal ", addressData?._id);
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
       <DialogTitle

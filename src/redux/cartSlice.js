@@ -54,6 +54,18 @@ export const updateCart = createAsyncThunk(
   }
 )
 
+export const clearCart = createAsyncThunk(
+  "cart/clearCart",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.delete("/cart/clear-cart");
+      return response.data.cart;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+)
+
 const cartSlice = createSlice({
   name: "cart",
   initialState: {
@@ -91,6 +103,10 @@ const cartSlice = createSlice({
       .addCase(updateCart.fulfilled, (state, action) => {
         state.loading = false;
         state.cartItems = action.payload
+      })
+      .addCase(clearCart.fulfilled, (state, action) => {
+        state.loading = false;
+        state.cartItems = [];
       })
   },
 });

@@ -1,9 +1,12 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CartCheckout from "../../components/user/CartCheckout";
 import PaymentOptions from "../../components/user/PaymentOptions";
+import { useEffect } from "react";
+import { setSelectedAddress } from "../../redux/selectedAddressSlice";
 
 const PaymentPage = () => {
   const cartItems = useSelector((state) => state.cart.cartItems);
+  const address = useSelector(state => state.address.selectedAddress)
 
   const totalPrice = cartItems?.items?.reduce((acc, item) => {
     const price = Number(item?.productId?.salePrice)
@@ -15,7 +18,9 @@ const PaymentPage = () => {
     return acc + item?.quantity
   }, 0)
 
-  return (
+  console.log("this is frm the payment page cartitem", cartItems);  
+  console.log("this is frm the payment page address", address); 
+  return ( 
     <div className="py-12 md:p-8 lg:px-36">
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="flex-1">
@@ -32,7 +37,7 @@ const PaymentPage = () => {
             </div>
           </div>
 
-          <PaymentOptions />
+          <PaymentOptions totalPrice={totalPrice}/>
         </div>
         <div className="lg:w-1/3 ">
           <div className="bg-white max-w-md mx-auto">

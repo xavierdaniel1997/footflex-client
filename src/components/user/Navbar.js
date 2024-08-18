@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineHome, AiOutlineSearch, AiOutlineDown } from "react-icons/ai";
-import { BsBag, BsCreditCard, BsPerson } from "react-icons/bs";
+import { BsCreditCard, BsPerson } from "react-icons/bs";
 import { BiHeart } from "react-icons/bi";
 import { FiMenu } from "react-icons/fi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -13,6 +13,7 @@ const NavBar = () => {
   const [menuVisible, setMenuVisible] = useState(false);
   // const cartItems = useSelector((state) => state.cart.cartItems);
   const cartItemsCount = useSelector((state) => state.cart.cartItems?.items?.length || 0);
+  const address = useSelector((state) => state.address.selectedAddress)
 
   const location = useLocation();
   const [currentStep, setCurrentStep] = useState(1); // 1: Bag, 2: Delivery Details, 3: Payment
@@ -43,7 +44,12 @@ const NavBar = () => {
       navigate("/address")
     }
   }
-  
+
+  const handleNavgatePymt = () => {
+    if(cartItemsCount > 0 && address){
+      navigate("/payment")
+    }
+  }
 
   return (
     <nav className="fixed top-0 left-0 right-0 px-7 py-6 shadow-md lg:mx-auto lg:px-20 bg-white z-10">
@@ -107,8 +113,8 @@ const NavBar = () => {
               <hr className={`w-8 border-t-2 border-gray-300 ${currentStep >=1 ? "border-green-600" : "border-gray-300"}`} />
               {/* <Link to="/address"> */}
                 <div
-                  className={`flex items-center gap-2 cursor-pointer ${
-                    currentStep >= 2 ? "text-green-600" : "text-gray-400"
+                  className={`flex items-center gap-2  ${
+                    currentStep >= 2 ? "text-green-600 cursor-pointer" : "text-gray-400"
                   }`}
                   onClick={handleNavgate}
                 >
@@ -117,20 +123,21 @@ const NavBar = () => {
                 </div>
               {/* </Link> */}
               <hr className={`w-8 border-t-2 border-gray-300 ${currentStep >=2 ? "border-green-600" : "border-gray-300"}`} />
-              <Link to="/payment">
+              {/* <Link to="/payment"> */}
                 <div
                   className={`flex items-center gap-2 ${
-                    currentStep >= 3 ? "text-green-600" : "text-gray-400"
+                    currentStep >= 3 ? "text-green-600 cursor-pointer" : "text-gray-400"
                   }`}
+                  onClick={handleNavgatePymt}
                 >
                   <BsCreditCard className="text-2xl" />
                   <span>Payment</span>
                 </div>
-              </Link>
+              {/* </Link> */}
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span>More</span>
+            <Link to="/userProfile"><span>More</span></Link>
             <AiOutlineDown/>
           </div>
           </div>
@@ -168,7 +175,7 @@ const NavBar = () => {
 
               <Link to="/wishList">
                 <button className="flex flex-col justify-center items-center">
-                  <BiHeart />
+                  <BiHeart size={24}/>
                   <span className="text-xs">Wishlist</span>
                 </button>
               </Link>

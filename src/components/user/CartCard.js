@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react";
-import { MdDeleteForever } from "react-icons/md";
+import {MdDeleteForever} from "react-icons/md";
 import {useDispatch} from "react-redux";
 import {removeFromCart, updateCart} from "../../redux/cartSlice";
 
-const CartCard = ({cartItem}) => {
+const CartCard = ({cartItem, stockStatus}) => {
   const dispatch = useDispatch();
   const [selectedSize, setSelectedSize] = useState(cartItem?.size);
   const [availableQty, setAvailableQty] = useState([]);
@@ -48,8 +48,8 @@ const CartCard = ({cartItem}) => {
     handleUpdateCart();
   }, [selectedSize, selectedQty]);
 
-  const itemPrice = Number(cartItem?.productId?.salePrice)
-  const totalPrice = itemPrice * selectedQty || 1
+  const itemPrice = Number(cartItem?.productId?.salePrice);
+  const totalPrice = itemPrice * selectedQty || 1;
   // console.log("this is from the cart card", cartItem);
   // console.log("this is from the cart card quantity", availableQty);
 
@@ -115,22 +115,21 @@ const CartCard = ({cartItem}) => {
           <div className="text-right">
             <div className="flex items-center space-x-2">
               {/* <p className="line-through text-gray-500">₹4 599.00</p> */}
-              <p className="text-red-500 font-bold">
-                ₹{totalPrice}
-              </p>
+              <p className="text-red-500 font-bold">₹{totalPrice}</p>
               <button
                 className="text-gray-500 hover:text-black"
                 onClick={handleRemoveCartItem}
               >
-                <MdDeleteForever size={22}/>
+                <MdDeleteForever size={22} />
               </button>
             </div>
           </div>
         </div>
 
         {/* gender section */}
-        <h2
-          className={`font-semibold 
+        <div className="flex items-center gap-4">
+          <h2
+            className={`font-semibold 
     ${cartItem?.productId?.gender === "Men" ? "bg-blue-100 text-blue-500" : ""} 
     ${
       cartItem?.productId?.gender === "Women" ? "bg-pink-100 text-pink-500" : ""
@@ -141,9 +140,13 @@ const CartCard = ({cartItem}) => {
         : ""
     } 
     max-w-fit px-1 rounded-md`}
-        >
-          {cartItem?.productId?.gender}
-        </h2>
+          >
+            {cartItem?.productId?.gender}
+          </h2>
+          {stockStatus && !stockStatus.inStock && (
+            <p className="text-red-500 text-md font-semibold">{stockStatus.message}</p>
+          )}
+        </div>
       </div>
     </div>
   );

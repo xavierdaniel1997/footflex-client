@@ -1,14 +1,18 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import CartCard from "../../components/user/CartCard";
 import {useDispatch, useSelector} from "react-redux";
-import {fetchCartDetails} from "../../redux/cartSlice";
+import {clearCart, fetchCartDetails} from "../../redux/cartSlice";
 import CartCheckout from "../../components/user/CartCheckout";
 import { useNavigate } from "react-router-dom";
+import EmptyItems from "../../components/user/EmptyItems";
+import toast from "react-hot-toast";
+import api from "../../config/axiosConfig";
 
 const CartPage = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const userName = useSelector((state) => state.auth.user);
+  const [stockStatus, setStockStatus] = useState({});
 
   useEffect(() => {
     dispatch(fetchCartDetails());
@@ -26,10 +30,35 @@ const CartPage = () => {
   }, 0)
 
   const navigate = useNavigate()
-  const handleNavAddress = () => {
-    if(totalPrice > 0){
-      navigate("/address")
+  const handleNavAddress = async () => {
+    if(totalPrice > 0){ 
+      try{
+        const response = await api.get("cart/check-items") 
+        if(response?.data?.allItemsInStock){
+          navigate("/address")
+        }else{
+          toast.error("Some items in your cart are out of stock or unavailable.");
+          const newStockStatus = {};
+          response.data.stockCheckResults.forEach(result => {
+            newStockStatus[result.productId] = result;
+          });
+          setStockStatus(newStockStatus);
+        }
+      }catch(error){
+        console.error(error);
+        toast.error("Failed to verify cart items. Please try again.");
+      }
+    }else{
+      toast.error("our cart is empty. Add items before proceeding to checkout.")
     }
+  }
+
+  // const handleClearCart = () => {
+  //   dispatch(clearCart());
+  // };
+
+  if(cartItems?.items?.length===0){
+    return <EmptyItems  buttonName={"ADD ITEMS TO YOUR CART"} pageName={"cart"}/>
   }
 
   console.log("this is frm the cart page cart details", totalQty)
@@ -48,21 +77,30 @@ const CartPage = () => {
                 HELLO {userName?.firstName}
               </h1>
             </div>
+
+        
             <div className="mt-8">
               <h2 className="text-3xl font-bold">YOUR BAG</h2>
               <p className="text-gray-600 font-semibold mt-2">
                 TOTAL ({totalQty}) ₹{totalPrice}
               </p>
+              <div className="flex justify-between">
               <p className="text-gray-500 mt-2">
                 Items in your bag are not reserved — check out now to make them
                 yours.
               </p>
+              <button>CLEAR CART</button>
+              </div>
             </div>
+
+          
+
           </div>
           <div className="py-10">
             {cartItems?.items?.map((cartItem) => (
               <div className="mb-5" key={cartItem?._id}>
-                <CartCard cartItem={cartItem}/>
+                <CartCard cartItem={cartItem} stockStatus={stockStatus[cartItem.productId._id]}
+                />
               </div>
             ))}
           </div>

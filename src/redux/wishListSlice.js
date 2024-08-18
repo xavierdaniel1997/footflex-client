@@ -2,7 +2,7 @@ import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
 import api from "../config/axiosConfig";
 
 export const fetchWishList = createAsyncThunk(
-  "wishList/fetchWishList",
+  "wishList/fetchWishList", 
   async () => {
     const response = await api.get("wishList/showItems");
     return response.data.wishList.products;
@@ -50,6 +50,7 @@ const wishListSlice = createSlice({
       .addCase(addItemToWishList.fulfilled, (state, action) => {
         console.log("additemtowishlist item with ID:", action.payload);
         state.items.push(action.payload);
+        // state.items = action.payload;
       })
       .addCase(removeItemFromWishList.fulfilled, (state, action) => {
         const removedItemId = action.payload;
