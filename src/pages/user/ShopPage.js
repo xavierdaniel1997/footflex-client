@@ -47,16 +47,19 @@ const ShopPage = ({gender}) => {
             <option>Recommended</option>
             <option>High to Low</option>
             <option>Low to High</option>
-          </select>
+          </select> 
         </div>
       </div>
 
+      {/* <div>filter items</div> */}
+
       <div className="flex flex-col lg:flex-row">
+        
         {/* Filter Component */}
         {filter && (
           <div className="lg:w-1/4 w-full">
             <FilterComponent />
-          </div>
+          </div> 
         )}
 
         {/* Shoes Container */}

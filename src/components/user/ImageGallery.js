@@ -6,7 +6,7 @@ const ImageGallery = ({galleryImg}) => {
   return (
     <div className="grid grid-cols-2 md:grid-cols-2 gap-2">
       {galleryImg?.map((image, index) => (
-        <div key={index} className="bg-gray-200  h-64 md:h-80 lg:h-96 flex items-center justify-center p-4">
+        <div key={index} className="bg-gray-100  h-64 md:h-80 lg:h-96 flex items-center justify-center p-4">
           <div className="w-full h-full relative object-cover">
             <Magnifier
               src={image}

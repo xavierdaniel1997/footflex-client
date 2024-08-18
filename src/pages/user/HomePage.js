@@ -4,11 +4,16 @@ import ShoeCard from '../../components/user/ShoeCard';
 import api from '../../config/axiosConfig';
 import { useDispatch } from 'react-redux';
 import { fetchWishList } from '../../redux/wishListSlice';
+import { fetchCartDetails } from '../../redux/cartSlice';
 
 const HomePage = () => {
   const dispatch = useDispatch()
   const [newArrival, setNewArrival] = useState([])
 
+   useEffect(() => {
+    dispatch(fetchWishList());
+  }, [dispatch]);
+  
   const fetchNewArrival = async () => {
     try{
       const resposne = await api.get("product/getProducts")
@@ -21,7 +26,7 @@ const HomePage = () => {
   useEffect(() => {
     fetchNewArrival()
   }, [])
-  console.log("this is  frm the new arrival", newArrival)
+
 
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8">

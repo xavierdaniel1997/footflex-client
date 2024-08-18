@@ -7,16 +7,22 @@ import RelatedProducts from "../../components/user/RelatedProducts";
 import {toast, Toaster} from "react-hot-toast";
 import {useDispatch, useSelector} from "react-redux";
 import {addToCart, fetchCartDetails} from "../../redux/cartSlice";
+import { addItemToWishList, fetchWishList, removeItemFromWishList } from "../../redux/wishListSlice";
+import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 
 const ProductDetails = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
+  const wishlistItems = useSelector((state) => state.wishList.items);
   const [product, setProduct] = useState(null);
   const [selectSize, setSelectSize] = useState(null);
   const [error, setError] = useState("");
   const [isInCart, setIsInCart] = useState(false);
-  const location = useLocation();
-  const {id} = useParams();
+  const [isWishList, setIsWishList] = useState(false)
+  const {id} = useParams(); 
+
+ 
+  
 
   const fetchProdctDetial = async () => {
     try {
@@ -27,14 +33,18 @@ const ProductDetails = () => {
     }
   };
 
-  const checkIfInCart = () => {
-    return cartItems.items?.some(item => item.productId._id === product?._id);
-  };
-
   useEffect(() => {
     fetchProdctDetial();
+    dispatch(fetchWishList())
     dispatch(fetchCartDetails());
-  }, [dispatch]);
+  }, [id, dispatch]);
+
+
+
+  // cart functions
+  const checkIfInCart = () => {
+    return cartItems.items?.some((item) => item.productId._id === product?._id);
+  };
 
   useEffect(() => {
     if (product && cartItems.items) {
@@ -48,20 +58,43 @@ const ProductDetails = () => {
       return;
     }
     setError("");
-    try{
-      dispatch(addToCart({
-        productId: product._id,
-        size: selectSize
-      }))
+    try {
+      dispatch(
+        addToCart({
+          productId: product._id,
+          size: selectSize,
+        })
+      );
       toast.success("Added to cart successfully");
-      setIsInCart(!isInCart)
-    }catch(error){
-      console.log(error)
+      setIsInCart(!isInCart);
+    } catch (error) {
+      console.log(error);
       toast.error("Failed to add");
     }
   };
+  
+ 
 
 
+  useEffect(() => {
+    if (product) {
+      const isInWishList = wishlistItems.some(item => item._id === product._id);
+      setIsWishList(isInWishList);
+    }
+  }, []);
+ 
+  const toggleWishList = () => {
+    if (isWishList) { 
+      dispatch(removeItemFromWishList(id));
+    } else {
+      dispatch(addItemToWishList(id));
+    }
+    setIsWishList(!isWishList)
+  };
+
+ 
+ 
+  console.log("this is frm the product details page wishlistItems", isWishList) 
   return (
     <div className="px-10">
       <div className="mb-8 ">
@@ -80,8 +113,11 @@ const ProductDetails = () => {
             <span className="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-sm font-semibold">
               {product?.gender}
             </span>
-            <button className="mr-2">
-              <FaRegHeart size={22} />
+            <button className="mr-2"
+            onClick={toggleWishList}
+            >
+              {/* <FaRegHeart size={22} /> */}
+              {isWishList ? <AiFillHeart color="red" size={24}/> : <AiOutlineHeart size={24}/>}
             </button>
           </div>
           <h1 className="text-2xl font-bold mt-2">{product?.productName}</h1>
@@ -154,18 +190,19 @@ const ProductDetails = () => {
               </button>
             </div>
           ) : (
-            <Link to="/cart"><div className="mt-4 flex items-center gap-2">
-              <button
-                className={`flex-1 py-2 rounded-lg mb-2 ${
-                  product?.status
-                    ? "bg-black text-white hover:bg-gray-800"
-                    : "bg-gray-300 text-gray-800 cursor-not-allowed"
-                }`}
-                disabled={!product?.status}
-              >
-                Go to Cart
-              </button>
-            </div>
+            <Link to="/cart">
+              <div className="mt-4 flex items-center gap-2">
+                <button
+                  className={`flex-1 py-2 rounded-lg mb-2 ${
+                    product?.status
+                      ? "bg-black text-white hover:bg-gray-800"
+                      : "bg-gray-300 text-gray-800 cursor-not-allowed"
+                  }`}
+                  disabled={!product?.status}
+                >
+                  Go to Cart
+                </button>
+              </div>
             </Link>
           )}
 

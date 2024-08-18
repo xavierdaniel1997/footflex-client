@@ -1,9 +1,14 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {FaStar, FaWallet} from "react-icons/fa";
 import {MdPayment} from "react-icons/md";
 import {BsCashStack, BsCreditCard2Back} from "react-icons/bs";
 import {SiPhonepe} from "react-icons/si";
-import { IoMdRefresh } from "react-icons/io";
+import {IoMdRefresh} from "react-icons/io";
+import {useDispatch, useSelector} from "react-redux";
+import toast from "react-hot-toast";
+import api from "../../config/axiosConfig";
+import {clearCart} from "../../redux/cartSlice";
+import SuccessModal from "./SuccessModal";
 
 const generateCaptcha = () => {
   const characters =
@@ -15,12 +20,16 @@ const generateCaptcha = () => {
   return captcha;
 };
 
-const PaymentOptions = () => {
+const PaymentOptions = ({totalPrice}) => {
   const [selectedOption, setSelectedOption] = useState("recommended");
   const [openCashOnDel, setOpenCashOnDel] = useState(false);
   const [captcha, setCaptcha] = useState(generateCaptcha());
   const [captchaInput, setCaptchaInput] = useState("");
   const [isCaptchaValid, setIsCaptchaValid] = useState(false);
+  const cartItems = useSelector((state) => state.cart.cartItems);
+  const address = useSelector((state) => state.address.selectedAddress);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const dispatch = useDispatch();
 
   const options = [
     {id: "recommended", label: "Recommended", icon: <FaStar />},
@@ -29,6 +38,60 @@ const PaymentOptions = () => {
     {id: "card", label: "Credit/Debit Card", icon: <BsCreditCard2Back />},
     {id: "wallet", label: "Wallets", icon: <FaWallet />},
   ];
+
+  const error = totalPrice < 10000 ? "Cash On Delivery is not available" : "";
+
+  const handleCaptchaValidation = () => {
+    setIsCaptchaValid(captchaInput === captcha);
+  };
+
+  useEffect(() => {
+    handleCaptchaValidation();
+  }, [captchaInput]);
+
+  const handleConfirmCOD = async () => {
+    if (cartItems && address) {
+      const response = await api.get("cart/check-items");  
+      if (response?.data?.allItemsInStock) {
+        const orderData = {
+          items: cartItems?.items.map((item) => ({
+            product: item.productId._id,
+            productName: item.productId.productName,
+            description: item.productId.description,
+            price: item.productId.salePrice,
+            regularPrice: item.productId.regularPrice,
+            quantity: item.quantity,               
+            size: item.size,
+            totalPrice: item.quantity * item.productId.salePrice,
+            thumbnail: item.productId.thumbnail,
+          })),
+          address: address,
+          totalPrice: totalPrice,
+          payment: {
+            method: "Cash on Delivery",
+            status: "Pending",
+          },  
+        };
+        const createOrderResponse = await api.post(
+          "order/place-order",
+          orderData
+        );
+        console.log("this is the resposne of order", createOrderResponse)
+        if (createOrderResponse.status === 200) {
+          // toast.success("Order placed successfully!");
+          setShowSuccessModal(true);
+          dispatch(clearCart());
+          setCaptchaInput("")
+        } else {
+          toast.error("Failed to place order. Please try again.");
+        }
+      } else {
+        toast.error("Some items in your cart are out of stock or unavailable.");
+      }
+    } else {
+      toast.error("Select an address");
+    }
+  };
 
   const renderContent = () => {
     switch (selectedOption) {
@@ -71,16 +134,23 @@ const PaymentOptions = () => {
                     setOpenCashOnDel(!openCashOnDel);
                     setCaptcha(generateCaptcha());
                   }}
+                  disabled={error ? true : false}
                 />
                 <label htmlFor="cod">Cash on Delivery</label>
                 <BsCashStack className="ml-auto" />
               </div>
+              <span className="text-red-600">{error}</span>
               {openCashOnDel && (
                 <div className="w-full flex flex-col gap-4">
                   <div className="flex items-center justify-center gap-2 ">
-                    <span className="font-bold italic text-2xl text-orange-600">{captcha}</span>
+                    <span className="font-bold italic text-2xl text-orange-600">
+                      {captcha}
+                    </span>
                     <button
-                      onClick={() => setCaptcha(generateCaptcha())}
+                      onClick={() => {
+                        setCaptcha(generateCaptcha());
+                        setCaptchaInput("");
+                      }}
                       className="text-gray-600 underline"
                     >
                       <IoMdRefresh />
@@ -90,8 +160,20 @@ const PaymentOptions = () => {
                     type="text"
                     placeholder="Enter captch"
                     className="outline-none px-2 py-2 border w-full"
+                    value={captchaInput}
+                    onChange={(e) => setCaptchaInput(e.target.value)}
                   />
-                  <button className="px-3 py-2 bg-blue-700 text-white font-semibold text-lg">Confirm Order</button>
+                  <button
+                    className={`px-3 py-2 font-semibold text-lg ${
+                      isCaptchaValid
+                        ? "bg-blue-700 text-white cursor-pointer"
+                        : "bg-gray-400 text-gray-700 cursor-not-allowed"
+                    }`}
+                    disabled={!isCaptchaValid}
+                    onClick={handleConfirmCOD}
+                  >
+                    Confirm Order
+                  </button>
                 </div>
               )}
             </div>
@@ -186,6 +268,10 @@ const PaymentOptions = () => {
         </h2>
         <div className="px-10 py-3">{renderContent()}</div>
       </div>
+      <SuccessModal
+      isOpen={showSuccessModal} 
+      onClose={() => setShowSuccessModal(false)} 
+    />
     </div>
   );
 };

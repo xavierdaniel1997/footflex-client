@@ -4,20 +4,6 @@ import api from "../../config/axiosConfig";
 
 const PopularBrands = () => {
   const [brandDetials, setBrandDetials] = useState([])
-  const brands = [
-    "adidas",
-    "nike",
-    "new-balance",
-    "jordan",
-    "asics",
-    "under-armour",
-    "louis-vuitton",
-    "crocs",
-    "adidas",
-    "nike",
-    "new-balance",
-    "jordan",
-  ];
 
   const fetchingAllBrands = async () => {
     try{

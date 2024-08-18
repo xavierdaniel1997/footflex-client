@@ -14,7 +14,7 @@ const DefaultAddressModal = ({open, onClose, onConfirm, address}) => {
       <DialogTitle>{"Confirm Default Address"}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Are you sure you want to make this address the default address?
+          Are you sure you want to change this address?
         </DialogContentText>
         <DialogActions sx={{mt: 3}}>
           <Button onClick={onClose}>Cancel</Button>
