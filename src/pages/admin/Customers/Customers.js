@@ -107,7 +107,7 @@ const Customers = () => {
             : "bg-red-100 text-red-600"
         }`}
       >
-        {userData.isVerified ? "Active" : "Inactive"}
+        {userData.isVerified ? "Active" : "Inactive"} 
       </div>
     ),
     action: (

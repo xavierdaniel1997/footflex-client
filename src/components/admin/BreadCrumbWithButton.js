@@ -13,7 +13,6 @@ const BreadCrumbWithButton = ({componentLocation, location, goback, buttonName, 
         <div className="flex items-center">
           {noButton && <button
             className="bg-black text-white p-2 rounded-md flex items-center"
-            // onClick={buttonNavigate}
           >
             <span className="mr-2">{buttonName}</span>
             <FaPlus />

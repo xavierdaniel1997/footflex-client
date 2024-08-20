@@ -57,6 +57,7 @@ const PaymentOptions = ({totalPrice}) => {
           items: cartItems?.items.map((item) => ({
             product: item.productId._id,
             productName: item.productId.productName,
+            productBrand: item.productId.brand.brandName,
             description: item.productId.description,
             price: item.productId.salePrice,
             regularPrice: item.productId.regularPrice,
@@ -65,7 +66,7 @@ const PaymentOptions = ({totalPrice}) => {
             totalPrice: item.quantity * item.productId.salePrice,
             thumbnail: item.productId.thumbnail,
           })),
-          address: address,
+          address: address,   
           totalPrice: totalPrice,
           payment: {
             method: "Cash on Delivery",
@@ -78,7 +79,6 @@ const PaymentOptions = ({totalPrice}) => {
         );
         console.log("this is the resposne of order", createOrderResponse)
         if (createOrderResponse.status === 200) {
-          // toast.success("Order placed successfully!");
           setShowSuccessModal(true);
           dispatch(clearCart());
           setCaptchaInput("")

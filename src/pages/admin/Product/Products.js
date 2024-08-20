@@ -111,7 +111,7 @@ const Products = () => {
   const productDetials =
     getProducts?.map((product) => ({
       clickbox: (
-        <div>
+        <div> 
           <input
             type="checkbox"
             checked={product?.status}
@@ -176,21 +176,6 @@ const Products = () => {
 
   return (
     <div className="flex flex-col">
-      {/* <div className="flex justify-between items-center px-10 py-5 mb-4">
-        <div>
-          <h1 className="text-2xl font-bold">Popular Brands</h1>
-          <nav className="text-gray-600 text-sm">Home &gt; Brand</nav>
-        </div>
-        <div className="flex items-center">
-          <Link to="/dashboard/addNewProduct">
-            {" "}
-            <button className="bg-black text-white p-2 rounded-md flex items-center">
-              <span className="mr-2">Add New Product</span>
-              <FaPlus />
-            </button>
-          </Link>
-        </div>
-      </div> */}
       <BreadCrumbWithButton
         buttonName={"Add New Product"}
         noButton={true}

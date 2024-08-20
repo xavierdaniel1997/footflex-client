@@ -458,22 +458,6 @@ const ProductForm = () => {
       {/* Updated button container */}
       <div className="mt-6 px-20">
         <div className="flex justify-end space-x-3">
-          {/* <button
-            type="button"
-            onClick={submitProductForm}
-            className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-900"
-          >
-            {isLoading ? (
-              <>
-                <l-dot-pulse size="43" speed="1.3" color="white"></l-dot-pulse>
-              </>
-            ) : isEditing ? (
-              "Update"
-            ) : (
-              "Save"
-            )}
-          </button> */}
-
 
           {isLoading ? (
             <button className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-900">
@@ -507,19 +491,3 @@ const ProductForm = () => {
 
 export default ProductForm;
 
-/*
-
-
-import { dotPulse } from 'ldrs'
-
-dotPulse.register()
-
-// Default values shown
-<l-dot-pulse
-  size="43"
-  speed="1.3" 
-  color="black" 
-></l-dot-pulse>
-
-
-*/

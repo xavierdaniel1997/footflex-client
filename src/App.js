@@ -27,6 +27,8 @@ import CartPage from "./pages/user/CartPage";
 import { fetchCartDetails } from "./redux/cartSlice";
 import DeliveryDetails from "./pages/user/DeliveryDetails";
 import PaymentPage from "./pages/user/PaymentPage";
+import EditOrder from "./pages/admin/Order/EditOrder";
+
 
 function App() {
   const dispatch = useDispatch();
@@ -38,7 +40,7 @@ function App() {
 
   return (
     
-    <BrowserRouter>
+    <BrowserRouter> 
       <Toaster position="top-right" reverseOrder={false} />
       <Routes>
         <Route path="/register" element={<RegisterForm />} />
@@ -74,6 +76,7 @@ function App() {
               <Route path="editproduct/:productId" element={<ProductForm />} />
               <Route path="customers" element={<Customers />} />
               <Route path="orders" element={<Orders />} />
+              <Route path="editOrder/:orderId" element={<EditOrder/>}/>
               <Route path="category" element={<Category />} />
               <Route path="brand" element={<BrandPage />} />
             </Route>
@@ -81,6 +84,7 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+
   );
 }
 

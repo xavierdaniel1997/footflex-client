@@ -19,9 +19,8 @@ const CartCard = ({cartItem, stockStatus}) => {
       (size) => size.size === selectedSize
     );
     if (selectedSizeObj) {
-      setAvailableQty(
-        Array.from({length: selectedSizeObj.stock}, (_, i) => i + 1)
-      );
+      const maxQty = selectedSizeObj.stock > 5 ? 5 : selectedSizeObj.stock;
+      setAvailableQty(Array.from({ length: maxQty }, (_, i) => i + 1));
       setSelectedQty(cartItem?.quantity);
     }
   }, [selectedSize]);
@@ -105,7 +104,7 @@ const CartCard = ({cartItem, stockStatus}) => {
                 >
                   {availableQty.map((quantity) => (
                     <option key={quantity} value={quantity}>
-                      {quantity}
+                      {quantity} 
                     </option>
                   ))}
                 </select>

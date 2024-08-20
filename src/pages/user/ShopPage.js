@@ -11,6 +11,7 @@ const ShopPage = ({gender}) => {
   const [filter, setFilter] = useState(false);
   const [productDetials, setProductDetials] = useState([])
   const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState({ gender, brands: [], categories: [], prices: [] });
 
   const fetchProductDetials = async () => {
     try{
@@ -24,6 +25,10 @@ const ShopPage = ({gender}) => {
   useEffect(() => {
     fetchProductDetials()
   }, [gender])
+
+  const handleFilterChange = (newFilters) => {
+    setFilters({ ...filters, ...newFilters });
+  };
 
   console.log("this is form the respons of product detials ", productDetials)
   return (
@@ -58,7 +63,7 @@ const ShopPage = ({gender}) => {
         {/* Filter Component */}
         {filter && (
           <div className="lg:w-1/4 w-full">
-            <FilterComponent />
+            <FilterComponent onFilterChange={handleFilterChange}/>
           </div> 
         )}
 
