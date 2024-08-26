@@ -22,8 +22,7 @@ export const addToCart = createAsyncThunk(
           productId,
           size,
         })
-        .unwrap();
-      return response.data.cart;
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data.message);
     }
@@ -40,7 +39,7 @@ export const removeFromCart = createAsyncThunk(
       return rejectWithValue(error.response.data.message);
     }
   }
-);
+); 
 
 export const updateCart = createAsyncThunk(
   "cart/updateCart",
@@ -90,8 +89,6 @@ const cartSlice = createSlice({
       })
       .addCase(addToCart.fulfilled, (state, action) => {
         state.loading = false;
-        state.cartItems.push(action.payload);
-        // state.cartItems = action.payload;
       })
       .addCase(removeFromCart.fulfilled, (state, action) => {
         state.loading = false;

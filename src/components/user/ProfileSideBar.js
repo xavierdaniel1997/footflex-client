@@ -25,7 +25,7 @@ const ProfileSideBar = () => {
     {name: "Cart", icon: FaShoppingCart, path: "/cart"},
     {name: "FOOTFLEX Wallet", icon: FaWallet, path: "/userProfile/wallet"},
     {name: "Invite Friends", icon: FaUserFriends, path: "/userProfile/invite"},
-    {name: "Edit Profile", icon: FaUser, path: "/userProfile/editProfile"},
+    {name: "Edit Profile", icon: FaUser, path: "/userProfile"},
     {name: "Address", icon: FaMapMarkerAlt, path: "/userProfile/address"},
   ];
 
@@ -85,7 +85,7 @@ const ProfileSideBar = () => {
       </div>
 
       <div className="mt-8 px-6 py-4 flex items-center gap-6">
-        <div className="flex items-center">
+        <div className="flex items-center"> 
           {user?.dpImage ? (
             <img
               src={user?.dpImage}

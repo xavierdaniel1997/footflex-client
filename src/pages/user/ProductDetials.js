@@ -1,12 +1,12 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import ImageGallery from "../../components/user/ImageGallery";
-import {Link, useLocation, useParams} from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import api from "../../config/axiosConfig";
-import {FaRegHeart} from "react-icons/fa";
+import { FaRegHeart } from "react-icons/fa";
 import RelatedProducts from "../../components/user/RelatedProducts";
-import {toast, Toaster} from "react-hot-toast";
-import {useDispatch, useSelector} from "react-redux";
-import {addToCart, fetchCartDetails} from "../../redux/cartSlice";
+import { toast, Toaster } from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart, fetchCartDetails } from "../../redux/cartSlice";
 import { addItemToWishList, fetchWishList, removeItemFromWishList } from "../../redux/wishListSlice";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 
@@ -19,10 +19,7 @@ const ProductDetails = () => {
   const [error, setError] = useState("");
   const [isInCart, setIsInCart] = useState(false);
   const [isWishList, setIsWishList] = useState(false)
-  const {id} = useParams(); 
-
- 
-  
+  const { id } = useParams();
 
   const fetchProdctDetial = async () => {
     try {
@@ -36,7 +33,7 @@ const ProductDetails = () => {
   useEffect(() => {
     fetchProdctDetial();
     dispatch(fetchWishList())
-    dispatch(fetchCartDetails());
+    // dispatch(fetchCartDetails());
   }, [id, dispatch]);
 
 
@@ -58,22 +55,23 @@ const ProductDetails = () => {
       return;
     }
     setError("");
-    try {
-      dispatch(
-        addToCart({
-          productId: product._id,
-          size: selectSize,
-        })
-      );
-      toast.success("Added to cart successfully");
-      setIsInCart(!isInCart);
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to add");
-    }
+    dispatch(
+      addToCart({
+        productId: product._id,
+        size: selectSize,
+      })
+    ).then((response) => {
+      if (response.meta.requestStatus === 'fulfilled') {
+        toast.success("Added to cart successfully");
+        setIsInCart(!isInCart);
+        dispatch(fetchCartDetails());
+      } else {
+        toast.error("Failed to add");
+      }
+    });
   };
-  
- 
+
+
 
 
   useEffect(() => {
@@ -82,9 +80,9 @@ const ProductDetails = () => {
       setIsWishList(isInWishList);
     }
   }, []);
- 
+
   const toggleWishList = () => {
-    if (isWishList) { 
+    if (isWishList) {
       dispatch(removeItemFromWishList(id));
     } else {
       dispatch(addItemToWishList(id));
@@ -92,9 +90,6 @@ const ProductDetails = () => {
     setIsWishList(!isWishList)
   };
 
- 
- 
-  console.log("this is frm the product details page wishlistItems", isWishList) 
   return (
     <div className="px-10">
       <div className="mb-8 ">
@@ -114,10 +109,10 @@ const ProductDetails = () => {
               {product?.gender}
             </span>
             <button className="mr-2"
-            onClick={toggleWishList}
+              onClick={toggleWishList}
             >
               {/* <FaRegHeart size={22} /> */}
-              {isWishList ? <AiFillHeart color="red" size={24}/> : <AiOutlineHeart size={24}/>}
+              {isWishList ? <AiFillHeart color="red" size={24} /> : <AiOutlineHeart size={24} />}
             </button>
           </div>
           <h1 className="text-2xl font-bold mt-2">{product?.productName}</h1>
@@ -140,20 +135,18 @@ const ProductDetails = () => {
                 <div key={size._id} className="text-center">
                   <button
                     key={size}
-                    className={`px-4 py-2 border rounded-lg focus:outline-none ${
-                      selectSize === size.size ? "bg-black text-white" : " "
-                    }`}
+                    className={`px-4 py-2 border rounded-lg focus:outline-none ${selectSize === size.size ? "bg-black text-white" : " "
+                      }`}
                     disabled={size.stock === 0}
                     onClick={() => setSelectSize(size.size)}
                   >
                     {size?.size}
                   </button>
                   <p
-                    className={`text-sm mt-1 ${
-                      size.stock === 0 || size.stock === 1
-                        ? "text-red-500"
-                        : "text-green-700"
-                    }`}
+                    className={`text-sm mt-1 ${size.stock === 0 || size.stock === 1
+                      ? "text-red-500"
+                      : "text-green-700"
+                      }`}
                   >
                     {size.stock > 0 ? `${size.stock} left` : "Out of stock"}
                   </p>
@@ -167,9 +160,8 @@ const ProductDetails = () => {
               Availability :
             </h1>
             <p
-              className={`text-xl font-semibold ${
-                product?.status ? "text-green-800" : "text-red-600"
-              }`}
+              className={`text-xl font-semibold ${product?.status ? "text-green-800" : "text-red-600"
+                }`}
             >
               {product?.status ? "Available" : "Unavailable"}
             </p>
@@ -178,11 +170,10 @@ const ProductDetails = () => {
           {!isInCart ? (
             <div className="mt-4 flex items-center gap-2">
               <button
-                className={`flex-1 py-2 rounded-lg mb-2 ${
-                  product?.status
-                    ? "bg-black text-white hover:bg-gray-800"
-                    : "bg-gray-300 text-gray-800 cursor-not-allowed"
-                }`}
+                className={`flex-1 py-2 rounded-lg mb-2 ${product?.status
+                  ? "bg-black text-white hover:bg-gray-800"
+                  : "bg-gray-300 text-gray-800 cursor-not-allowed"
+                  }`}
                 disabled={!product?.status}
                 onClick={handleAddToCart}
               >
@@ -193,11 +184,10 @@ const ProductDetails = () => {
             <Link to="/cart">
               <div className="mt-4 flex items-center gap-2">
                 <button
-                  className={`flex-1 py-2 rounded-lg mb-2 ${
-                    product?.status
-                      ? "bg-black text-white hover:bg-gray-800"
-                      : "bg-gray-300 text-gray-800 cursor-not-allowed"
-                  }`}
+                  className={`flex-1 py-2 rounded-lg mb-2 ${product?.status
+                    ? "bg-black text-white hover:bg-gray-800"
+                    : "bg-gray-300 text-gray-800 cursor-not-allowed"
+                    }`}
                   disabled={!product?.status}
                 >
                   Go to Cart
@@ -207,9 +197,8 @@ const ProductDetails = () => {
           )}
 
           <button
-            className={`w-full ${
-              product?.status ? "bg-blue-600" : "bg-blue-400 cursor-not-allowed"
-            }  text-white py-2 rounded-lg`}
+            className={`w-full ${product?.status ? "bg-blue-600" : "bg-blue-400 cursor-not-allowed"
+              }  text-white py-2 rounded-lg`}
             disabled={!product?.status}
           >
             Buy It Now

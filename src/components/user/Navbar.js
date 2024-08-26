@@ -11,16 +11,17 @@ import { BsCart3 } from "react-icons/bs";
 const NavBar = () => {
   const dispatch = useDispatch();
   const [menuVisible, setMenuVisible] = useState(false);
-  // const cartItems = useSelector((state) => state.cart.cartItems);
+  const cartItems = useSelector((state) => state.cart.cartItems);
   const cartItemsCount = useSelector((state) => state.cart.cartItems?.items?.length || 0);
   const address = useSelector((state) => state.address.selectedAddress)
+  
 
   const location = useLocation();
-  const [currentStep, setCurrentStep] = useState(1); // 1: Bag, 2: Delivery Details, 3: Payment
+  const [currentStep, setCurrentStep] = useState(1); 
 
   useEffect(() => {
     
-    // Determine current step based on the route
+
     if (location.pathname === "/cart") {
       setCurrentStep(1);
     } else if (location.pathname === "/address") {
@@ -32,8 +33,8 @@ const NavBar = () => {
 
   useEffect(() => {
     dispatch(fetchCartDetails());
-  }, [dispatch])
-
+  }, [dispatch, ])
+ 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
   };

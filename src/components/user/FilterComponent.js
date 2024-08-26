@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import {FiFilter} from "react-icons/fi"; // Filter icon from React Icons
 import api from "../../config/axiosConfig";
 import {useDispatch, useSelector} from "react-redux";
 import {getCategoryItems} from "../../redux/categorySlice";
@@ -12,14 +11,9 @@ const priceRanges = [
   "Rs. 25999 to Rs. 29999",
 ];
 
-const FilterComponent = ({onFilterChange}) => {
+const FilterComponent = ({filters, onFilterChange}) => {
   const [myBrands, setMyBrands] = useState([]);
   const [showAllBrands, setShowAllBrands] = useState(false);
-  const [selectedFilters, setSelectedFilters] = useState({
-    brands: [],
-    categories: [],
-    prices: [],
-  });
   const dispatch = useDispatch();
   const categories = useSelector((state) => state.category.categories);
 
@@ -31,6 +25,7 @@ const FilterComponent = ({onFilterChange}) => {
       console.log(error);
     }
   };
+
   useEffect(() => {
     fetchBrand();
     dispatch(getCategoryItems());
@@ -41,33 +36,31 @@ const FilterComponent = ({onFilterChange}) => {
   };
 
   const handleFilterChange = (type, value) => {
-    const newFilters = {...selectedFilters};
+    const newFilters = {...filters};
     if (newFilters[type].includes(value)) {
       newFilters[type] = newFilters[type].filter((item) => item !== value);
     } else {
       newFilters[type].push(value);
     }
-    setSelectedFilters(newFilters);
     onFilterChange(newFilters);
   };
 
   const removeFilter = (type, value) => {
-    const newFilters = {...selectedFilters};
+    const newFilters = {...filters};
     newFilters[type] = newFilters[type].filter((item) => item !== value);
-    setSelectedFilters(newFilters);
     onFilterChange(newFilters);
   };
 
   const displayedBrands = showAllBrands ? myBrands : myBrands.slice(0, 8);
 
-  console.log("this is form the filter compoent categories", categories);
+  console.log("this is frm the filter page categories", categories)
+  
   return (
     <div className="w-72 bg-gray-50 border shadow-lg rounded-sm px-6 py-4">
-
-      <div className="mb-4">
+      <div className="mb-4 flex flex-wrap gap-1">
         {["brands", "categories", "prices"].map((type) =>
-          selectedFilters[type].map((filterValue) => (
-            <div key={filterValue} className="flex flex-w items-center mb-1 border-2 rounded-full px-2 w-fit">
+          filters[type].map((filterValue) => (
+            <div key={filterValue} className="flex items-center mb-1 border-2 rounded-full px-2 w-fit">
               <span className="mr-2">{filterValue}</span>
               <button onClick={() => removeFilter(type, filterValue)}>×</button>
             </div>
@@ -80,7 +73,7 @@ const FilterComponent = ({onFilterChange}) => {
         {displayedBrands?.map((brand) => (
           <div key={brand?._id} className="flex items-center mb-1">
             <input type="checkbox" className="mr-2" 
-            checked={selectedFilters.brands.includes(brand.brandName)}
+            checked={filters.brands.includes(brand.brandName)}
             onChange={() => handleFilterChange('brands', brand.brandName)}
             />
             <label>{brand?.brandName}</label>
@@ -99,7 +92,7 @@ const FilterComponent = ({onFilterChange}) => {
         {priceRanges.map((range, index) => (
           <div key={index} className="flex items-center mb-1">
             <input type="checkbox" id={`price-${index}`} className="mr-2"
-            checked={selectedFilters.prices.includes(range)}
+            checked={filters.prices.includes(range)}
             onChange={() => handleFilterChange('prices', range)} 
             />
             <label htmlFor={`price-${index}`}>{range}</label>
@@ -109,16 +102,15 @@ const FilterComponent = ({onFilterChange}) => {
 
       <div className="">
         <h3 className="font-medium mb-2">TYPE OFF</h3>
-        {categories.map((category) => (
+        {categories?.map((category) => (
           <div key={category?._id} className="flex items-center mb-1">
             <input type="checkbox" className="mr-2" 
-             checked={selectedFilters.categories.includes(category.categoryName)}
+             checked={filters.categories.includes(category.categoryName)}
              onChange={() => handleFilterChange('categories', category.categoryName)}
             />
             <label>{category?.categoryName}</label>
           </div>
         ))}
-        {/* <button className="text-blue-500 text-sm mt-1">more</button> */}
       </div>
     </div>
   );

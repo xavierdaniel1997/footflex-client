@@ -81,7 +81,6 @@ const Orders = () => {
     ),
   }));
 
-  console.log("this is frm the admin order page", allOrder);
   return (
     <div className="flex flex-col">
       <div className="flex justify-between items-center px-10 py-5 mb-4">
