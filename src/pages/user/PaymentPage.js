@@ -18,8 +18,7 @@ const PaymentPage = () => {
     return acc + item?.quantity
   }, 0)
 
-  console.log("this is frm the payment page cartitem", cartItems);  
-  console.log("this is frm the payment page address", address); 
+ 
   return ( 
     <div className="py-12 md:p-8 lg:px-36">
       <div className="flex flex-col lg:flex-row gap-8">

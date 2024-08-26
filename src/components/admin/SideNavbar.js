@@ -26,7 +26,7 @@ const SideNavbar = () => {
     { icon: <MdShoppingCart />, text: "ORDERS", path: "/dashboard/orders" },
     { icon: <MdPeople />, text: "CUSTOMERS", path: "/dashboard/customers" },
     { icon: <MdBarChart />, text: "SALES REPORT", path: "/sales-report" },
-    { icon: <MdLocalOffer />, text: "COUPONS", path: "/coupons" },
+    { icon: <MdLocalOffer />, text: "COUPONS", path: "/dashboard/coupons" },
     { icon: <MdCategory />, text: "CATEGORY", path: "/dashboard/category" },
     { icon: <MdAdminPanelSettings />, text: "BRANDS", path: "/dashboard/brand" },
     { icon: <MdSettings />, text: "SETTINGS", path: "/settings" },

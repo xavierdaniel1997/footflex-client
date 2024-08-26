@@ -41,7 +41,7 @@ const CartPage = () => {
           const newStockStatus = {};
           response.data.stockCheckResults.forEach(result => {
             newStockStatus[result.productId] = result;
-          });
+          }); 
           setStockStatus(newStockStatus);
         }
       }catch(error){
@@ -61,7 +61,6 @@ const CartPage = () => {
     return <EmptyItems  buttonName={"ADD ITEMS TO YOUR CART"} pageName={"cart"}/>
   }
 
-  console.log("this is frm the cart page cart details", totalQty)
   return (
     <div className="py-48 md:p-8 lg:px-36">
       <div className="flex flex-col lg:flex-row gap-8">

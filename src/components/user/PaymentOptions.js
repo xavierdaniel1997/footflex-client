@@ -51,7 +51,7 @@ const PaymentOptions = ({totalPrice}) => {
 
   const handleConfirmCOD = async () => {
     if (cartItems && address) {
-      const response = await api.get("cart/check-items");  
+      const response = await api.get("cart/check-items");
       if (response?.data?.allItemsInStock) {
         const orderData = {
           items: cartItems?.items.map((item) => ({
@@ -61,27 +61,27 @@ const PaymentOptions = ({totalPrice}) => {
             description: item.productId.description,
             price: item.productId.salePrice,
             regularPrice: item.productId.regularPrice,
-            quantity: item.quantity,               
+            quantity: item.quantity,
             size: item.size,
             totalPrice: item.quantity * item.productId.salePrice,
             thumbnail: item.productId.thumbnail,
           })),
-          address: address,   
+          address: address,
           totalPrice: totalPrice,
           payment: {
             method: "Cash on Delivery",
             status: "Pending",
-          },  
+          },
         };
         const createOrderResponse = await api.post(
           "order/place-order",
           orderData
         );
-        console.log("this is the resposne of order", createOrderResponse)
+        console.log("this is the resposne of order", createOrderResponse);
         if (createOrderResponse.status === 200) {
           setShowSuccessModal(true);
           dispatch(clearCart());
-          setCaptchaInput("")
+          setCaptchaInput("");
         } else {
           toast.error("Failed to place order. Please try again.");
         }
@@ -143,7 +143,11 @@ const PaymentOptions = ({totalPrice}) => {
               {openCashOnDel && (
                 <div className="w-full flex flex-col gap-4">
                   <div className="flex items-center justify-center gap-2 ">
-                    <span className="font-bold italic text-2xl text-orange-600">
+                    <span
+                      className="font-bold italic text-2xl text-orange-600"
+                      style={{userSelect: "none", pointerEvents: "none"}}
+                      disabled={true}
+                    >
                       {captcha}
                     </span>
                     <button
@@ -269,9 +273,9 @@ const PaymentOptions = ({totalPrice}) => {
         <div className="px-10 py-3">{renderContent()}</div>
       </div>
       <SuccessModal
-      isOpen={showSuccessModal} 
-      onClose={() => setShowSuccessModal(false)} 
-    />
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+      />
     </div>
   );
 };

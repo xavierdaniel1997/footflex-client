@@ -101,4 +101,25 @@ export const validateAddressForm = (formData) => {
 
 
 
+export const validateCouponForm = (formData) => {
+  const errors = {};
+
+  const minPurchaseAmount = parseFloat(formData.minPurchaseAmount);
+  const maxDiscountAmount = parseFloat(formData.maxDiscountAmount);
+
+  if (!formData.couponName) errors.couponName = "Coupon name is required*";
+  if (!formData.couponCode) errors.couponCode = "Coupon code is required*";
+  if (!formData.startDate) errors.startDate = "Starting date is required*";
+  if (!formData.endDate) errors.endDate = "Ending date is required*";
+  if (!formData.discount) errors.discount = "Discount is required*";
+  if (isNaN(formData.discount) || formData.discount <= 0 || formData.discount > 100)
+    errors.discount = "Discount must be a percentage between 1 and 100*";
+  if (!formData.minPurchaseAmount) errors.minPurchaseAmount = "Minimum purchase amount is required*";
+  if (isNaN(minPurchaseAmount) || minPurchaseAmount < 0) errors.minPurchaseAmount = "Minimum purchase amount must be a positive number*";
+  if (!formData.maxDiscountAmount) errors.maxDiscountAmount = "Maximum purchase amount is required*";
+  if (isNaN(maxDiscountAmount) || maxDiscountAmount < 0) errors.maxDiscountAmount = "Maximum purchase amount must be a positive number*";
+  if (maxDiscountAmount > minPurchaseAmount) errors.maxDiscountAmount = "Maximum purchase amount must be less than the minimum purchase amount*";
+
+  return errors;
+};
 

@@ -28,6 +28,7 @@ import { fetchCartDetails } from "./redux/cartSlice";
 import DeliveryDetails from "./pages/user/DeliveryDetails";
 import PaymentPage from "./pages/user/PaymentPage";
 import EditOrder from "./pages/admin/Order/EditOrder";
+import CouponsPage from "./pages/admin/CouponsPage";
 
 
 function App() {
@@ -79,6 +80,7 @@ function App() {
               <Route path="editOrder/:orderId" element={<EditOrder/>}/>
               <Route path="category" element={<Category />} />
               <Route path="brand" element={<BrandPage />} />
+              <Route path="coupons" element={<CouponsPage/>} />
             </Route>
           </Route>
         </Route>

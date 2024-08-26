@@ -22,7 +22,7 @@ const UserProfilePage = () => {
             <Route path="orders" element={<Orders />} />
             <Route path="wishlist" element={<WishList inUserProfile={true}/>} />
             {/* profile */}
-            <Route path="editProfile" element={<EditProfile />} />
+            <Route path="" element={<EditProfile />} />
             <Route
               path="address"
               element={<DeliveryDetails inUserProfile={true} />}

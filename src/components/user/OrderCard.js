@@ -37,7 +37,8 @@ const OrderCard = ({ productName, size, quantity, totalPrice, status, thumbnail,
         </p>
         <div className="flex items-center justify-end space-x-1 text-blue-600 cursor-pointer">
           <span>{paymentMethod}</span>
-        </div>
+        </div>  
+        {/* <button className='font-semibold text-red-600 flex items-center justify-end'>Cancel</button> */}
       </div>
     </div>
   );
