@@ -24,7 +24,7 @@ const ReusableTable = ({
     <>
       <TableContainer
         component={Paper}
-        sx={{borderRadius: "8px", margin: "20px 0"}}
+        sx={{borderRadius: "5px", margin: "20px 0"}}
       >
         <Table>
           <TableHead>

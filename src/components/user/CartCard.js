@@ -17,7 +17,7 @@ const CartCard = ({cartItem, stockStatus}) => {
   useEffect(() => {
     const selectedSizeObj = cartItem?.productId?.sizes?.find(
       (size) => size.size === selectedSize
-    );
+    ); 
     if (selectedSizeObj) {
       const maxQty = selectedSizeObj.stock > 5 ? 5 : selectedSizeObj.stock;
       setAvailableQty(Array.from({ length: maxQty }, (_, i) => i + 1));

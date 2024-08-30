@@ -103,6 +103,7 @@ const CouponModal = ({open, onClose, totalPrice}) => {
                 backgroundColor: "black",
               },
             }}
+            onClick={onClose}
          
           >
             APPLY

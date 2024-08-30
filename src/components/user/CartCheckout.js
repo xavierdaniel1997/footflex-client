@@ -1,34 +1,16 @@
 import React, {useEffect, useState} from "react";
 import {MdArrowForward, MdLocalOffer} from "react-icons/md";
 import CouponModal from "./CouponModal";
+import {useSelector} from "react-redux";
 
-const CartCheckout = ({cartCount, totalPrice, navigateTo, buttonName}) => {
+const CartCheckout = ({
+  cartCount,
+  totalPrice,
+  navigateTo,
+  buttonName,
+}) => {
   const [showPrmoInput, setShowPrmoInput] = useState(false);
   const [open, setOpen] = useState(false);
-  // const [selectedCoupon, setSelectedCoupon] = useState(null);
-  // const [discountAmount, setDiscountAmount] = useState(0);
-  // const [finalPrice, setFinalPrice] = useState(totalPrice);
-
-  // useEffect(() => {
-  //   if (selectedCoupon) {
-  //     const discountPercentage = Number(selectedCoupon.discount);
-  //     const discount = (totalPrice * discountPercentage) / 100;
-   
-  //     const maxDiscountAmount = Number(selectedCoupon.maxDiscountAmount);
-
-  //     const maxDiscount = Math.min(discount, maxDiscountAmount);
-  
-  //     const roundedDiscountAmount = Math.round(maxDiscount);
-  //     setDiscountAmount(roundedDiscountAmount);
-  
-  //     const roundedFinalPrice = Math.round(totalPrice - roundedDiscountAmount);
-  //     setFinalPrice(roundedFinalPrice);
-  //   } else {
-  //     setDiscountAmount(0);
-  //     setFinalPrice(totalPrice);
-  //   }
-  // }, [selectedCoupon, totalPrice]);
-
 
   return (
     <div className="bg-white max-w-md mx-auto">
@@ -96,7 +78,6 @@ const CartCheckout = ({cartCount, totalPrice, navigateTo, buttonName}) => {
       </div>
       <p className="text-gray-500 text-sm mb-6">(Inclusive of all taxes)</p>
 
-      {/* <p className="font-bold">ACCEPTED PAYMENT METHODS</p> */}
       <CouponModal
         open={open}
         onClose={() => setOpen(false)}

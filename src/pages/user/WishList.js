@@ -13,7 +13,6 @@ const WishList = ({inUserProfile}) => {
   }, [dispatch]);
 
 
-  console.log("this is from the wishlist page", items)
   return (
     <>
       {items.length === 0 ? (

@@ -12,6 +12,7 @@ import {
   MdSettings, 
   MdLogout 
 } from 'react-icons/md';
+import { BiSolidOffer } from "react-icons/bi";
 import api from '../../config/axiosConfig';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../../redux/authSlice';
@@ -27,9 +28,10 @@ const SideNavbar = () => {
     { icon: <MdPeople />, text: "CUSTOMERS", path: "/dashboard/customers" },
     { icon: <MdBarChart />, text: "SALES REPORT", path: "/sales-report" },
     { icon: <MdLocalOffer />, text: "COUPONS", path: "/dashboard/coupons" },
+    { icon: <BiSolidOffer />, text: "OFFERS", path: "/dashboard/offers" },
     { icon: <MdCategory />, text: "CATEGORY", path: "/dashboard/category" },
     { icon: <MdAdminPanelSettings />, text: "BRANDS", path: "/dashboard/brand" },
-    { icon: <MdSettings />, text: "SETTINGS", path: "/settings" },
+    // { icon: <MdSettings />, text: "SETTINGS", path: "/settings" },
   ];
 
   const handleLogout = async () => {
