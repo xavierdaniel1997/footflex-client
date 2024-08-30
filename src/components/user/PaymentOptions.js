@@ -39,7 +39,7 @@ const PaymentOptions = ({totalPrice}) => {
     {id: "wallet", label: "Wallets", icon: <FaWallet />},
   ];
 
-  const error = totalPrice < 10000 ? "Cash On Delivery is not available" : "";
+  const error = totalPrice < 5000 ? "Cash On Delivery is not available" : "";
 
   const handleCaptchaValidation = () => {
     setIsCaptchaValid(captchaInput === captcha);

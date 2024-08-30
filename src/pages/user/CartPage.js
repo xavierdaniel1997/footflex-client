@@ -3,7 +3,7 @@ import CartCard from "../../components/user/CartCard";
 import {useDispatch, useSelector} from "react-redux";
 import {clearCart, fetchCartDetails} from "../../redux/cartSlice";
 import CartCheckout from "../../components/user/CartCheckout";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import EmptyItems from "../../components/user/EmptyItems";
 import toast from "react-hot-toast";
 import api from "../../config/axiosConfig";
@@ -12,53 +12,74 @@ const CartPage = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const userName = useSelector((state) => state.auth.user);
+  // const {selectedCoupon} = useSelector((state) => state.coupons); 
   const [stockStatus, setStockStatus] = useState({});
 
   useEffect(() => {
     dispatch(fetchCartDetails());
   }, [dispatch]);
 
-  
   const totalPrice = cartItems?.items?.reduce((acc, item) => {
-    const price = Number(item?.productId?.salePrice)
-    const quantity = item?.quantity
-    return acc + price*quantity
-  }, 0)
+    const price = Number(item?.productId?.salePrice);
+    const quantity = item?.quantity;
+    return acc + price * quantity;
+  }, 0);
 
   const totalQty = cartItems?.items?.reduce((acc, item) => {
-    return acc + item?.quantity
-  }, 0)
+    return acc + item?.quantity;
+  }, 0);
 
-  const navigate = useNavigate()
+  // calculating the discount after copoun applayed
+  // const [discountAmount, setDiscountAmount] = useState(0);
+  // const [finalPrice, setFinalPrice] = useState(totalPrice);
+
+  // useEffect(() => {
+  //   if (selectedCoupon) {
+  //     const discountPercentage = Number(selectedCoupon.discount);
+  //     const discount = (totalPrice * discountPercentage) / 100;
+  //     const maxDiscountAmount = Number(selectedCoupon.maxDiscountAmount);
+  //     const maxDiscount = Math.min(discount, maxDiscountAmount);
+  //     const roundedDiscountAmount = Math.round(maxDiscount);
+  //     setDiscountAmount(roundedDiscountAmount);
+  //     setFinalPrice(Math.round(totalPrice - roundedDiscountAmount));
+  //   } else {
+  //     setDiscountAmount(0);
+  //     setFinalPrice(totalPrice);
+  //   }
+  // }, [selectedCoupon, totalPrice]);
+
+  const navigate = useNavigate();
   const handleNavAddress = async () => {
-    if(totalPrice > 0){ 
-      try{
-        const response = await api.get("cart/check-items") 
-        if(response?.data?.allItemsInStock){
-          navigate("/address")
-        }else{
-          toast.error("Some items in your cart are out of stock or unavailable.");
+    if (totalPrice > 0) {
+      try {
+        const response = await api.get("cart/check-items");
+        if (response?.data?.allItemsInStock) {
+          navigate("/address");
+        } else {
+          toast.error(
+            "Some items in your cart are out of stock or unavailable."
+          );
           const newStockStatus = {};
-          response.data.stockCheckResults.forEach(result => {
+          response.data.stockCheckResults.forEach((result) => {
             newStockStatus[result.productId] = result;
-          }); 
+          });
           setStockStatus(newStockStatus);
         }
-      }catch(error){
+      } catch (error) {
         console.error(error);
         toast.error("Failed to verify cart items. Please try again.");
       }
-    }else{
-      toast.error("our cart is empty. Add items before proceeding to checkout.")
+    } else {
+      toast.error(
+        "our cart is empty. Add items before proceeding to checkout."
+      );
     }
-  }
+  };
 
-  // const handleClearCart = () => {
-  //   dispatch(clearCart());
-  // };
-
-  if(cartItems?.items?.length===0){
-    return <EmptyItems  buttonName={"ADD ITEMS TO YOUR CART"} pageName={"cart"}/>
+  if (cartItems?.items?.length === 0) {
+    return (
+      <EmptyItems buttonName={"ADD ITEMS TO YOUR CART"} pageName={"cart"} />
+    );
   }
 
   return (
@@ -77,35 +98,38 @@ const CartPage = () => {
               </h1>
             </div>
 
-        
             <div className="mt-8">
               <h2 className="text-3xl font-bold">YOUR BAG</h2>
               <p className="text-gray-600 font-semibold mt-2">
                 TOTAL ({totalQty}) ₹{totalPrice}
               </p>
               <div className="flex justify-between">
-              <p className="text-gray-500 mt-2">
-                Items in your bag are not reserved — check out now to make them
-                yours.
-              </p>
-              <button>CLEAR CART</button>
+                <p className="text-gray-500 mt-2">
+                  Items in your bag are not reserved — check out now to make
+                  them yours.
+                </p>
+                {/* <button>CLEAR CART</button> */}
               </div>
             </div>
-
-          
-
           </div>
           <div className="py-10">
             {cartItems?.items?.map((cartItem) => (
               <div className="mb-5" key={cartItem?._id}>
-                <CartCard cartItem={cartItem} stockStatus={stockStatus[cartItem.productId._id]}
+                <CartCard
+                  cartItem={cartItem}
+                  stockStatus={stockStatus[cartItem.productId._id]}
                 />
               </div>
             ))}
           </div>
         </div>
         <div className="lg:w-1/3">
-        <CartCheckout cartCount={totalQty} totalPrice={totalPrice} navigateTo={handleNavAddress} buttonName={"CHECKOUT"}/>
+          <CartCheckout
+            cartCount={totalQty}
+            totalPrice={totalPrice}
+            navigateTo={handleNavAddress}
+            buttonName={"CHECKOUT"}
+          />
         </div>
       </div>
     </div>

@@ -29,6 +29,7 @@ import DeliveryDetails from "./pages/user/DeliveryDetails";
 import PaymentPage from "./pages/user/PaymentPage";
 import EditOrder from "./pages/admin/Order/EditOrder";
 import CouponsPage from "./pages/admin/CouponsPage";
+import OfferPage from "./pages/admin/OfferPage";
 
 
 function App() {
@@ -81,6 +82,7 @@ function App() {
               <Route path="category" element={<Category />} />
               <Route path="brand" element={<BrandPage />} />
               <Route path="coupons" element={<CouponsPage/>} />
+              <Route path="offers" element={<OfferPage/>}/>
             </Route>
           </Route>
         </Route>

@@ -134,7 +134,6 @@ const CouponModal = ({open, handleClose, onAddCoupon}) => {
             <TextField
               label="Starting Date"
               type="date"
-              //   defaultValue={currentDate}
               inputProps={{min: currentDate}}
               InputLabelProps={{shrink: true}}
               sx={{width: "48%", cursor: "pointer"}}
@@ -147,7 +146,6 @@ const CouponModal = ({open, handleClose, onAddCoupon}) => {
             <TextField
               label="Ending Date"
               type="date"
-              //   defaultValue={currentDate}
               inputProps={{min: currentDate}}
               InputLabelProps={{shrink: true}}
               sx={{width: "48%", cursor: "pointer"}}
