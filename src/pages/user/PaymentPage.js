@@ -39,28 +39,8 @@ const PaymentPage = () => {
           <PaymentOptions totalPrice={totalPrice}/>
         </div>
         <div className="lg:w-1/3 ">
-          <div className="bg-white max-w-md mx-auto">
-            <h2 className="text-2xl font-bold mb-4">ORDER SUMMARY</h2>
-
-            <div className="space-y-2 mb-4">
-              <div className="flex justify-between">
-                <span>{totalQty} items</span> {/* Dummy data */}
-                <span>₹ {totalPrice}</span> {/* Dummy data */}
-              </div>
-              <div className="flex justify-between">
-                <span>Delivery</span>
-                <span className="text-green-600">Free</span>
-              </div>
-            </div>
-
-            <div className="flex justify-between font-bold mb-1">
-              <span>Total</span>
-              <span>₹ {totalPrice}</span> {/* Dummy data */}
-            </div>
-            <p className="text-gray-500 text-sm mb-6">
-              (Inclusive of all taxes)
-            </p>
-          </div>
+          <CartCheckout cartCount={totalQty} inPayment={true}/>
+          
         </div>
       </div>
     </div>

@@ -129,6 +129,7 @@ const DeliveryDetails = ({inUserProfile}) => {
                 totalPrice={totalPrice}
                 buttonName={"NEXT"}
                 navigateTo={handleNavToPayment}
+                inDeliveryDetails={true}
               />
             )}
           </div>

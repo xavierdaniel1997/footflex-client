@@ -37,6 +37,17 @@ const EditOrder = () => {
     }
   };
 
+  const updateOrderItemStatus = async (orderId, productId, newStatus) => {
+    try {
+      const response = await api.put(`order/update-order-item-status/${orderId}/${productId}`, { status: newStatus });
+      toast.success(response?.data?.message)
+      getOrderDetials()
+    } catch (error) {
+      console.error("Error updating item status:", error);
+      toast.error("Failed to update item status");
+    }
+  };
+
   console.log("this is frm the edit order page", orderData)
   return (
     <div className="flex flex-col">
@@ -49,7 +60,7 @@ const EditOrder = () => {
       <div className="px-10">
         <OrderDetailsCards orderData={orderData} onUpdateStatus={handleUpdateStatus}/>
         <p className="text-xl font-bold mb-3">Product Details</p>
-        <OrderedProductTable orderData={orderData}/>
+        <OrderedProductTable orderData={orderData} updateOrderItemStatus={updateOrderItemStatus}/>
       </div>
     </div>
   );

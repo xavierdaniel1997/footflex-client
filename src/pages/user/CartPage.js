@@ -3,21 +3,22 @@ import CartCard from "../../components/user/CartCard";
 import {useDispatch, useSelector} from "react-redux";
 import {clearCart, fetchCartDetails} from "../../redux/cartSlice";
 import CartCheckout from "../../components/user/CartCheckout";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import EmptyItems from "../../components/user/EmptyItems";
 import toast from "react-hot-toast";
 import api from "../../config/axiosConfig";
+import { applyCouponPricingDetails } from "../../redux/couponSlice";
 
 const CartPage = () => {
   const dispatch = useDispatch();
-  const cartItems = useSelector((state) => state.cart.cartItems);
+  
   const userName = useSelector((state) => state.auth.user);
+  const cartItems = useSelector((state) => state.cart.cartItems);
   // const {selectedCoupon} = useSelector((state) => state.coupons); 
   const [stockStatus, setStockStatus] = useState({});
 
-  useEffect(() => {
-    dispatch(fetchCartDetails());
-  }, [dispatch]);
+  
+  
 
   const totalPrice = cartItems?.items?.reduce((acc, item) => {
     const price = Number(item?.productId?.salePrice);
@@ -29,24 +30,9 @@ const CartPage = () => {
     return acc + item?.quantity;
   }, 0);
 
-  // calculating the discount after copoun applayed
-  // const [discountAmount, setDiscountAmount] = useState(0);
-  // const [finalPrice, setFinalPrice] = useState(totalPrice);
-
-  // useEffect(() => {
-  //   if (selectedCoupon) {
-  //     const discountPercentage = Number(selectedCoupon.discount);
-  //     const discount = (totalPrice * discountPercentage) / 100;
-  //     const maxDiscountAmount = Number(selectedCoupon.maxDiscountAmount);
-  //     const maxDiscount = Math.min(discount, maxDiscountAmount);
-  //     const roundedDiscountAmount = Math.round(maxDiscount);
-  //     setDiscountAmount(roundedDiscountAmount);
-  //     setFinalPrice(Math.round(totalPrice - roundedDiscountAmount));
-  //   } else {
-  //     setDiscountAmount(0);
-  //     setFinalPrice(totalPrice);
-  //   }
-  // }, [selectedCoupon, totalPrice]);
+  useEffect(() => {
+    dispatch(fetchCartDetails());
+  }, [dispatch]);
 
   const navigate = useNavigate();
   const handleNavAddress = async () => {
@@ -65,7 +51,7 @@ const CartPage = () => {
           });
           setStockStatus(newStockStatus);
         }
-      } catch (error) {
+      } catch (error) { 
         console.error(error);
         toast.error("Failed to verify cart items. Please try again.");
       }
@@ -81,6 +67,7 @@ const CartPage = () => {
       <EmptyItems buttonName={"ADD ITEMS TO YOUR CART"} pageName={"cart"} />
     );
   }
+
 
   return (
     <div className="py-48 md:p-8 lg:px-36">
@@ -119,7 +106,7 @@ const CartPage = () => {
                   cartItem={cartItem}
                   stockStatus={stockStatus[cartItem.productId._id]}
                 />
-              </div>
+              </div> 
             ))}
           </div>
         </div>

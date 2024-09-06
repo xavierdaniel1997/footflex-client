@@ -1,11 +1,11 @@
 import React from "react";
 import {Routes, Route} from "react-router-dom";
 import ProfileSideBar from "../../components/user/ProfileSideBar";
-import Cart from "./Cart";
 import Orders from "./Orders";
 import EditProfile from "./EditProfile";
 import DeliveryDetails from "./DeliveryDetails";
 import WishList from "./WishList";
+import CartPage from "./CartPage";
 
 const UserProfilePage = () => {
   return (
@@ -18,7 +18,7 @@ const UserProfilePage = () => {
         <div className="flex-grow">
           <Routes>
             {/* Orders & Credits */}
-            <Route path="cart" element={<Cart />} />
+            <Route path="cart" element={<CartPage />} />
             <Route path="orders" element={<Orders />} />
             <Route path="wishlist" element={<WishList inUserProfile={true}/>} />
             {/* profile */}

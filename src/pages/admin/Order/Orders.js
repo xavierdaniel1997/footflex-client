@@ -63,7 +63,8 @@ const Orders = () => {
     date: new Date(order.createdAt).toLocaleDateString(),
     paymentMethod: (
       <div>
-        {order.payment.method==="Cash on Delivery" ? "COD" : ""}
+        {order.payment.method==="Cash on Delivery" ? "COD" : "UPI"}
+        {/* {order.payment.method==="Cash on Delivery" ? "COD" : ""} */}
       </div>
     ),
     customerName: `${order?.user?.firstName} ${order?.user?.lastName}`,
@@ -99,6 +100,10 @@ const Orders = () => {
               }}
               variant="outlined"
               size="small"
+              sx={{
+                backgroundColor: "white",
+                borderRadius: "4px", 
+              }}
             />
           </div>
           <div className="flex items-center">
@@ -111,6 +116,10 @@ const Orders = () => {
               }}
               variant="outlined"
               size="small"
+              sx={{
+                backgroundColor: "white",
+                borderRadius: "4px", 
+              }}
             />
           </div>
           <button className="bg-black text-white p-2 rounded-md">Submit</button>
