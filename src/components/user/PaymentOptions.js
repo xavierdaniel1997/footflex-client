@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {FaStar, FaWallet} from "react-icons/fa";
 import {MdPayment} from "react-icons/md";
 import {BsCashStack, BsCreditCard2Back} from "react-icons/bs";
-import {SiPhonepe} from "react-icons/si";
+import {SiRazorpay} from "react-icons/si";
 import {IoMdRefresh} from "react-icons/io";
 import {useDispatch, useSelector} from "react-redux";
 import toast from "react-hot-toast";
@@ -27,15 +27,17 @@ const PaymentOptions = ({totalPrice}) => {
   const [captchaInput, setCaptchaInput] = useState("");
   const [isCaptchaValid, setIsCaptchaValid] = useState(false);
   const cartItems = useSelector((state) => state.cart.cartItems);
+  const pricingDetails = useSelector((state) => state.coupons.pricingDetails);
   const address = useSelector((state) => state.address.selectedAddress);
+  const {user} = useSelector((state) => state.auth);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const dispatch = useDispatch();
+
 
   const options = [
     {id: "recommended", label: "Recommended", icon: <FaStar />},
     {id: "cash", label: "Cash On Delivery", icon: <BsCashStack />},
-    {id: "upi", label: "UPI (Pay via any App)", icon: <MdPayment />},
-    {id: "card", label: "Credit/Debit Card", icon: <BsCreditCard2Back />},
+    {id: "upi", label: "UPI (Pay via Razorpay)", icon: <SiRazorpay />},
     {id: "wallet", label: "Wallets", icon: <FaWallet />},
   ];
 
@@ -49,47 +51,117 @@ const PaymentOptions = ({totalPrice}) => {
     handleCaptchaValidation();
   }, [captchaInput]);
 
-  const handleConfirmCOD = async () => {
-    if (cartItems && address) {
+  const createOrderData = () => ({
+    items: cartItems?.items.map((item) => ({
+      product: item.productId._id,
+      productName: item.productId.productName,
+      productBrand: item.productId.brand.brandName,
+      description: item.productId.description,
+      price: item.productId.salePrice,
+      regularPrice: item.productId.regularPrice,
+      quantity: item.quantity,
+      size: item.size,
+      totalPrice: item.quantity * item.productId.salePrice,
+      thumbnail: item.productId.thumbnail,
+    })),
+    address: address,
+    totalPrice: totalPrice,
+    originalTotalPrice: pricingDetails.originalTotalPrice,
+    totalPriceAfterDiscount: pricingDetails.totalPriceAfterDiscount,
+    savedTotal: pricingDetails.savedTotal,
+    couponDiscount: pricingDetails.couponDiscount,
+    finalPrice: pricingDetails.finalPrice,
+  });
+
+  const handlePayment = async (paymentMethod) => {
+    if (!cartItems || !address) {
+      toast.error("Please select an address.");
+      return;
+    }
+
+    try {
       const response = await api.get("cart/check-items");
-      if (response?.data?.allItemsInStock) {
-        const orderData = {
-          items: cartItems?.items.map((item) => ({
-            product: item.productId._id,
-            productName: item.productId.productName,
-            productBrand: item.productId.brand.brandName,
-            description: item.productId.description,
-            price: item.productId.salePrice,
-            regularPrice: item.productId.regularPrice,
-            quantity: item.quantity,
-            size: item.size,
-            totalPrice: item.quantity * item.productId.salePrice,
-            thumbnail: item.productId.thumbnail,
-          })),
-          address: address,
-          totalPrice: totalPrice,
-          payment: {
-            method: "Cash on Delivery",
-            status: "Pending",
-          },
-        };
-        const createOrderResponse = await api.post(
-          "order/place-order",
-          orderData
-        );
-        console.log("this is the resposne of order", createOrderResponse);
-        if (createOrderResponse.status === 200) {
+      if (!response?.data?.allItemsInStock) {
+        toast.error("Some items in your cart are out of stock or unavailable.");
+        return;
+      }
+
+      const orderData = {
+        ...createOrderData(),
+        payment: {
+          method: paymentMethod,
+          status: "Pending",
+        },
+      };
+
+      const createOrderResponse = await api.post(
+        "order/place-order",
+        orderData
+      );
+      if (createOrderResponse.status === 200) {
+        if (paymentMethod === "Cash on Delivery") {
           setShowSuccessModal(true);
           dispatch(clearCart());
           setCaptchaInput("");
-        } else {
-          toast.error("Failed to place order. Please try again.");
         }
       } else {
-        toast.error("Some items in your cart are out of stock or unavailable.");
+        toast.error("Failed to place order. Please try again.");
       }
-    } else {
-      toast.error("Select an address");
+    } catch (error) {
+      console.error("Error creating order:", error);
+      toast.error("An error occurred. Please try again.");
+    }
+  };
+    
+  const handleRazorpay = async () => {
+    try {
+      const {data} = await api.post("order/create-razorpay-order", {
+        totalPrice: pricingDetails.finalPrice,
+      });
+
+      console.log("this is from the payment option process.env.REACT_APP_RZP_KEY_ID", process.env.RZP_KEY_ID)
+      const options = {
+        key: process.env.RZP_KEY_ID,
+        amount: pricingDetails.finalPrice * 100,
+        currency: "INR",
+        name: user?.firstName,
+        description: "Online payment",
+        order_id: data.orderId,
+        handler: async (response) => {
+          const orderData = createOrderData();
+  
+          const verifyResponse = await api.post("order/verify-razorpay-order", {
+            razorpayOrderId: response.razorpay_order_id,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpaySignature: response.razorpay_signature,
+            orderData,
+          });
+  
+          if (verifyResponse.status === 200) {
+            setShowSuccessModal(true);
+            dispatch(clearCart());
+          } else {
+            toast.error("Failed to confirm order. Please try again.");
+          }
+        },
+        prefill: {
+          name: user.firstName,
+          email: user.email,
+          contact: user.phoneNumber,
+        },
+        theme: {
+          color: "#F37254",
+        },
+
+        
+      };
+
+      const razorpayInstance = new window.Razorpay(options);
+      razorpayInstance.open();
+      console.log("this is from the payment razorpay", razorpayInstance)
+    } catch (error) {
+      console.log("Error processing Razorpay payment:", error);
+      toast.error("Failed to initiate payment. Please try again.");
     }
   };
 
@@ -115,8 +187,8 @@ const PaymentOptions = ({totalPrice}) => {
                 name="payment"
                 className="form-radio"
               />
-              <label htmlFor="phonepe">PhonePe</label>
-              <SiPhonepe className="ml-auto text-purple-600 text-2xl" />
+              <label htmlFor="phonepe">Razorpay</label>
+              <SiRazorpay className="ml-auto text-blue-800 text-2xl" />
             </div>
           </div>
         );
@@ -167,6 +239,7 @@ const PaymentOptions = ({totalPrice}) => {
                     value={captchaInput}
                     onChange={(e) => setCaptchaInput(e.target.value)}
                   />
+                  {/* click this button to cod */}
                   <button
                     className={`px-3 py-2 font-semibold text-lg ${
                       isCaptchaValid
@@ -174,7 +247,8 @@ const PaymentOptions = ({totalPrice}) => {
                         : "bg-gray-400 text-gray-700 cursor-not-allowed"
                     }`}
                     disabled={!isCaptchaValid}
-                    onClick={handleConfirmCOD}
+                    // onClick={handleConfirmCOD}
+                    onClick={() => handlePayment("Cash on Delivery")}
                   >
                     Confirm Order
                   </button>
@@ -183,32 +257,24 @@ const PaymentOptions = ({totalPrice}) => {
             </div>
           </div>
         );
+
       case "upi":
         return (
-          <div className="flex items-center space-x-2">
-            <input
-              type="radio"
-              id="upi"
-              name="payment"
-              className="form-radio"
-            />
-            <label htmlFor="upi">UPI (Pay via any App)</label>
-            <MdPayment className="ml-auto" />
+          <div className="flex flex-col">
+            <div className="flex items-center space-x-2">
+              <label htmlFor="upi">UPI (Pay via Razorpay)</label>
+              <SiRazorpay className="ml-auto" />
+            </div>
+            {/* click this button for razorpay */}
+            <button
+              className="bg-blue-700 text-white cursor-pointer px-3 py-2 font-semibold text-lg mt-4 w-28"
+              onClick={handleRazorpay}
+            >
+              PAY NOW
+            </button>
           </div>
         );
-      case "card":
-        return (
-          <div className="flex items-center space-x-2">
-            <input
-              type="radio"
-              id="card"
-              name="payment"
-              className="form-radio"
-            />
-            <label htmlFor="card">Credit/Debit Card</label>
-            <BsCreditCard2Back className="ml-auto" />
-          </div>
-        );
+
       case "wallet":
         return (
           <div className="flex items-center space-x-2">
@@ -227,6 +293,7 @@ const PaymentOptions = ({totalPrice}) => {
     }
   };
 
+  console.log("this is from the payment options", pricingDetails);
   return (
     <div className="flex overflow-hidden">
       <div className="w-1/3 bg-gray-100">

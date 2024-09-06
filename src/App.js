@@ -30,6 +30,7 @@ import PaymentPage from "./pages/user/PaymentPage";
 import EditOrder from "./pages/admin/Order/EditOrder";
 import CouponsPage from "./pages/admin/CouponsPage";
 import OfferPage from "./pages/admin/OfferPage";
+import SalesReportPage from "./pages/admin/SalesReportPage";
 
 
 function App() {
@@ -77,6 +78,7 @@ function App() {
               <Route path="addNewProduct" element={<ProductForm />} />
               <Route path="editproduct/:productId" element={<ProductForm />} />
               <Route path="customers" element={<Customers />} />
+              <Route path="sales-report" element={<SalesReportPage/>} />
               <Route path="orders" element={<Orders />} />
               <Route path="editOrder/:orderId" element={<EditOrder/>}/>
               <Route path="category" element={<Category />} />

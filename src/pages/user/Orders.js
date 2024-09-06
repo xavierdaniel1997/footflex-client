@@ -5,6 +5,7 @@ import api from "../../config/axiosConfig";
 const Orders = () => {
   const [myOrders, setMyOrders] = useState([]);
 
+
   const getMyOrders = async () => {
     try {
       const response = await api.get("/order/my-orders");
@@ -19,6 +20,18 @@ const Orders = () => {
   }, []);
 
   console.log("this is from the order page", myOrders);
+
+  const handleCancelOrder = async (orderId, productId) => {
+    console.log("Cancelling order with ID:", orderId, productId);
+    try{
+      const response = await api.post("order/cancel-order", {
+        orderId, productId
+      })
+      getMyOrders()
+    }catch(error){
+      console.log(error)
+    }
+  };
 
   return (
     <div>
@@ -37,6 +50,11 @@ const Orders = () => {
               deliveryStatus={order.status}
               paymentMethod={order.payment.method}
               orderDate={order.createdAt}
+              // handleCancelOrder={() => handleCancelOrder(order._id, item.id)} 
+              handleCancelOrder={handleCancelOrder} 
+              orderId={order._id} 
+              productId={item.product}
+              itemStatus={item.status}
             />
           ))
         )}

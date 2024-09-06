@@ -15,6 +15,7 @@ const ProductDetails = () => {
   const cartItems = useSelector((state) => state.cart.cartItems);
   const wishlistItems = useSelector((state) => state.wishList.items);
   const [product, setProduct] = useState(null);
+  const [priceDiscount, setPriceDiscount] = useState(null)
   const [selectSize, setSelectSize] = useState(null);
   const [error, setError] = useState("");
   const [isInCart, setIsInCart] = useState(false);
@@ -25,6 +26,7 @@ const ProductDetails = () => {
     try {
       const response = await api.get(`/product/product-detial/${id}`);
       setProduct(response?.data?.productDetial);
+      setPriceDiscount(response?.data)
     } catch (error) {
       console.log(error);
     }
@@ -90,6 +92,7 @@ const ProductDetails = () => {
     setIsWishList(!isWishList)
   };
 
+  console.log("this is from the product details page", product)
   return (
     <div className="px-10">
       <div className="mb-8 ">
@@ -116,9 +119,19 @@ const ProductDetails = () => {
             </button>
           </div>
           <h1 className="text-2xl font-bold mt-2">{product?.productName}</h1>
-          <p className="text-blue-500 text-2xl mt-2 font-semibold">
-            ₹ {product?.salePrice}
-          </p>
+
+          <div className="flex items-center gap-2 mt-2">
+          <p className={`text-blue-500 text-2xl  font-semibold ${priceDiscount?.discountedPrice ? "line-through" : ""}`}>
+            ₹ {product?.salePrice}   
+          </p>  
+  
+          {priceDiscount?.discountedPrice && (
+              <p className="text-red-600 text-2xl font-semibold">
+                {priceDiscount?.discountedPrice} ({priceDiscount?.offerPercentage}% OFF)
+              </p>
+            )}
+
+          </div>
 
           <div className="mt-4">
             <p className="font-semibold">Review and Rating</p>

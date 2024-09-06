@@ -1,7 +1,11 @@
 import React, {useEffect, useState} from "react";
 import {MdDeleteForever} from "react-icons/md";
 import {useDispatch} from "react-redux";
-import {removeFromCart, updateCart} from "../../redux/cartSlice";
+import {
+  removeFromCart,
+  updateCart,
+} from "../../redux/cartSlice";
+import { applyCouponPricingDetails } from "../../redux/couponSlice";
 
 const CartCard = ({cartItem, stockStatus}) => {
   const dispatch = useDispatch();
@@ -17,10 +21,10 @@ const CartCard = ({cartItem, stockStatus}) => {
   useEffect(() => {
     const selectedSizeObj = cartItem?.productId?.sizes?.find(
       (size) => size.size === selectedSize
-    ); 
+    );
     if (selectedSizeObj) {
       const maxQty = selectedSizeObj.stock > 5 ? 5 : selectedSizeObj.stock;
-      setAvailableQty(Array.from({ length: maxQty }, (_, i) => i + 1));
+      setAvailableQty(Array.from({length: maxQty}, (_, i) => i + 1));
       setSelectedQty(cartItem?.quantity);
     }
   }, [selectedSize]);
@@ -31,6 +35,7 @@ const CartCard = ({cartItem, stockStatus}) => {
 
   const handleQtyChange = (e) => {
     setSelectedQty(Number(e.target.value));
+    
   };
 
   const handleUpdateCart = () => {
@@ -40,19 +45,22 @@ const CartCard = ({cartItem, stockStatus}) => {
         size: selectedSize,
         quantity: selectedQty,
       })
-    );
+    )
+    // dispatch(applyCouponPricingDetails());
   };
 
   useEffect(() => {
     handleUpdateCart();
+    
   }, [selectedSize, selectedQty]);
 
-  const itemPrice = Number(cartItem?.productId?.salePrice);
-  const totalPrice = itemPrice * selectedQty || 1;
-  // console.log("this is from the cart card", cartItem);
+
+  const itemPrice = cartItem?.discountedPrice || cartItem?.productId?.salePrice;
+  const finalPrice = itemPrice * selectedQty;
+
   // console.log("this is from the cart card quantity", availableQty);
 
-  return (
+  return (  
     <div className="border rounded-lg flex">
       {/* Image Section */}
       <div className="w-1/3 h-52 px-4 bg-slate-100">
@@ -104,7 +112,7 @@ const CartCard = ({cartItem, stockStatus}) => {
                 >
                   {availableQty.map((quantity) => (
                     <option key={quantity} value={quantity}>
-                      {quantity} 
+                      {quantity}
                     </option>
                   ))}
                 </select>
@@ -114,7 +122,23 @@ const CartCard = ({cartItem, stockStatus}) => {
           <div className="text-right">
             <div className="flex items-center space-x-2">
               {/* <p className="line-through text-gray-500">₹4 599.00</p> */}
-              <p className="text-red-500 font-bold">₹{totalPrice}</p>
+              <p
+                className={`text-green-500 font-bold ${
+                  cartItem?.discountedPrice ? "line-through" : ""
+                }`}
+              >
+                ₹{cartItem?.discountedPrice ? cartItem?.originalPrice : finalPrice}
+              </p>
+
+              {cartItem.discountedPrice  && (
+                <div className="flex gap-1">
+                  <p className="text-red-500 font-bold">
+                    {finalPrice}
+                  </p>
+                  <p className="text-gray-600">{cartItem?.offerPercentage}%OFF</p>
+                </div>
+              )}
+
               <button
                 className="text-gray-500 hover:text-black"
                 onClick={handleRemoveCartItem}
@@ -143,7 +167,9 @@ const CartCard = ({cartItem, stockStatus}) => {
             {cartItem?.productId?.gender}
           </h2>
           {stockStatus && !stockStatus.inStock && (
-            <p className="text-red-500 text-md font-semibold">{stockStatus.message}</p>
+            <p className="text-red-500 text-md font-semibold">
+              {stockStatus.message}
+            </p>
           )}
         </div>
       </div>

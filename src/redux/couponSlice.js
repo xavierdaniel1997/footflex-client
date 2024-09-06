@@ -46,10 +46,30 @@ export const fetchAvailableCoupons = createAsyncThunk(
   }
 );
 
+
+export const applyCouponPricingDetails = createAsyncThunk(
+  "coupons/applyCouponPricingDetails",
+  async(couponId, {rejectWithValue}) => {
+    try{
+      const response = await api.post("cart/checkout", {couponId})
+      return response?.data
+    }catch(error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+)
+
 const couponSlice = createSlice({
   name: "coupons",
   initialState: {
     coupons: [],
+    pricingDetails: {
+      originalTotalPrice: 0,
+      totalPriceAfterDiscount: 0,
+      savedTotal: 0,
+      couponDiscount: 0,
+      finalPrice: 0,
+    },
     selectedCoupon: null,
     loading: false,
     error: null,
@@ -101,7 +121,12 @@ const couponSlice = createSlice({
       .addCase(fetchAvailableCoupons.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message;
-      });
+      })
+      
+      //for the coupon adding and getting price detials
+      .addCase(applyCouponPricingDetails.fulfilled, (state, action) => {
+        state.pricingDetails = action.payload;
+      })
   },
 });
 

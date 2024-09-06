@@ -1,20 +1,39 @@
-import React from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox } from '@mui/material';
-import { FaRupeeSign } from 'react-icons/fa';
+import React, { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Checkbox,
+  Select,
+  MenuItem,
+} from "@mui/material";
+import {FaRupeeSign} from "react-icons/fa";
+import api from "../../config/axiosConfig";
 
-const OrderedProductTable = ({orderData}) => {
-  const rows = [
-    { id: 1, name: 'Adidas ultra boost', orderId: '#25421', quantity: 2, total: 800.40 },
-    { id: 2, name: 'Adidas ultra boost', orderId: '#25421', quantity: 2, total: 800.40 },
-    { id: 3, name: 'Adidas ultra boost', orderId: '#25421', quantity: 2, total: 800.40 },
-    { id: 4, name: 'Adidas ultra boost', orderId: '#25421', quantity: 2, total: 800.40 },
+const OrderedProductTable = ({orderData, updateOrderItemStatus}) => {
+
+
+  const singleOrderStatus = [
+    "Active",
+    "Delivered",
+    "Cancelled",
+    "Return Requested",
+    "Return Accepted",
+    "Return Rejected",
+    "Returned",
   ];
 
-  const subtotal = rows.reduce((sum, row) => sum + row.total, 0);
-  const tax = subtotal * 0.2; // 20% tax
-  const discount = 0;
-  const total = subtotal + tax - discount;
 
+
+
+const handleChangeStatus = (orderId, productId, status) => {
+  updateOrderItemStatus(orderId, productId, status);
+};
+ 
   return (
     <TableContainer component={Paper}>
       <Table aria-label="ordered products table">
@@ -23,6 +42,8 @@ const OrderedProductTable = ({orderData}) => {
             <TableCell />
             <TableCell>Product Name</TableCell>
             <TableCell>Order ID</TableCell>
+            <TableCell>Size</TableCell>
+            <TableCell>Status</TableCell>
             <TableCell>Quantity</TableCell>
             <TableCell>Total</TableCell>
           </TableRow>
@@ -30,40 +51,99 @@ const OrderedProductTable = ({orderData}) => {
         <TableBody>
           {orderData?.items?.map((product) => (
             <TableRow key={product?._id}>
-              <TableCell padding="checkbox">
-                {/* <Checkbox /> */}
-              </TableCell>
+              <TableCell padding="checkbox">{/* <Checkbox /> */}</TableCell>
               <TableCell component="th" scope="row">
                 <div className="flex items-center">
-                  <img src={product?.thumbnail} alt="product" className="w-10 h-10 mr-3 object-cover" />
+                  <img
+                    src={product?.thumbnail}
+                    alt="product"
+                    className="w-10 h-10 mr-3 object-cover"
+                  />
                   {product?.productBrand}
                 </div>
               </TableCell>
               <TableCell>{orderData?._id}</TableCell>
+              <TableCell>{product?.size}</TableCell>
+
+
+            {/* need drop down */}
+              {/* <TableCell>{product?.status}</TableCell> */}
+
+              <TableCell>
+                <Select
+                 value={product?.status}
+                  onChange={(e) => handleChangeStatus(orderData?._id, product?.product, e.target.value)}
+                  displayEmpty
+                  sx={{
+                    padding: 0, 
+                    minWidth: 120,
+                    backgroundColor: "#F0F8FF", 
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      border: 'none', 
+                    },
+                    '& .MuiSelect-select': {
+                      padding: '4px 8px',
+                    },
+                  }}
+                >
+                  {singleOrderStatus.map((status) => (
+                    <MenuItem key={status} value={status}>
+                      {status} 
+                    </MenuItem>
+                  ))}
+                </Select>
+              </TableCell>
+
               <TableCell>{product?.quantity}</TableCell>
-              <TableCell><FaRupeeSign className="inline" /> {product?.price}</TableCell>
+              <TableCell>
+                <FaRupeeSign className="inline" /> {product?.price}
+              </TableCell>
             </TableRow>
           ))}
-          {/* Subtotal, Tax, Discount, and Total without borders */}
+ 
           <TableRow>
-            <TableCell colSpan={3} sx={{ borderBottom: 'none' }} />
-            <TableCell sx={{ borderBottom: 'none' }}>Subtotal</TableCell>
-            <TableCell sx={{ borderBottom: 'none' }}><FaRupeeSign className="inline" /> {orderData?.totalPrice}</TableCell>
+            <TableCell colSpan={5} sx={{borderBottom: "none"}} />
+            <TableCell sx={{borderBottom: "none"}}>MRP</TableCell>
+            <TableCell sx={{borderBottom: "none"}}>
+              <FaRupeeSign className="inline" /> {orderData?.totalPrice}
+            </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell colSpan={3} sx={{ borderBottom: 'none' }} />
-            <TableCell sx={{ borderBottom: 'none' }}>Deliver Fee</TableCell>
-            <TableCell sx={{ borderBottom: 'none' }}><FaRupeeSign className="inline" /> 0.00</TableCell>
+            <TableCell colSpan={5} sx={{borderBottom: "none"}} />
+            <TableCell sx={{borderBottom: "none"}}>Deliver Fee</TableCell>
+            <TableCell sx={{borderBottom: "none"}}>
+              <FaRupeeSign className="inline" /> 0.00
+            </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell colSpan={3} sx={{ borderBottom: 'none' }} />
-            <TableCell sx={{ borderBottom: 'none' }}>Discount</TableCell>
-            <TableCell sx={{ borderBottom: 'none' }}><FaRupeeSign className="inline" /> {discount.toFixed(2)}</TableCell>
+            <TableCell colSpan={5} sx={{borderBottom: "none"}} />
+            <TableCell sx={{borderBottom: "none"}}>Coupon discount</TableCell>
+            <TableCell sx={{borderBottom: "none"}}>
+              <FaRupeeSign className="inline" /> {orderData?.couponDiscount}
+            </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell colSpan={3} sx={{ borderBottom: 'none' }} />
-            <TableCell sx={{ borderBottom: 'none' }} className="font-bold text-lg">Total</TableCell>
-            <TableCell sx={{ borderBottom: 'none' }} className="font-bold text-lg"><FaRupeeSign className="inline" />{orderData?.totalPrice}</TableCell>
+            <TableCell colSpan={5} sx={{borderBottom: "none"}} />
+            <TableCell sx={{borderBottom: "none"}}>Offer discount</TableCell>
+            <TableCell sx={{borderBottom: "none"}}>
+              <FaRupeeSign className="inline" /> {orderData?.savedTotal}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell colSpan={5} sx={{borderBottom: "none"}} />
+            <TableCell
+              sx={{borderBottom: "none"}}
+              className="font-bold text-lg"
+            >
+              Total
+            </TableCell>
+            <TableCell
+              sx={{borderBottom: "none"}}
+              className="font-bold text-lg"
+            >
+              <FaRupeeSign className="inline" />
+              {orderData?.finalPrice}
+            </TableCell>
           </TableRow>
         </TableBody>
       </Table>
