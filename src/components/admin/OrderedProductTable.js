@@ -7,7 +7,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Checkbox,
   Select,
   MenuItem,
 } from "@mui/material";
@@ -37,7 +36,7 @@ const handleChangeStatus = (orderId, productId, status) => {
   return (
     <TableContainer component={Paper}>
       <Table aria-label="ordered products table">
-        <TableHead>
+        <TableHead> 
           <TableRow>
             <TableCell />
             <TableCell>Product Name</TableCell>
@@ -66,8 +65,7 @@ const handleChangeStatus = (orderId, productId, status) => {
               <TableCell>{product?.size}</TableCell>
 
 
-            {/* need drop down */}
-              {/* <TableCell>{product?.status}</TableCell> */}
+            
 
               <TableCell>
                 <Select

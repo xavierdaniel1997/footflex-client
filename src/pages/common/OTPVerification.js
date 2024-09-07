@@ -80,7 +80,7 @@ const OTPVerification = () => {
       console.log(error)
       toast.error(error.response.data.message)
     }
-    setTimer(60); // Reset timer to 60 seconds
+    setTimer(60); 
   };
 
   return (

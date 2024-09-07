@@ -50,14 +50,8 @@ const OfferPage = () => {
     startDate: new Date(offer?.startDate).toLocaleDateString(),
     endDate: new Date(offer?.endDate).toLocaleDateString(),
     discount: <div>{offer?.discountPercentage} %</div>,
-    // action: (
-    //   <div className="flex gap-2 items-center">
-    //     <MdOutlineEdit className="text-green-500 cursor-pointer text-xl" />
-    //     <MdDeleteOutline className="text-red-500 cursor-pointer text-xl" />
-    //   </div>
-    // ),
   }));
-
+ 
   const categoryOfferData = categoryOffers?.map((offer) => ({
     name: offer?.targetOfferId?.categoryName,
     startDate: new Date(offer?.startDate).toLocaleDateString(),

@@ -25,6 +25,8 @@ const Orders = () => {
     {label: "Action", field: "action"},
   ];
 
+
+
   const getOrderData = async (currentPage) => {
     try {
       const response = await api.get(`/order/order-lists?page=${currentPage}&limit=${limit}`);
@@ -48,39 +50,64 @@ const Orders = () => {
     navigate(`/dashboard/editOrder/${orderId}`);
   };
 
-  const orderData = allOrder.map((order) => ({
-    productName: (
-      <div className="flex items-center gap-2">
-        <img
-          className="h-12 w-12 object-contain"
-          src={order.items[0]?.thumbnail}
-          alt={order.items[0]?.productName}
-        />
-        {order.items[0]?.productName.split(" ").splice(0, 2).join(" ")}{" "}
-      </div>
-    ),
-    orderId: order._id,
-    date: new Date(order.createdAt).toLocaleDateString(),
-    paymentMethod: (
-      <div>
-        {order.payment.method==="Cash on Delivery" ? "COD" : "UPI"}
-        {/* {order.payment.method==="Cash on Delivery" ? "COD" : ""} */}
-      </div>
-    ),
-    customerName: `${order?.user?.firstName} ${order?.user?.lastName}`,
-    status: order.status,
-    amount: `₹${order.totalPrice}`,
-    totalItems: (
-      <div>
-        <span className={`font-semibold ${order?.items?.length===1 ? "text-green-500" : "text-red-500"}`}>{order.items.length} Item</span>
-      </div>
-    ),
-    action: (
-      <button className="bg-blue-500 text-white px-2 py-1 rounded"
-      onClick={() => handleEditOrder(order?._id)}
-      >View</button>
-    ),
-  }));
+
+  const statusColors = {
+    Pending: {bg: "bg-yellow-200", text: "text-yellow-700"},
+    Processing: {bg: "bg-blue-200", text: "text-blue-700"},
+    Shipped: {bg: "bg-purple-200", text: "text-purple-700"},
+    Delivered: {bg: "bg-green-200", text: "text-green-700"},
+    Cancelled: {bg: "bg-red-200", text: "text-red-700"},
+    Returned: {bg: "bg-gray-200", text: "text-gray-700"},
+    "Partially Cancelled": {bg: "bg-red-100", text: "text-red-600"},
+    "Partially Returned": {bg: "bg-gray-100", text: "text-gray-600"},
+  };
+
+  const orderData = allOrder.map((order) => {
+    const currentStatusColors = statusColors[order.status] || statusColors["Pending"];
+    
+    return {
+      productName: (
+        <div className="flex items-center gap-2">
+          <img
+            className="h-12 w-12 object-contain"
+            src={order.items[0]?.thumbnail}
+            alt={order.items[0]?.productName}
+          />
+          {order.items[0]?.productName.split(" ").splice(0, 2).join(" ")}{" "}
+        </div>
+      ),
+      orderId: order._id,
+      date: new Date(order.createdAt).toLocaleDateString(),
+      paymentMethod: (
+        <div>
+          {order.payment.method === "Cash on Delivery" ? "COD" : "Online"}
+        </div>
+      ),
+      customerName: `${order?.user?.firstName} ${order?.user?.lastName}`,
+      status: (
+        <div className={`px-2 py-1 text-center rounded ${currentStatusColors.bg} ${currentStatusColors.text}`}>
+          {order.status}
+        </div>
+      ),
+      amount: `₹${order.totalPrice}`,
+      totalItems: (
+        <div>
+          <span className={`font-semibold ${order?.items?.length === 1 ? "text-green-500" : "text-red-500"}`}>
+            {order.items.length} Item
+          </span>
+        </div>
+      ),
+      action: (
+        <button
+          className="bg-blue-500 text-white px-2 py-1 rounded"
+          onClick={() => handleEditOrder(order?._id)}
+        >
+          View
+        </button>
+      ),
+    };
+  });
+  
 
   return (
     <div className="flex flex-col">

@@ -62,7 +62,7 @@ const OrderDetailsCards = ({orderData, onUpdateStatus}) => {
             className={`${currentStatusColors.bg} ${currentStatusColors.text} px-2 py-1 rounded text-sm w-fit`}
           >
             {orderData?.status}
-          </span>
+          </span> 
         </div>
         <div className="flex items-center space-x-4">
           <div className="flex items-center">
@@ -71,8 +71,7 @@ const OrderDetailsCards = ({orderData, onUpdateStatus}) => {
           </div>
           <select
             className="border rounded px-3 py-2 outline-none"
-            value={orderSts}
-            // defaultValue={orderStatus}
+            value={orderSts || orderData?.status}
             disabled={isCancelled}
             onChange={(e) => setOrderSts(e.target.value)}
           >
@@ -152,7 +151,7 @@ const OrderDetailsCards = ({orderData, onUpdateStatus}) => {
           </div>
           <p className="mb-1 font-semibold">
             <select
-              value={paymentSts}
+              value={paymentSts || orderData?.payment?.status}
               className="w-28 outline-none"
               onChange={(e) => setPaymentSts(e.target.value)}
             >
