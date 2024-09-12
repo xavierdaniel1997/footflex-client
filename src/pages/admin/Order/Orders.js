@@ -3,7 +3,7 @@ import {TextField} from "@mui/material";
 import {FaCalendarAlt} from "react-icons/fa";
 import ReusableTable from "../../../components/admin/ReusableTable";
 import api from "../../../config/axiosConfig";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 const Orders = () => {
   const [allOrder, setAllOrder] = useState([]);
@@ -21,15 +21,15 @@ const Orders = () => {
     {label: "Customer Name", field: "customerName"},
     {label: "Status", field: "status"},
     {label: "Amount", field: "amount"},
-    { label: "Total Items", field: "totalItems" }, 
+    {label: "Total Items", field: "totalItems"},
     {label: "Action", field: "action"},
   ];
 
-
-
   const getOrderData = async (currentPage) => {
     try {
-      const response = await api.get(`/order/order-lists?page=${currentPage}&limit=${limit}`);
+      const response = await api.get(
+        `/order/order-lists?page=${currentPage}&limit=${limit}`
+      );
       setAllOrder(response?.data?.orders);
       setTotalPages(response.data.totalPages);
       setTotalCount(response.data.totalCount);
@@ -45,11 +45,10 @@ const Orders = () => {
     setPage(value);
   };
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const handleEditOrder = (orderId) => {
     navigate(`/dashboard/editOrder/${orderId}`);
   };
-
 
   const statusColors = {
     Pending: {bg: "bg-yellow-200", text: "text-yellow-700"},
@@ -63,8 +62,9 @@ const Orders = () => {
   };
 
   const orderData = allOrder.map((order) => {
-    const currentStatusColors = statusColors[order.status] || statusColors["Pending"];
-    
+    const currentStatusColors =
+      statusColors[order.status] || statusColors["Pending"];
+
     return {
       productName: (
         <div className="flex items-center gap-2">
@@ -79,20 +79,35 @@ const Orders = () => {
       orderId: order._id,
       date: new Date(order.createdAt).toLocaleDateString(),
       paymentMethod: (
+        // <div>
+        //   {order.payment.method === "Cash on Delivery" ? "COD" : "Online"}
+        // </div>
+
         <div>
-          {order.payment.method === "Cash on Delivery" ? "COD" : "Online"}
+          {order.payment.method === "Cash on Delivery" ||
+          order.payment.method === "UPI"
+            ? order.payment.method === "Cash on Delivery"
+              ? "COD"
+              : "Online"
+            : order.payment.method}
         </div>
       ),
       customerName: `${order?.user?.firstName} ${order?.user?.lastName}`,
       status: (
-        <div className={`px-2 py-1 text-center rounded ${currentStatusColors.bg} ${currentStatusColors.text}`}>
+        <div
+          className={`px-2 py-1 text-center rounded ${currentStatusColors.bg} ${currentStatusColors.text}`}
+        >
           {order.status}
         </div>
       ),
       amount: `₹${order.totalPrice}`,
       totalItems: (
         <div>
-          <span className={`font-semibold ${order?.items?.length === 1 ? "text-green-500" : "text-red-500"}`}>
+          <span
+            className={`font-semibold ${
+              order?.items?.length === 1 ? "text-green-500" : "text-red-500"
+            }`}
+          >
             {order.items.length} Item
           </span>
         </div>
@@ -107,7 +122,6 @@ const Orders = () => {
       ),
     };
   });
-  
 
   return (
     <div className="flex flex-col">
@@ -123,13 +137,13 @@ const Orders = () => {
               label="From"
               type="date"
               InputLabelProps={{
-                shrink: true
+                shrink: true,
               }}
               variant="outlined"
               size="small"
               sx={{
                 backgroundColor: "white",
-                borderRadius: "4px", 
+                borderRadius: "4px",
               }}
             />
           </div>
@@ -145,7 +159,7 @@ const Orders = () => {
               size="small"
               sx={{
                 backgroundColor: "white",
-                borderRadius: "4px", 
+                borderRadius: "4px",
               }}
             />
           </div>
@@ -153,12 +167,14 @@ const Orders = () => {
         </div>
       </div>
       <div className="px-10">
-        <ReusableTable columns={columns} data={orderData} 
-        page={page}
-        rowsPerPage={limit}
-        totalCount={totalCount}
-        onPageChange={handlePageChange}
-        isPagination={true}
+        <ReusableTable
+          columns={columns}
+          data={orderData}
+          page={page}
+          rowsPerPage={limit}
+          totalCount={totalCount}
+          onPageChange={handlePageChange}
+          isPagination={true}
         />
       </div>
     </div>

@@ -24,7 +24,7 @@ const ProfileSideBar = () => {
     {name: "Wishlist", icon: FaHeart, path: "/userProfile/wishlist"},
     {name: "Cart", icon: FaShoppingCart, path: "/cart"},
     {name: "FOOTFLEX Wallet", icon: FaWallet, path: "/userProfile/wallet"},
-    {name: "Invite Friends", icon: FaUserFriends, path: "/userProfile/invite"},
+    // {name: "Invite Friends", icon: FaUserFriends, path: "/userProfile/invite"},
     {name: "Edit Profile", icon: FaUser, path: "/userProfile"},
     {name: "Address", icon: FaMapMarkerAlt, path: "/userProfile/address"},
   ];
@@ -44,7 +44,7 @@ const ProfileSideBar = () => {
             Orders & Credits
           </h3>
           <ul className="mt-3 space-y-3">
-            {menuItems.slice(0, 5).map((item, index) => (
+            {menuItems.slice(0, 4).map((item, index) => (
               <li key={index}>
                 <Link
                   to={item.path}
@@ -65,7 +65,7 @@ const ProfileSideBar = () => {
         <div className="mt-8">
           <h3 className="text-lg font-medium text-gray-700">Profile</h3>
           <ul className="mt-3 space-y-3">
-            {menuItems.slice(5).map((item, index) => (
+            {menuItems.slice(4).map((item, index) => (
               <li key={index}>
                 <Link
                   to={item.path}

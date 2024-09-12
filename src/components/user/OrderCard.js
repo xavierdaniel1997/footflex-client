@@ -5,8 +5,20 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
 } from "@mui/material";
 import React, {useState} from "react";
+
+const returnReasons = [
+  "Size does not fit",
+  "Wrong product delivered",
+  "Product damaged",
+  "Quality not as expected",
+  "Changed my mind",
+];
 
 const OrderCard = ({
   productName,
@@ -20,23 +32,40 @@ const OrderCard = ({
   orderDate,
   productBrand,
   handleCancelOrder,
+  handleReturnOrder,
   orderId,
   productId,
   itemStatus,
 }) => {
   const [open, setOpen] = useState(false);
+  const [openReturn, setOpenReturn] = useState(false);
+  const [reason, setReason] = useState("");
 
   const onClose = () => {
     setOpen(false);
   };
-
   const handleCancel = () => {
     setOpen(true);
   };
-
   const onConfirm = () => {
     handleCancelOrder(orderId, productId);
     onClose();
+  };
+
+  const onCloseReturn = () => {
+    setOpenReturn(false);
+  };
+  const handleReturnItem = () => {
+    setOpenReturn(true);
+  };
+  const handleReasonChange = (event) => {
+    setReason(event.target.value);
+  };
+
+  const onConfirmReturn = () => {
+    handleReturnOrder(orderId, productId, reason);
+    setReason("");
+    setOpenReturn(false);
   };
 
   return (
@@ -69,7 +98,9 @@ const OrderCard = ({
 
       <div className="text-right space-y-2 flex-1 pr-4 h-full flex flex-col justify-center">
         <div className="flex items-center justify-end space-x-2">
-          <span className="text-sm text-gray-700">{deliveryStatus}</span>
+          <span className="text-sm text-gray-700">
+            {itemStatus === "Active" ? "Pending" : itemStatus}
+          </span>
         </div>
         <p className="text-sm text-gray-500">
           {new Date(orderDate).toLocaleDateString()}
@@ -77,23 +108,31 @@ const OrderCard = ({
         <div className="flex items-center justify-end space-x-1 text-blue-600 cursor-pointer">
           <span>{paymentMethod}</span>
         </div>
-        {itemStatus === "Cancelled" ? (
-          <button className="font-semibold text-red-600 flex items-center justify-end">
-            Cancelled
+       
+
+        {itemStatus === "Delivered" ? (
+          <button
+            className="font-semibold text-green-600 flex items-center justify-end"
+            onClick={handleReturnItem}
+          >
+            RETURN
           </button>
-        ) : (
+        ) : itemStatus === "Active" ? (
           <button
             className="font-semibold text-red-600 flex items-center justify-end"
-            onClick={() => handleCancel(productId)}
+            onClick={handleCancel}
           >
-            Cancel
+            CANCEL
           </button>
-        )}
-        {/* <button className='font-semibold text-red-600 flex items-center justify-end' onClick={() => handleCancel(productId)}>Cancel</button> */}
+        ) : itemStatus === "Cancelled" ? (
+          <button className="font-semibold text-red-600 flex items-center justify-end">
+            CANCELLED
+          </button>
+        ) : null}
       </div>
 
       <Dialog open={open} onClose={onClose}>
-        <DialogTitle>{"Confirm Default Address"}</DialogTitle>
+        <DialogTitle>{"Cancel Order"}</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Are you sure you want to cancel this order?
@@ -101,6 +140,44 @@ const OrderCard = ({
           <DialogActions sx={{mt: 3}}>
             <Button onClick={onClose}>Cancel</Button>
             <Button onClick={onConfirm} color="primary">
+              Confirm
+            </Button>
+          </DialogActions>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={openReturn} onClose={onCloseReturn}>
+        <DialogTitle>{"Return Order"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Please select a reason for returning this order.
+          </DialogContentText>
+
+          {/* Dropdown for return reasons */}
+          <FormControl fullWidth sx={{mt: 2}}>
+            <InputLabel id="return-reason-label">Reason for Return</InputLabel>
+            <Select
+              labelId="return-reason-label"
+              id="return-reason"
+              value={reason}
+              onChange={handleReasonChange}
+              label="Reason for Return"
+            >
+              {returnReasons.map((reason, index) => (
+                <MenuItem key={index} value={reason}>
+                  {reason}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <DialogActions sx={{mt: 3}}>
+            <Button onClick={onCloseReturn}>Cancel</Button>
+            <Button
+              onClick={onConfirmReturn}
+              color="primary"
+              disabled={!reason}
+            >
               Confirm
             </Button>
           </DialogActions>

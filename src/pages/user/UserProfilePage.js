@@ -6,6 +6,7 @@ import EditProfile from "./EditProfile";
 import DeliveryDetails from "./DeliveryDetails";
 import WishList from "./WishList";
 import CartPage from "./CartPage";
+import WalletPage from "./WalletPage";
 
 const UserProfilePage = () => {
   return (
@@ -27,6 +28,7 @@ const UserProfilePage = () => {
               path="address"
               element={<DeliveryDetails inUserProfile={true} />}
             />
+            <Route path="/wallet" element={<WalletPage/>}/>
           </Routes>
         </div>
       </div>

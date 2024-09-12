@@ -67,39 +67,6 @@ const SalesReportTable = ({reportData}) => {
               {reportData?.topProductsSummary?.totalRevenue}
             </TableCell>
           </TableRow>
-
-          {/* <TableRow>
-            <TableCell colSpan={5} sx={{borderBottom: "none"}} />
-            <TableCell sx={{borderBottom: "none"}}>Coupon discount</TableCell>
-            <TableCell sx={{borderBottom: "none"}}>
-              <FaRupeeSign className="inline" /> orderData?.couponDiscount
-            </TableCell>
-          </TableRow> */}
-
-          {/* <TableRow>
-            <TableCell colSpan={5} sx={{borderBottom: "none"}} />
-            <TableCell sx={{borderBottom: "none"}}>Offer discount</TableCell>
-            <TableCell sx={{borderBottom: "none"}}>
-              <FaRupeeSign className="inline" /> orderData?.savedTotal
-            </TableCell>
-          </TableRow> */}
-
-          {/* <TableRow>
-            <TableCell colSpan={5} sx={{borderBottom: "none"}} />
-            <TableCell
-              sx={{borderBottom: "none"}}
-              className="font-bold text-lg"
-            >
-              Total
-            </TableCell>
-            <TableCell
-              sx={{borderBottom: "none"}}
-              className="font-bold text-lg"
-            >
-              <FaRupeeSign className="inline" />
-              orderData?.finalPrice
-            </TableCell>
-          </TableRow> */}
         </TableBody>
       </Table>
     </TableContainer>

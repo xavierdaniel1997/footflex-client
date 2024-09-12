@@ -9,11 +9,13 @@ import {
   Paper,
   Select,
   MenuItem,
+  Tooltip,
 } from "@mui/material";
 import {FaRupeeSign} from "react-icons/fa";
 import api from "../../config/axiosConfig";
 
 const OrderedProductTable = ({orderData, updateOrderItemStatus}) => {
+
 
 
   const singleOrderStatus = [
@@ -27,7 +29,7 @@ const OrderedProductTable = ({orderData, updateOrderItemStatus}) => {
   ];
 
 
-
+  // returnReason
 
 const handleChangeStatus = (orderId, productId, status) => {
   updateOrderItemStatus(orderId, productId, status);
@@ -68,6 +70,15 @@ const handleChangeStatus = (orderId, productId, status) => {
             
 
               <TableCell>
+
+              <Tooltip
+                  title={
+                    product?.status === "Return Requested"  && product?.returnReason
+                      ? product?.returnReason
+                      : ""
+                  }
+                  placement="top"
+                >
                 <Select
                  value={product?.status}
                   onChange={(e) => handleChangeStatus(orderData?._id, product?.product, e.target.value)}
@@ -90,6 +101,7 @@ const handleChangeStatus = (orderId, productId, status) => {
                     </MenuItem>
                   ))}
                 </Select>
+                </Tooltip>
               </TableCell>
 
               <TableCell>{product?.quantity}</TableCell>

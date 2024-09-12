@@ -19,7 +19,7 @@ const Orders = () => {
     getMyOrders();
   }, []);
 
-  console.log("this is from the order page", myOrders);
+ 
 
   const handleCancelOrder = async (orderId, productId) => {
     console.log("Cancelling order with ID:", orderId, productId);
@@ -33,6 +33,16 @@ const Orders = () => {
     }
   };
 
+
+  const handleReturnOrder = async (orderId, productId, reason) => {
+    console.log("Return order with ID:", orderId, productId, reason);
+    try {
+      await api.post("/order/return-order", { orderId, productId, reason });
+      getMyOrders(); 
+    } catch (error) { 
+      console.log(error);
+    }
+  };
   return (
     <div>
       <div className="py-3">
@@ -52,6 +62,7 @@ const Orders = () => {
               orderDate={order.createdAt}
               // handleCancelOrder={() => handleCancelOrder(order._id, item.id)} 
               handleCancelOrder={handleCancelOrder} 
+              handleReturnOrder={handleReturnOrder} 
               orderId={order._id} 
               productId={item.product}
               itemStatus={item.status}

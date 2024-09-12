@@ -31,6 +31,8 @@ import EditOrder from "./pages/admin/Order/EditOrder";
 import CouponsPage from "./pages/admin/CouponsPage";
 import OfferPage from "./pages/admin/OfferPage";
 import SalesReportPage from "./pages/admin/SalesReportPage";
+import WalletPage from "./pages/user/WalletPage";
+import ResetPassword from "./pages/common/ResetPassword";
 
 
 function App() {
@@ -48,6 +50,7 @@ function App() {
       <Routes>
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/login" element={<LoginForm />} />
+        <Route path="/reset-password/:token" element={<ResetPassword/>}/>
         <Route path="/otp" element={<OTPVerification />} />
 
         <Route path="/" element={<UserLayout />}>

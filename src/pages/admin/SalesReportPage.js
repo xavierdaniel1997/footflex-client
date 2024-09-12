@@ -4,17 +4,12 @@ import {useLocation} from "react-router-dom";
 import {TextField} from "@mui/material";
 import {FaCalendarAlt} from "react-icons/fa";
 import {FiChevronDown, FiDownload, FiFilter, FiPrinter} from "react-icons/fi";
-import { FaRegFileExcel } from "react-icons/fa6";
-import dayjs from "dayjs";
+import {FaRegFileExcel} from "react-icons/fa6";
 import api from "../../config/axiosConfig";
 import SalesReportTable from "../../components/admin/SalesReportTable";
 
 const SalesReportPage = () => {
   const location = useLocation();
-  // const [fromDate, setFromDate] = useState(dayjs().startOf("day").format("YYYY-MM-DD"));
-  // const [toDate, setToDate] = useState(dayjs().endOf("day").format("YYYY-MM-DD"));
-  // const [filter, setFilter] = useState("Daily");
-
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [filter, setFilter] = useState("Daily");
@@ -46,7 +41,7 @@ const SalesReportPage = () => {
 
       const response = await api.get("salesAndDetials/sales-report", {params});
       setReportData(response?.data?.report);
-      console.log("this is the response of fetch sales report ", response);
+      // console.log("this is the response of fetch sales report ", response);
     } catch (error) {
       console.log("Error fetching sales report:", error);
       setError("Failed to fetch sales report. Please try again.");
@@ -66,10 +61,68 @@ const SalesReportPage = () => {
     fetchReport("Daily");
   }, []);
 
+  const handleDownloadSalesReport = async (format) => {
+    try {
+      let params = {};
 
+      if (fromDate && toDate) {
+        params.fromDate = fromDate;
+        params.toDate = toDate;
+      } else if (filter) {
+        params.filter = filter;
+      }
+
+      params.format = format; 
+
+      console.log("Download request params:", params);
+      // console.log("this is the params of handleDownloadPdf", params, format);
+      const response = await api.get("/salesAndDetials/sales-report/download", {
+        params,
+        responseType: "blob",
+      });
+
+      // const url = window.URL.createObjectURL(new Blob([response.data]));
+      // const link = document.createElement("a");
+      // link.href = url;
+      // link.setAttribute("download", `sales_report.${format}`);
+      // document.body.appendChild(link);
+      // link.click();
+
+         // Check if the response is actually an error message
+         const contentType = response.headers['content-type'];
+         if (contentType && contentType.indexOf('application/json') !== -1) {
+           // It's likely an error message in JSON format
+           const reader = new FileReader();
+           reader.onload = function() {
+             const errorMessage = JSON.parse(reader.result);
+             console.error("Server error:", errorMessage);
+             alert(`Error: ${errorMessage.message || 'Failed to download report'}`);
+           };
+           reader.readAsText(response.data);
+           return;
+         }
+   
+         // If it's not an error, proceed with download
+         const blob = new Blob([response.data], {
+           type: format === "pdf" 
+             ? "application/pdf" 
+             : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+         });
+         const url = window.URL.createObjectURL(blob);
+         const link = document.createElement("a");
+         link.href = url;
+         link.setAttribute("download", `sales_report.${format === "pdf" ? "pdf" : "xlsx"}`);
+         document.body.appendChild(link);
+         link.click();
+         link.remove();
+         window.URL.revokeObjectURL(url);
+         
+    } catch (error) {
+      console.log(error);
+    }
+  };
   // console.log("this is form the sale reprt page ", reportData);
 
- 
   return (
     <div className="flex flex-col">
       <BreadCrumbWithButton
@@ -141,17 +194,23 @@ const SalesReportPage = () => {
           </div>
 
           <div className="flex space-x-4">
-            <button className="flex items-center justify-center w-14 h-10 bg-black rounded-md">
+            <button
+              className="flex items-center justify-center w-14 h-10 bg-black rounded-md"
+              onClick={() => handleDownloadSalesReport("pdf")}
+            >
               <FiDownload className="text-white text-2xl" />
             </button>
-            <button className="flex items-center justify-center w-14 h-10 bg-black rounded-md">
+            <button
+              className="flex items-center justify-center w-14 h-10 bg-black rounded-md"
+              onClick={() => handleDownloadSalesReport("excel")}
+            >
               <FaRegFileExcel className="text-white text-2xl" />
             </button>
           </div>
         </div>
 
         <div className="mt-10">
-          <SalesReportTable reportData={reportData}/>
+          <SalesReportTable reportData={reportData} />
         </div>
       </div>
     </div>

@@ -94,6 +94,7 @@ const PaymentOptions = ({totalPrice}) => {
         },
       };
 
+      console.log("order detials", orderData)
       const createOrderResponse = await api.post(
         "order/place-order",
         orderData
@@ -103,17 +104,26 @@ const PaymentOptions = ({totalPrice}) => {
           setShowSuccessModal(true);
           dispatch(clearCart());
           setCaptchaInput("");
+        }else if (paymentMethod === "Wallet"){
+          setShowSuccessModal(true);
+          dispatch(clearCart());
+          setCaptchaInput("");
         }
       } else {
         toast.error("Failed to place order. Please try again.");
       }
     } catch (error) {
-      console.error("Error creating order:", error);
-      toast.error("An error occurred. Please try again.");
+      console.log("Error creating order:", error);
+      toast.error(error?.response?.data?.message);
     }
   };
     
   const handleRazorpay = async () => {
+    if (!cartItems || !address) {
+      toast.error("Please select an address.");
+      return;
+    }
+    
     try {
       const {data} = await api.post("order/create-razorpay-order", {
         totalPrice: pricingDetails.finalPrice,
@@ -277,16 +287,15 @@ const PaymentOptions = ({totalPrice}) => {
 
       case "wallet":
         return (
+          <>
           <div className="flex items-center space-x-2">
-            <input
-              type="radio"
-              id="wallet"
-              name="payment"
-              className="form-radio"
-            />
             <label htmlFor="wallet">Wallets</label>
             <FaWallet className="ml-auto" />
           </div>
+          <button className="bg-blue-700 text-white cursor-pointer px-3 py-2 font-semibold text-lg mt-4 w-28"
+          onClick={() => handlePayment("Wallet")}
+          >PAY NOW</button>
+          </>
         );
       default:
         return <p>Select a payment option</p>;
