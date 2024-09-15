@@ -5,6 +5,7 @@ import api from "../../config/axiosConfig";
 import FilterComponent from "../../components/user/FilterComponent";
 import {useDispatch} from "react-redux";
 import {fetchWishList} from "../../redux/wishListSlice";
+import ShoeCardShimmer from "../../components/user/ShoeCardShimmer";
 
 const ShopPage = ({gender}) => {
   const dispatch = useDispatch();
@@ -42,24 +43,17 @@ const ShopPage = ({gender}) => {
 
       console.log("Fetching products with params:", params);
       const response = await api.get("product/filter-items", {params});
-      console.log("Filtered products:", response?.data?.products);
+      setLoading(false);
       setProductDetials(response?.data?.products);
     } catch (error) {
       console.error("Error fetching filtered products:", error);
+      setLoading(false);
     }
   };
 
-  // useEffect(() => {
-  //   if (filter) {
-  //     fetchFilteredProducts();
-  //   } else {
-  //     fetchProductDetials();
-  //   }
-  // }, [filters, gender]);
-
   useEffect(() => {
     fetchFilteredProducts();
-  }, [filters, gender])
+  }, [filters, gender]);
 
   useEffect(() => {
     setFilters({
@@ -70,7 +64,7 @@ const ShopPage = ({gender}) => {
       sort: "Recommended",
     });
     // fetchProductDetials();
-    fetchFilteredProducts()
+    fetchFilteredProducts();
   }, [gender]);
 
   const handleFilterChange = (newFilters) => {
@@ -85,6 +79,7 @@ const ShopPage = ({gender}) => {
       sort: selectedSort,
     }));
   };
+
 
   return (
     <div>
@@ -113,7 +108,6 @@ const ShopPage = ({gender}) => {
               <option value="High to Low">High to Low</option>
               <option value="aA - zZ">aA - zZ </option>
               <option value="zZ - aA">zZ - aA </option>
-              
             </select>
           </div>
         </div>
@@ -140,9 +134,19 @@ const ShopPage = ({gender}) => {
                   : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
               }`}
             >
-              {productDetials?.map((productData) => (
+              {productDetials.length===0
+                ? Array(8)
+                    .fill(0)
+                    .map((_, index) => <ShoeCardShimmer key={index} />)
+                : productDetials?.map((productData) => (
+                    <ShoeCard
+                      key={productData?._id}
+                      productData={productData}
+                    />
+                  ))}
+              {/* {productDetials?.map((productData) => (
                 <ShoeCard key={productData?._id} productData={productData} />
-              ))}
+              ))} */}
             </div>
           </div>
         </div>

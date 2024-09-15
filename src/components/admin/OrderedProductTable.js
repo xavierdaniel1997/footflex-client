@@ -27,7 +27,7 @@ const OrderedProductTable = ({orderData, updateOrderItemStatus}) => {
     "Return Rejected",
     "Returned",
   ];
-
+  
 
   // returnReason
 
@@ -122,7 +122,7 @@ const handleChangeStatus = (orderId, productId, status) => {
             <TableCell colSpan={5} sx={{borderBottom: "none"}} />
             <TableCell sx={{borderBottom: "none"}}>Deliver Fee</TableCell>
             <TableCell sx={{borderBottom: "none"}}>
-              <FaRupeeSign className="inline" /> 0.00
+              <FaRupeeSign className="inline" /> {orderData?.deliveryCharge}
             </TableCell>
           </TableRow>
           <TableRow>

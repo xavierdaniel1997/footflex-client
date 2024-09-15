@@ -37,15 +37,15 @@ const PaymentOptions = ({totalPrice}) => {
   const options = [
     {id: "recommended", label: "Recommended", icon: <FaStar />},
     {id: "cash", label: "Cash On Delivery", icon: <BsCashStack />},
-    {id: "upi", label: "UPI (Pay via Razorpay)", icon: <SiRazorpay />},
+    {id: "upi", label: "Online Payments", icon: <SiRazorpay />},
     {id: "wallet", label: "Wallets", icon: <FaWallet />},
   ];
 
-  const error = totalPrice < 5000 ? "Cash On Delivery is not available" : "";
+  const error = totalPrice > 10000 ? "Cash On Delivery is not available" : "";
 
   const handleCaptchaValidation = () => {
     setIsCaptchaValid(captchaInput === captcha);
-  };
+  };  
 
   useEffect(() => {
     handleCaptchaValidation();
@@ -66,6 +66,7 @@ const PaymentOptions = ({totalPrice}) => {
     })),
     address: address,
     totalPrice: totalPrice,
+    deliveryCharge: pricingDetails.deliveryCharge,
     originalTotalPrice: pricingDetails.originalTotalPrice,
     totalPriceAfterDiscount: pricingDetails.totalPriceAfterDiscount,
     savedTotal: pricingDetails.savedTotal,
@@ -94,7 +95,6 @@ const PaymentOptions = ({totalPrice}) => {
         },
       };
 
-      console.log("order detials", orderData)
       const createOrderResponse = await api.post(
         "order/place-order",
         orderData
@@ -129,7 +129,6 @@ const PaymentOptions = ({totalPrice}) => {
         totalPrice: pricingDetails.finalPrice,
       });
 
-      console.log("this is from the payment option process.env.REACT_APP_RZP_KEY_ID", process.env.RZP_KEY_ID)
       const options = {
         key: process.env.RZP_KEY_ID,
         amount: pricingDetails.finalPrice * 100,
@@ -168,7 +167,6 @@ const PaymentOptions = ({totalPrice}) => {
 
       const razorpayInstance = new window.Razorpay(options);
       razorpayInstance.open();
-      console.log("this is from the payment razorpay", razorpayInstance)
     } catch (error) {
       console.log("Error processing Razorpay payment:", error);
       toast.error("Failed to initiate payment. Please try again.");
@@ -181,24 +179,16 @@ const PaymentOptions = ({totalPrice}) => {
         return (
           <div className="flex flex-col space-y-4">
             <div className="flex items-center space-x-2">
-              <input
-                type="radio"
-                id="cod"
-                name="payment"
-                className="form-radio"
-              />
-              <label htmlFor="cod">Cash on Delivery (Cash/UPI)</label>
+              <label htmlFor="cod">Cash on Delivery</label>
               <BsCashStack className="ml-auto" />
             </div>
             <div className="flex items-center space-x-2">
-              <input
-                type="radio"
-                id="phonepe"
-                name="payment"
-                className="form-radio"
-              />
               <label htmlFor="phonepe">Razorpay</label>
               <SiRazorpay className="ml-auto text-blue-800 text-2xl" />
+            </div>
+            <div className="flex items-center space-x-2">
+              <label htmlFor="phonepe">Wallet</label>
+              <FaWallet className="ml-auto" />
             </div>
           </div>
         );
@@ -272,7 +262,7 @@ const PaymentOptions = ({totalPrice}) => {
         return (
           <div className="flex flex-col">
             <div className="flex items-center space-x-2">
-              <label htmlFor="upi">UPI (Pay via Razorpay)</label>
+              <label htmlFor="upi">RazorPay</label>
               <SiRazorpay className="ml-auto" />
             </div>
             {/* click this button for razorpay */}
@@ -302,7 +292,6 @@ const PaymentOptions = ({totalPrice}) => {
     }
   };
 
-  console.log("this is from the payment options", pricingDetails);
   return (
     <div className="flex overflow-hidden">
       <div className="w-1/3 bg-gray-100">

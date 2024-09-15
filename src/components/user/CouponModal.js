@@ -3,14 +3,14 @@ import {
   Modal,
   Box,
   Typography,
-  Button,
+  Button, 
   Checkbox,
   IconButton,
 } from "@mui/material";
 import {FaTimes, FaCheckSquare, FaSquare} from "react-icons/fa";
 import {IoMdClose} from "react-icons/io";
 import api from "../../config/axiosConfig";
-import {applyCouponPricingDetails, fetchAvailableCoupons, selectCoupon} from "../../redux/couponSlice";
+import {applyCouponPricingDetails, fetchAvailableCoupons, getCheckoutDetials, selectCoupon} from "../../redux/couponSlice";
 import {useDispatch, useSelector} from "react-redux";
 
 const CouponModal = ({open, onClose, totalPrice}) => {
@@ -36,14 +36,29 @@ const CouponModal = ({open, onClose, totalPrice}) => {
 
 
 
+  // const handleApplyCoupon = () => {
+  //   if (selectedCoupon) {
+  //     dispatch(applyCouponPricingDetails(selectedCoupon._id))
+  //     // dispatch(getCheckoutDetials())
+  //     .then(() => {
+  //       onClose(); 
+  //     });
+  //   }
+  // };
+
+
   const handleApplyCoupon = () => {
     if (selectedCoupon) {
       dispatch(applyCouponPricingDetails(selectedCoupon._id))
-      .then(() => {
-        onClose(); 
-      });
+        .then(() => {
+          return dispatch(getCheckoutDetials());
+        })
+        .then(() => {
+          onClose(); 
+        });
     }
   };
+  
 
   return (
     <Modal

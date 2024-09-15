@@ -5,15 +5,12 @@ import api from '../../config/axiosConfig';
 import LoginRegisterLeftImg from '../../components/common/LoginRegisterLeftImg';
 
 const ResetPassword = () => {
-  // Retrieve the token from the URL
   const { token } = useParams();
   const navigate = useNavigate();
 
-  // Form state
   const [password, setPassword] = useState('');
   const [cPassword, setCPassword] = useState('');
-  
-  // Handle form submission
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     

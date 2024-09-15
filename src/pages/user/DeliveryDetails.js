@@ -53,7 +53,7 @@ const DeliveryDetails = ({inUserProfile}) => {
   }, 0);
 
   const handleDefaultAddressUpdate = () => {
-    fetchUserAddresses();
+    fetchUserAddresses(); 
   };
   const handleAddNewAddress = () => {
     setEditMode(false);

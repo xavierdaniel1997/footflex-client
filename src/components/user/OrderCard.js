@@ -69,7 +69,7 @@ const OrderCard = ({
   };
 
   return (
-    <div className="mt-4 border rounded-md flex items-center h-40">
+    <div className="mt-2 border rounded-md flex items-center h-40">
       <div className="flex items-center space-x-4 flex-1 h-full">
         <div className="w-44 h-full bg-gray-100 flex-shrink-0">
           <img
@@ -102,9 +102,9 @@ const OrderCard = ({
             {itemStatus === "Active" ? "Pending" : itemStatus}
           </span>
         </div>
-        <p className="text-sm text-gray-500">
+        {/* <p className="text-sm text-gray-500">
           {new Date(orderDate).toLocaleDateString()}
-        </p>
+        </p> */}
         <div className="flex items-center justify-end space-x-1 text-blue-600 cursor-pointer">
           <span>{paymentMethod}</span>
         </div>

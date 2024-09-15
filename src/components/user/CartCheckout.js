@@ -2,24 +2,27 @@ import React, {useEffect, useState} from "react";
 import {MdArrowForward, MdLocalOffer} from "react-icons/md";
 import CouponModal from "./CouponModal";
 import {useDispatch, useSelector} from "react-redux";
-import { applyCouponPricingDetails } from "../../redux/couponSlice";
+import api from "../../config/axiosConfig";
+import { getCheckoutDetials } from "../../redux/couponSlice";
 
 const CartCheckout = ({
   cartCount,
-  totalPrice,
+  totalPrice, 
   navigateTo,
   buttonName,
   inPayment,
   inDeliveryDetails
 }) => {
   const [showPrmoInput, setShowPrmoInput] = useState(false);
+  const pricingDetails = useSelector((state) => state.coupons.pricingDetails);
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch()
-  const pricingDetails = useSelector(state => state.coupons.pricingDetails) 
+
+
 
   useEffect(() => {
-    dispatch(applyCouponPricingDetails())
-  }, [dispatch, totalPrice])
+    dispatch(getCheckoutDetials())
+  }, [totalPrice, dispatch])
 
 
   return (
@@ -85,7 +88,7 @@ const CartCheckout = ({
 
         <div className="flex justify-between">
           <span>Delivery</span>
-          <span className="text-green-600">Free</span>
+          <span className="text-green-600">{pricingDetails?.deliveryCharge}</span>
         </div>
       </div>
 
@@ -93,7 +96,6 @@ const CartCheckout = ({
         <span>Total</span>
         <span>₹ {pricingDetails?.finalPrice}</span>
       </div>
-      {/* <p className="text-gray-500 text-sm mb-6">(Inclusive of all taxes)</p> */}
 
       <CouponModal
         open={open}

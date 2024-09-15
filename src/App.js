@@ -31,8 +31,8 @@ import EditOrder from "./pages/admin/Order/EditOrder";
 import CouponsPage from "./pages/admin/CouponsPage";
 import OfferPage from "./pages/admin/OfferPage";
 import SalesReportPage from "./pages/admin/SalesReportPage";
-import WalletPage from "./pages/user/WalletPage";
 import ResetPassword from "./pages/common/ResetPassword";
+import ViewOrderDetials from "./pages/user/ViewOrderDetials";
 
 
 function App() {
@@ -69,6 +69,7 @@ function App() {
               <Route path="/cart" element={<CartPage/>}/>
               <Route path="/address" element={<DeliveryDetails/>} />
               <Route path="/payment" element={<PaymentPage/>}/>
+              <Route path="/view-order-detial/:orderId" element={<ViewOrderDetials/>}/>
             </Route>
           </Route>
         </Route>

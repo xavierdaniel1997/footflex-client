@@ -33,7 +33,8 @@ const WalletPage = () => {
     </div>
   )
 
-  const transationData = walletData?.transactions?.map((data) => ({
+  const sortedTransactions = walletData?.transactions?.sort((a, b) => new Date(b.date) - new Date(a.date));
+  const transationData = sortedTransactions?.map((data) => ({
     type: data?.type,
     description: data?.description,
     date: new Date(data.date).toLocaleDateString(),

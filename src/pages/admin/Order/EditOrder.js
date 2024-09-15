@@ -34,7 +34,7 @@ const EditOrder = () => {
       }
     } catch (error) {
       console.log(error);
-    }
+    } 
   };
 
   const updateOrderItemStatus = async (orderId, productId, newStatus) => {
