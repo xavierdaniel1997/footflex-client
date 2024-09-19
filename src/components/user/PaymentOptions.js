@@ -9,6 +9,8 @@ import toast from "react-hot-toast";
 import api from "../../config/axiosConfig";
 import {clearCart} from "../../redux/cartSlice";
 import SuccessModal from "./SuccessModal";
+import FailureModal from "./FailureModal";
+import { useNavigate } from "react-router-dom";
 
 const generateCaptcha = () => {
   const characters =
@@ -31,6 +33,7 @@ const PaymentOptions = ({totalPrice}) => {
   const address = useSelector((state) => state.address.selectedAddress);
   const {user} = useSelector((state) => state.auth);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showFailureModal, setShowFailureModal] = useState(false);
   const dispatch = useDispatch();
 
 
@@ -129,6 +132,7 @@ const PaymentOptions = ({totalPrice}) => {
         totalPrice: pricingDetails.finalPrice,
       });
 
+
       const options = {
         key: process.env.RZP_KEY_ID,
         amount: pricingDetails.finalPrice * 100,
@@ -138,7 +142,6 @@ const PaymentOptions = ({totalPrice}) => {
         order_id: data.orderId,
         handler: async (response) => {
           const orderData = createOrderData();
-  
           const verifyResponse = await api.post("order/verify-razorpay-order", {
             razorpayOrderId: response.razorpay_order_id,
             razorpayPaymentId: response.razorpay_payment_id,
@@ -161,15 +164,67 @@ const PaymentOptions = ({totalPrice}) => {
         theme: {
           color: "#F37254",
         },
+        modal: {
+          ondismiss: function () {
+            handlePaymentFailure({
+              error: {
+                description: "Payment was cancelled by user.",
+                source: "customer",
+                step: "payment_authentication",
+                reason: "payment_cancelled",
+              },
+              order_id: data.orderId, 
+            });
+            setShowFailureModal(true)
+          },
+        },
 
         
       };
 
+      
       const razorpayInstance = new window.Razorpay(options);
       razorpayInstance.open();
+
+      razorpayInstance.on("payment.failed", function (response) {
+        toast.error(`Payment failed: ${response.error.description}`);
+        console.log("inside the razorpayInstece on", response)
+        razorpayInstance.close();
+        handlePaymentFailure({
+          ...response.error,
+          order_id: data.orderId, 
+        });
+        
+      });
     } catch (error) {
       console.log("Error processing Razorpay payment:", error);
       toast.error("Failed to initiate payment. Please try again.");
+    }
+  };
+
+
+  // handle payment failer
+  const navigate = useNavigate()
+  const handlePaymentFailure = async (response) => {
+    const orderData = createOrderData();
+    console.log("from the handlepayment filed orderdata", orderData)
+    try {
+      console.log("inside the failure response",response)
+      const failureResponse = await api.post("order/payment-failed", {
+        razorpayOrderId: response.metadata.order_id,
+        razorpayPaymentId: response.metadata.payment_id,
+        errorDetails: response,
+        orderData,
+      });
+
+      console.log("failed order", failureResponse)
+      if (failureResponse.status === 200) {
+        navigate("/userProfile/orders");
+        toast.error("Payment failed. Please try again.");
+      }
+    } catch (error) {
+      console.log("Error handling payment failure:", error);
+      toast.error("Failed to handle payment failure. Please try again.");
     }
   };
 
@@ -340,6 +395,10 @@ const PaymentOptions = ({totalPrice}) => {
       <SuccessModal
         isOpen={showSuccessModal}
         onClose={() => setShowSuccessModal(false)}
+      />
+
+      <FailureModal isOpen={showFailureModal}
+      onClose={() => setShowFailureModal(false)}
       />
     </div>
   );

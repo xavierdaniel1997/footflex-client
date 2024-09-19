@@ -2,8 +2,42 @@ import {MdEmail, MdPhone} from "react-icons/md";
 import {Link} from "react-router-dom";
 import {IoArrowBackSharp} from "react-icons/io5";
 import { MdFileDownload } from "react-icons/md";
+import api from "../../config/axiosConfig";
 
-const ViewOrderDetailCard = () => {
+const ViewOrderDetailCard = ({orderId, orderDetails}) => {
+
+  const downloadInvoice = async () => {
+    try{
+      const response = await api.get(`/order/download-invoice/${orderId}`, {
+        responseType: 'blob',
+      })
+      const file = new Blob([response.data], { type: 'application/pdf' });
+      const fileURL = URL.createObjectURL(file);
+      const link = document.createElement('a');
+      link.href = fileURL;
+      link.setAttribute('download', `invoice_${orderId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }catch(error){
+      console.log(error)
+    }
+  }
+
+  const formattedDate = new Date(orderDetails?.createdAt).toLocaleDateString(
+    "en-US",
+    {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }
+  );
+
+  const defaultAddress = orderDetails?.user?.addresses.find(address => address.isDefaultAddress === true);
+
+
+  console.log("findDefaultAddress", defaultAddress?.address) 
+
   return (
     <div className="p-6 ">
       <div className="flex justify-between items-center mb-4">
@@ -12,10 +46,10 @@ const ViewOrderDetailCard = () => {
             <IoArrowBackSharp size={22} />
           </Link>
           <h1 className="text-lg font-semibold">Order Details</h1>
-          <span className="text-gray-500">April 24, 2021 • 3 Products</span>
+          <span className="text-gray-500">{formattedDate} • {orderDetails?.items?.length} Products</span>
         </div>
         <div className="text-blue-500 font-medium">
-          <button className="flex items-center gap-2">Download Invoice <MdFileDownload size={22} color="gray"/></button>
+          <button className="flex items-center gap-2" onClick={downloadInvoice}>Download Invoice <MdFileDownload size={22} color="gray"/></button>
         </div>
       </div>
 
@@ -23,22 +57,22 @@ const ViewOrderDetailCard = () => {
         <div>
           <h2 className="font-semibold mb-2">CUSTOMER DETAILS</h2>
           <p className="text-sm">
-            <strong>Sourabh</strong>
+            <strong>{orderDetails?.user?.firstName} {orderDetails?.user?.lastName}</strong>
             <br />
-            Flat B1301, New Road, Kadubasnahalli,
+            {defaultAddress?.address}
             <br />
-            Updated Address, Bangalore Division,
+            {defaultAddress?.locality}
             <br />
-            Karnataka
+            {defaultAddress?.city} {defaultAddress?.state}
             <br />
             <br />
             <div className="flex items-center gap-2">
               <MdEmail className="text-gray-500" />
-              <span>abhi@ecomm.in</span>
+              <span>{orderDetails?.user?.email}</span>
             </div>
             <div className="flex items-center gap-2 mt-1">
               <MdPhone className="text-gray-500" />
-              <span>+91-63284 73843</span>
+              <span>{orderDetails?.user?.phoneNumber}</span>
             </div>
           </p>
         </div>
@@ -47,20 +81,20 @@ const ViewOrderDetailCard = () => {
         <div>
           <h2 className="font-semibold mb-2">SHIPPING ADDRESS</h2>
           <p className="text-sm">
-            <strong>Dianne Russell</strong>
+            <strong>{orderDetails?.address?.customerName}</strong>
             <br />
-            4140 Parker Rd. Allentown,
+            {orderDetails?.address?.address}
             <br />
-            New Mexico, 31134
+            {orderDetails?.address?.locality},{orderDetails?.address?.pinCode}, {orderDetails?.address?.city}, {orderDetails?.address?.state}
             <br />
             <br />
             <div className="flex items-center gap-2">
               <MdEmail className="text-gray-500" />
-              <span>dianne.russell@gmail.com</span>
+              <span>{orderDetails?.user?.email}</span>
             </div>
             <div className="flex items-center gap-2 mt-1">
               <MdPhone className="text-gray-500" />
-              <span>(671) 555-0110</span>
+              <span>{orderDetails?.address?.phone}</span>
             </div>
           </p>
         </div>
@@ -70,24 +104,24 @@ const ViewOrderDetailCard = () => {
           <h2 className="font-semibold mb-2">TOTAL SUMMARY</h2>
           <div className="text-sm">
             <div className="flex justify-between">
-              <span>Rent</span>
-              <span className="font-medium">₹877</span>
+              <span>Price</span>
+              <span className="font-medium">₹{orderDetails?.totalPriceAfterDiscount}</span>
             </div>
-            <div className="flex justify-between mt-2">
+            {/* <div className="flex justify-between mt-2">
               <span>Coupon Discount</span>
               <span>₹0</span>
             </div>
             <div className="flex justify-between mt-2">
-              <span>Refundable Deposit</span>
+              <span>{}</span>
               <span>₹0</span>
-            </div>
-            <div className="flex justify-between mt-2">
+            </div> */}
+            <div className="flex justify-between mt-1">
               <span>Shipping</span>
-              <span>₹299</span>
+              <span>₹{orderDetails?.deliveryCharge}</span>
             </div>
             <div className="border-t mt-2 pt-2 flex justify-between font-semibold">
               <span>Total</span>
-              <span className="text-lg">₹1176</span>
+              <span className="text-lg">₹{orderDetails?.finalPrice}</span>
             </div>
           </div>
         </div>

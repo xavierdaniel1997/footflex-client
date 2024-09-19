@@ -6,8 +6,9 @@ import FilterComponent from "../../components/user/FilterComponent";
 import {useDispatch} from "react-redux";
 import {fetchWishList} from "../../redux/wishListSlice";
 import ShoeCardShimmer from "../../components/user/ShoeCardShimmer";
+import { useLocation } from "react-router-dom";
 
-const ShopPage = ({gender}) => {
+const ShopPage = ({gender, showFilter}) => {
   const dispatch = useDispatch();
   const [filter, setFilter] = useState(false);
   const [productDetials, setProductDetials] = useState([]);
@@ -20,16 +21,27 @@ const ShopPage = ({gender}) => {
     sort: "Recommended",
   });
 
-  const fetchProductDetials = async () => {
-    try {
-      const resposne = await api.get(
-        `product/product-By-query?gender=${gender}`
-      );
-      setProductDetials(resposne?.data?.products);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
+  // const location = useLocation();
+  // const searchParams = new URLSearchParams(location.search);
+  // const searchQuery = searchParams.get("search");
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const searchQuery = searchParams.get("search");
+
+  console.log("this is frm the shop page search query", searchQuery)
+
+  // const fetchProductDetials = async () => {
+  //   try {
+  //     const resposne = await api.get(
+  //       `product/product-By-query?gender=${gender}`
+  //     );
+  //     setProductDetials(resposne?.data?.products);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const fetchFilteredProducts = async () => {
     try {
@@ -39,6 +51,7 @@ const ShopPage = ({gender}) => {
         categories: filters.categories.join(","),
         // prices: filters.prices.join(","),
         sort: filters.sort,
+        search: searchQuery,
       };
 
       console.log("Fetching products with params:", params);
@@ -53,7 +66,7 @@ const ShopPage = ({gender}) => {
 
   useEffect(() => {
     fetchFilteredProducts();
-  }, [filters, gender]);
+  }, [filters, gender, searchQuery]);
 
   useEffect(() => {
     setFilters({
@@ -144,9 +157,6 @@ const ShopPage = ({gender}) => {
                       productData={productData}
                     />
                   ))}
-              {/* {productDetials?.map((productData) => (
-                <ShoeCard key={productData?._id} productData={productData} />
-              ))} */}
             </div>
           </div>
         </div>

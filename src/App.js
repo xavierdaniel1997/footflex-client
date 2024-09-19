@@ -33,6 +33,7 @@ import OfferPage from "./pages/admin/OfferPage";
 import SalesReportPage from "./pages/admin/SalesReportPage";
 import ResetPassword from "./pages/common/ResetPassword";
 import ViewOrderDetials from "./pages/user/ViewOrderDetials";
+import RetryPayment from "./components/user/RetryPayment";
 
 
 function App() {
@@ -55,6 +56,7 @@ function App() {
 
         <Route path="/" element={<UserLayout />}>
           <Route index element={<HomePage />} />
+          <Route path="/shop" element={<ShopPage showFilter={false}/>} />
           <Route path="/menshop" element={<ShopPage gender={"Men"} />} />
           <Route path="/womenshop" element={<ShopPage gender={"Women"} />} />
           <Route path="/kidshop" element={<ShopPage gender={"Kids"} />} />
@@ -69,6 +71,7 @@ function App() {
               <Route path="/cart" element={<CartPage/>}/>
               <Route path="/address" element={<DeliveryDetails/>} />
               <Route path="/payment" element={<PaymentPage/>}/>
+              <Route path="/payment-failed/:orderId" element={<RetryPayment/>}/>
               <Route path="/view-order-detial/:orderId" element={<ViewOrderDetials/>}/>
             </Route>
           </Route>

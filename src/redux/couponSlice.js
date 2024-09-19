@@ -65,7 +65,6 @@ export const getCheckoutDetials = createAsyncThunk(
   async (_, {rejectWithValue}) => {
     try {
       const response = await api.get("/cart/checkout");
-      console.log("this is in side the getCheckoutDetials", response)
       return response?.data;
     } catch (error) {
       return rejectWithValue(error.response.data.message);

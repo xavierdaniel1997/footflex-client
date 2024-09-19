@@ -11,10 +11,29 @@ const ViewOrderDetials = () => {
 
   const getOrderDetails = async () => {
     try {
-      const response = await api.get(`/order/orderById/${orderId}`);
+      const response = await api.get(`/order/orderDetials/${orderId}`);
       setOrderDetails(response?.data?.order);
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const getCurrentStep = (status) => {
+    switch (status) {
+      case 'Pending':
+        return 1;
+      case 'Processing':
+        return 2;
+      case 'Shipped':
+        return 3;
+      case 'On the way':
+        return 4;
+      case 'Delivered':
+        return 5;
+      case 'Cancelled':
+        return 6;
+      default:
+        return 1;
     }
   };
 
@@ -22,17 +41,18 @@ const ViewOrderDetials = () => {
     getOrderDetails();
   }, []);
 
+  const currentStep = getCurrentStep(orderDetails?.status);
+
   return (
     <div className='px-32 flex flex-col items-center'>
-      {/* Apply max-w-4xl for consistent width */}
       <div className='w-full max-w-4xl'>
-        <ViewOrderDetailCard />
+        <ViewOrderDetailCard orderId={orderId} orderDetails={orderDetails}/>
       </div>
       <div className='w-full max-w-4xl mt-8'>
-        <OrderStatusBar/>
+        <OrderStatusBar currentStep={currentStep}/>
       </div>
       <div className='w-full max-w-4xl mt-8 px-7'>
-        <ViewOrderProductTable/>
+        <ViewOrderProductTable orderDetails={orderDetails}/>
       </div>
     </div>
   );

@@ -87,7 +87,7 @@ const FilterComponent = ({filters, onFilterChange}) => {
         </button>
       </div>
 
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <h3 className="font-medium mb-2">PRICE</h3>
         {priceRanges.map((range, index) => (
           <div key={index} className="flex items-center mb-1">
@@ -98,7 +98,7 @@ const FilterComponent = ({filters, onFilterChange}) => {
             <label htmlFor={`price-${index}`}>{range}</label>
           </div>
         ))}
-      </div>
+      </div> */}
 
       <div className="">
         <h3 className="font-medium mb-2">TYPE OFF</h3>

@@ -1,27 +1,27 @@
-import React, { useEffect, useState } from "react";
-import { AiOutlineHome, AiOutlineSearch, AiOutlineDown } from "react-icons/ai";
-import { BsCreditCard, BsPerson } from "react-icons/bs";
-import { BiHeart } from "react-icons/bi";
-import { FiMenu } from "react-icons/fi";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchCartDetails } from "../../redux/cartSlice";
-import { BsCart3 } from "react-icons/bs";
+import React, {useEffect, useState} from "react";
+import {AiOutlineHome, AiOutlineSearch, AiOutlineDown} from "react-icons/ai";
+import {BsCreditCard, BsPerson} from "react-icons/bs";
+import {BiHeart} from "react-icons/bi";
+import {FiMenu} from "react-icons/fi";
+import {Link, useLocation, useNavigate} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {fetchCartDetails} from "../../redux/cartSlice";
+import {BsCart3} from "react-icons/bs";
 
 const NavBar = () => {
   const dispatch = useDispatch();
   const [menuVisible, setMenuVisible] = useState(false);
   const cartItems = useSelector((state) => state.cart.cartItems);
-  const cartItemsCount = useSelector((state) => state.cart.cartItems?.items?.length || 0);
-  const address = useSelector((state) => state.address.selectedAddress)
-  
+  const cartItemsCount = useSelector(
+    (state) => state.cart.cartItems?.items?.length || 0
+  );
+  const address = useSelector((state) => state.address.selectedAddress);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const location = useLocation();
-  const [currentStep, setCurrentStep] = useState(1); 
+  const [currentStep, setCurrentStep] = useState(1);
 
   useEffect(() => {
-    
-
     if (location.pathname === "/cart") {
       setCurrentStep(1);
     } else if (location.pathname === "/address") {
@@ -33,24 +33,31 @@ const NavBar = () => {
 
   useEffect(() => {
     dispatch(fetchCartDetails());
-  }, [dispatch, ])
- 
+  }, [dispatch]);
+
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
   };
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const handleNavgate = () => {
-    if(cartItemsCount>0){
-      navigate("/address")
+    if (cartItemsCount > 0) {
+      navigate("/address");
     }
-  }
+  };
 
   const handleNavgatePymt = () => {
-    if(cartItemsCount > 0 && address){
-      navigate("/payment")
+    if (cartItemsCount > 0 && address) {
+      navigate("/payment");
     }
-  }
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim() !== "") {
+      navigate(`/shop?search=${encodeURIComponent(searchQuery)}`);
+    }
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 px-7 py-6 shadow-md lg:mx-auto lg:px-20 bg-white z-10">
@@ -96,51 +103,64 @@ const NavBar = () => {
         {/* Breadcrumb Navigation - Centered with More button on Right */}
         {["/cart", "/address", "/payment"].includes(location.pathname) ? (
           <div className="flex justify-between w-full">
-          <div className="hidden lg:flex justify-center items-center w-full relative">
-            {/* Flexbox container with centered breadcrumb */}
-            
+            <div className="hidden lg:flex justify-center items-center w-full relative">
+              {/* Flexbox container with centered breadcrumb */}
 
-            <div className="flex items-center gap-2 mx-auto" >
-              <Link to="/cart">
-                <div
-                  className={`flex items-center gap-2 ${
-                    currentStep >= 1 ? "text-green-600" : "text-gray-400"
+              <div className="flex items-center gap-2 mx-auto">
+                <Link to="/cart">
+                  <div
+                    className={`flex items-center gap-2 ${
+                      currentStep >= 1 ? "text-green-600" : "text-gray-400"
+                    }`}
+                  >
+                    <BsCart3 className="text-2xl" />
+                    <span>Cart</span>
+                  </div>
+                </Link>
+                <hr
+                  className={`w-8 border-t-2 border-gray-300 ${
+                    currentStep >= 1 ? "border-green-600" : "border-gray-300"
                   }`}
-                >
-                  <BsCart3 className="text-2xl" />
-                  <span>Cart</span>
-                </div>
-              </Link>
-              <hr className={`w-8 border-t-2 border-gray-300 ${currentStep >=1 ? "border-green-600" : "border-gray-300"}`} />
-              {/* <Link to="/address"> */}
+                />
+                {/* <Link to="/address"> */}
                 <div
                   className={`flex items-center gap-2  ${
-                    currentStep >= 2 ? "text-green-600 cursor-pointer" : "text-gray-400"
+                    currentStep >= 2
+                      ? "text-green-600 cursor-pointer"
+                      : "text-gray-400"
                   }`}
                   onClick={handleNavgate}
                 >
                   <AiOutlineHome className="text-2xl" />
                   <span>Delivery Details</span>
                 </div>
-              {/* </Link> */}
-              <hr className={`w-8 border-t-2 border-gray-300 ${currentStep >=2 ? "border-green-600" : "border-gray-300"}`} />
-              {/* <Link to="/payment"> */}
+                {/* </Link> */}
+                <hr
+                  className={`w-8 border-t-2 border-gray-300 ${
+                    currentStep >= 2 ? "border-green-600" : "border-gray-300"
+                  }`}
+                />
+                {/* <Link to="/payment"> */}
                 <div
                   className={`flex items-center gap-2 ${
-                    currentStep >= 3 ? "text-green-600 cursor-pointer" : "text-gray-400"
+                    currentStep >= 3
+                      ? "text-green-600 cursor-pointer"
+                      : "text-gray-400"
                   }`}
                   onClick={handleNavgatePymt}
                 >
                   <BsCreditCard className="text-2xl" />
                   <span>Payment</span>
                 </div>
-              {/* </Link> */}
+                {/* </Link> */}
+              </div>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link to="/userProfile"><span>More</span></Link>
-            <AiOutlineDown/>
-          </div>
+            <div className="flex items-center gap-2">
+              <Link to="/userProfile">
+                <span>More</span>
+              </Link>
+              <AiOutlineDown />
+            </div>
           </div>
         ) : (
           <div className="hidden lg:flex text-gray-600 justify-center items-center gap-10">
@@ -158,12 +178,33 @@ const NavBar = () => {
             </ul>
             <div className="hidden lg:block bg-gray-100 text-gray-800 rounded-full p-2">
               <div className="flex justify-center items-center gap-3">
-                <AiOutlineSearch className="text-2xl text-gray-400" />
+                {/* create search */}
+                {/* <AiOutlineSearch className="text-2xl text-gray-400" />
                 <input
                   type="text"
                   placeholder="What you looking for?"
                   className="w-full outline-none bg-inherit"
-                />
+                  value={onSearch}
+                  onChange={(e) => setOnSearch(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                /> */}
+
+                <form
+                  onSubmit={handleSearch}
+                  className="flex justify-center items-center gap-3"
+                >
+                  <AiOutlineSearch className="text-2xl text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="What you looking for?"
+                    className="w-full outline-none bg-inherit"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  <button type="submit" className="sr-only">
+                    Search
+                  </button>
+                </form>
               </div>
             </div>
             <div className="flex justify-around gap-10 text-xl">
@@ -176,7 +217,7 @@ const NavBar = () => {
 
               <Link to="/wishList">
                 <button className="flex flex-col justify-center items-center">
-                  <BiHeart size={24}/>
+                  <BiHeart size={24} />
                   <span className="text-xs">Wishlist</span>
                 </button>
               </Link>

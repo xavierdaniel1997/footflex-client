@@ -11,7 +11,7 @@ import {
 import { FaBluetoothB } from 'react-icons/fa';
 import { BsFillBoxFill, BsFillUsbDriveFill } from 'react-icons/bs';
 
-const ViewOrderProductTable = () => {
+const ViewOrderProductTable = ({orderDetails}) => {
   const products = [
     {
       name: 'boAt Airdopes 141 Bluetooth',
@@ -45,24 +45,25 @@ const ViewOrderProductTable = () => {
               <TableCell>PRODUCT NAME</TableCell>
               <TableCell>SIZE</TableCell>
               <TableCell>QUANTITY</TableCell>
-              <TableCell>RENT (INR)</TableCell>
+              <TableCell>PRICE (INR)</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {products.map((product, index) => (
+            {orderDetails?.items?.map((product, index) => (
+              
               <TableRow
                 key={index}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
                 <TableCell component="th" scope="row">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <span style={{ fontSize: '1.5rem' }}>{product.icon}</span>
-                    <span>{product.name}</span>
+                    <img src={product?.thumbnail} alt="" className='w-12 h-12 object-cover'/>
+                    <span>{product?.productName}</span>
                   </div>
                 </TableCell>
                 <TableCell>{product.size}</TableCell>
                 <TableCell>{product.quantity}</TableCell>
-                <TableCell>{product.rent}</TableCell>
+                <TableCell>{product.price}</TableCell>
               </TableRow>
             ))}
           </TableBody>

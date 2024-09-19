@@ -11,6 +11,7 @@ import {
   Select,
 } from "@mui/material";
 import React, {useState} from "react";
+import { useNavigate } from "react-router-dom";
 
 const returnReasons = [
   "Size does not fit",
@@ -68,6 +69,11 @@ const OrderCard = ({
     setOpenReturn(false);
   };
 
+  // const navigte = useNavigate()
+  // const handleRetryPayment = () => {
+  //   navigte("/payment")
+  // }
+
   return (
     <div className="mt-2 border rounded-md flex items-center h-40">
       <div className="flex items-center space-x-4 flex-1 h-full">
@@ -102,15 +108,39 @@ const OrderCard = ({
             {itemStatus === "Active" ? "Pending" : itemStatus}
           </span>
         </div>
-        {/* <p className="text-sm text-gray-500">
-          {new Date(orderDate).toLocaleDateString()}
-        </p> */}
         <div className="flex items-center justify-end space-x-1 text-blue-600 cursor-pointer">
           <span>{paymentMethod}</span>
         </div>
        
+        {deliveryStatus === "Payment Failed"? (
+          <button
+    className="font-semibold text-blue-600 flex items-center justify-end"
+  >
+    PAYMENT FAILED
+  </button>
+        ) : (
+          itemStatus === "Delivered" ? (
+            <button
+              className="font-semibold text-green-600 flex items-center justify-end"
+              onClick={handleReturnItem}
+            >
+              RETURN
+            </button>
+          ) : itemStatus === "Active" ? (
+            <button
+              className="font-semibold text-red-600 flex items-center justify-end"
+              onClick={handleCancel}
+            >
+              CANCEL
+            </button>
+          ) : itemStatus === "Cancelled" ? (
+            <button className="font-semibold text-red-600 flex items-center justify-end">
+              CANCELLED
+            </button>
+          ) : null
+        )}
 
-        {itemStatus === "Delivered" ? (
+        {/* {itemStatus === "Delivered" ? (
           <button
             className="font-semibold text-green-600 flex items-center justify-end"
             onClick={handleReturnItem}
@@ -128,7 +158,7 @@ const OrderCard = ({
           <button className="font-semibold text-red-600 flex items-center justify-end">
             CANCELLED
           </button>
-        ) : null}
+        ) : null} */}
       </div>
 
       <Dialog open={open} onClose={onClose}>

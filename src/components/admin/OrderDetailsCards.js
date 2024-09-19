@@ -51,7 +51,7 @@ const OrderDetailsCards = ({orderData, onUpdateStatus}) => {
     }
   );
 
-  console.log(formattedDate);
+
 
   return (
     <div className="w-full mx-auto">
