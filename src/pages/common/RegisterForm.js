@@ -36,13 +36,13 @@ const RegisterForm = () => {
       setIsLoading(true)
       try {
         const response = await api.post("/users/register", formData);
-        // console.log(response?.data?.message)
         toast.success("Enter the otp")
         if(response.status === 200){
           sessionStorage.setItem("userEmail", formData.email)
           navigate("/otp")
         }
       } catch (error) {
+        setIsLoading(false)
         console.log(error);
         toast.error(error?.response?.data?.message)
       }
