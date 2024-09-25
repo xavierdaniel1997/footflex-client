@@ -129,6 +129,7 @@ const SalesReportPage = () => {
         noButton={false}
         componentLocation={"Sales Report"}
         location={location.pathname}
+        showSearch={false}
       />
       <div className="px-10">
         <div className="flex items-center justify-between">

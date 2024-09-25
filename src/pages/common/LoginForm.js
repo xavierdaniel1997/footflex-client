@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {FcGoogle} from "react-icons/fc";
 import LoginRegisterLeftImg from "../../components/common/LoginRegisterLeftImg";
 import SignInWithGoogle from "../../components/common/SignInWithGoogle";
@@ -8,9 +8,11 @@ import {toast, Toaster} from "react-hot-toast";
 import api from "../../config/axiosConfig";
 import {useDispatch} from "react-redux";
 import {setUser} from "../../redux/authSlice";
+import {dotPulse} from "ldrs";
 
 const LoginForm = () => {
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [resetEmail, SetResetEmail] = useState("");
   const [forgotPsw, setForgotPsw] = useState(false);
@@ -49,30 +51,35 @@ const LoginForm = () => {
   };
 
   const handleSumbitEmail = async () => {
-    try{
-      const response = await api.post("users/forgot-password", {email: resetEmail})
-      toast.success(response?.data?.message)
-      SetResetEmail("")
-    }catch(error){
-      console.log(error)
-      toast.error(error?.response?.data?.message)
+    try {
+      const response = await api.post("users/forgot-password", {
+        email: resetEmail,
+      });
+      toast.success(response?.data?.message);
+      SetResetEmail("");
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.response?.data?.message);
     }
-  }
+  };
+
+  useEffect(() => {
+    dotPulse.register();
+  }, []);
 
   return (
     <div className="flex h-screen bg-gray-100">
       <Toaster position="top-right" reverseOrder={false} />
       <LoginRegisterLeftImg />
-      
-        <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
+
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         {!forgotPsw ? (
           <div className="w-full max-w-md">
             <h2 className="text-2xl font-bold mb-6 text-center">
               LOG-IN TO GET START
             </h2>
 
-           
-              <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 {errors.email && (
                   <p className="text-red-500 text-sm px-2">{errors.email}</p>
@@ -101,12 +108,27 @@ const LoginForm = () => {
                 />
               </div>
 
-              <button
-                type="submit"
-                className=" w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
-              >
-                LOGIN
-              </button>
+              {/* <l-dot-pulse size="43" speed="1.3" color="white"></l-dot-pulse> */}
+              {isLoading ? (
+                <button
+                  type="submit"
+                  className=" w-full flex justify-center py-4 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
+                >
+                  <l-dot-pulse
+                    size="45"
+                    speed="1.3"
+                    color="white"
+                  ></l-dot-pulse>
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  className=" w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
+                >
+                  LOGIN
+                </button>
+              )}
+
               <SignInWithGoogle />
             </form>
             <div className="flex justify-between items-center mt-2">
@@ -123,33 +145,32 @@ const LoginForm = () => {
                 </Link>
               </p>
             </div>
-          </div>)
-          : (
+          </div>
+        ) : (
           <div className="w-full max-w-md">
             <h2 className="text-2xl font-bold mb-6 text-center">
               RESET PASSWORD
             </h2>
             <div>
-            <input
-            type="email"
-            placeholder="Email"
-            name="email"
-            value={resetEmail}
-            onChange={(e) => SetResetEmail(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          />
-          <button
+              <input
+                type="email"
+                placeholder="Email"
+                name="email"
+                value={resetEmail}
+                onChange={(e) => SetResetEmail(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              />
+              <button
                 type="submit"
                 className="mt-6 w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
                 onClick={handleSumbitEmail}
               >
                 SUBMIT
               </button>
+            </div>
           </div>
-          </div>
-          )}
-        </div>
-  
+        )}
+      </div>
     </div>
   );
 };

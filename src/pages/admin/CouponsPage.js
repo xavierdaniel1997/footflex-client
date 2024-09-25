@@ -81,6 +81,7 @@ const CouponsPage = () => {
         componentLocation={"All Coupons"}
         location={location.pathname}
         onClick={() => setOpen(true)}
+        showSearch={false}
       />
       <div className="px-10">
         <ReusableTable

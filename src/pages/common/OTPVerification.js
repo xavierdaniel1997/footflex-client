@@ -3,13 +3,15 @@ import { FiRefreshCw } from "react-icons/fi";
 import api from "../../config/axiosConfig";
 import { toast, Toaster } from 'react-hot-toast';
 import { useNavigate } from "react-router-dom";
-
+import { dotPulse } from "ldrs";
 
 const OTPVerification = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [timer, setTimer] = useState(60);
   const inputs = useRef([]);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isResending, setIsResending] = useState(false); // State for resend OTP loader
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -52,36 +54,40 @@ const OTPVerification = () => {
     setOtp(newOtp);
   };
 
-  const handleSubmit = async () => {   
+  const handleSubmit = async () => {
     const otpValue = otp.join("");
-    try{
-      const response = await api.post("/users/verify-otp", {otp: otpValue})
-      console.log("otp respones", response)
-      toast.success("Register successfully")
-      if(response.status === 200){
-        navigate("/login")
-        sessionStorage.removeItem("userEmail")
+    setIsLoading(true);
+    try {
+      const response = await api.post("/users/verify-otp", { otp: otpValue });
+      toast.success("Registered successfully");
+      if (response.status === 200) {
+        navigate("/login");
+        sessionStorage.removeItem("userEmail");
       }
-      
-    }catch(error){
-      console.log(error)
-      toast.error(error.response.data.message)
+    } catch (error) {
+      toast.error(error.response.data.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleResendOTP = async () => {
-    
-    try{
-      const userEmail = sessionStorage.getItem("userEmail")
-      const response = await api.post("/users/resend-otp", {email: userEmail})
-      console.log("responser for resend", response)
-      toast.success(response.data.message)
-    }catch(error){
-      console.log(error)
-      toast.error(error.response.data.message)
+    setIsResending(true);
+    try {
+      const userEmail = sessionStorage.getItem("userEmail");
+      const response = await api.post("/users/resend-otp", { email: userEmail });
+      toast.success(response.data.message);
+    } catch (error) {
+      toast.error(error.response.data.message);
+    } finally {
+      setIsResending(false); 
+      setTimer(60); 
     }
-    setTimer(60); 
   };
+
+  useEffect(() => {
+    dotPulse.register();
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
@@ -101,7 +107,7 @@ const OTPVerification = () => {
               key={index}
               type="text"
               value={digit}
-              onChange={(e) => handleChange(e, index)}    
+              onChange={(e) => handleChange(e, index)}
               onKeyDown={(e) => handleKeyDown(e, index)}
               onPaste={handlePaste}
               maxLength="1"
@@ -113,21 +119,34 @@ const OTPVerification = () => {
         <div className="flex flex-col items-center gap-4 mt-4">
           <button
             onClick={handleSubmit}
+            disabled={isLoading}
             className="flex items-center justify-center bg-black p-2 md:py-2 md:px-5 font-semibold text-sm md:text-lg text-white hover:bg-gray-900 rounded-md"
           >
-            Verify OTP
+            {isLoading ? (
+              <l-dot-pulse size="46" speed="1.3" color="white"></l-dot-pulse>
+            ) : (
+              "Verify OTP"
+            )}
           </button>
-           {!timer && <button
-            onClick={handleResendOTP}
-            disabled={timer > 0}
-            className={`flex items-center justify-center gap-2 p-2 md:p-3 font-semibold text-sm md:text-lg ${
-              timer > 0 ? "text-gray-400 cursor-not-allowed" : "text-black"
-            }`}
-          >
-            <FiRefreshCw className="text-xl md:text-2xl" />
-            Resend OTP
-          </button>}
-            {timer > 0 && <p className="ml-2">validity ends in : {timer}s</p>}
+
+          {!timer && (
+            <button
+              onClick={handleResendOTP}
+              disabled={timer > 0 || isResending} 
+              className={`flex items-center justify-center gap-2 p-2 md:p-3 font-semibold text-sm md:text-lg ${
+                timer > 0 ? "text-gray-400 cursor-not-allowed" : "text-black"
+              }`}
+            >
+              <FiRefreshCw className="text-xl md:text-2xl" />
+              {isResending ? (
+                <l-dot-pulse size="30" speed="1.3" color="black"></l-dot-pulse>
+              ) : (
+                "Resend OTP"
+              )}
+            </button>
+          )}
+
+          {timer > 0 && <p className="ml-2">validity ends in: {timer}s</p>}
         </div>
       </div>
     </div>

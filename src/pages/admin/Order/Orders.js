@@ -11,6 +11,8 @@ const Orders = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
   const limit = 10;
 
   const columns = [
@@ -28,7 +30,7 @@ const Orders = () => {
   const getOrderData = async (currentPage) => {
     try {
       const response = await api.get(
-        `/order/order-lists?page=${currentPage}&limit=${limit}`
+        `/order/order-lists?page=${currentPage}&limit=${limit}&fromDate=${fromDate}&toDate=${toDate}`
       );
       setAllOrder(response?.data?.orders);
       setTotalPages(response.data.totalPages);
@@ -43,6 +45,11 @@ const Orders = () => {
 
   const handlePageChange = (event, value) => {
     setPage(value);
+  };
+
+  const handleDateFilter = () => {
+    setPage(1); 
+    getOrderData(1);
   };
 
   const navigate = useNavigate();
@@ -79,10 +86,6 @@ const Orders = () => {
       orderId: order._id,
       date: new Date(order.createdAt).toLocaleDateString(),
       paymentMethod: (
-        // <div>
-        //   {order.payment.method === "Cash on Delivery" ? "COD" : "Online"}
-        // </div>
-
         <div>
           {order.payment.method === "Cash on Delivery" ||
           order.payment.method === "UPI"
@@ -123,6 +126,7 @@ const Orders = () => {
     };
   });
 
+  console.log("from date", fromDate , "to date", toDate)
   return (
     <div className="flex flex-col">
       <div className="flex justify-between items-center px-10 py-5 mb-4">
@@ -136,6 +140,8 @@ const Orders = () => {
             <TextField
               label="From"
               type="date"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -152,6 +158,8 @@ const Orders = () => {
             <TextField
               label="To"
               type="date"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -163,7 +171,7 @@ const Orders = () => {
               }}
             />
           </div>
-          <button className="bg-black text-white p-2 rounded-md">Submit</button>
+          <button className="bg-black text-white p-2 rounded-md" onClick={handleDateFilter}>Submit</button>
         </div>
       </div>
       <div className="px-10">

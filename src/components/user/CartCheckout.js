@@ -3,7 +3,7 @@ import {MdArrowForward, MdLocalOffer} from "react-icons/md";
 import CouponModal from "./CouponModal";
 import {useDispatch, useSelector} from "react-redux";
 import api from "../../config/axiosConfig";
-import { getCheckoutDetials } from "../../redux/couponSlice";
+import { getCheckoutDetials, removeApplayCoupon } from "../../redux/couponSlice";
 
 const CartCheckout = ({
   cartCount,
@@ -24,6 +24,12 @@ const CartCheckout = ({
     dispatch(getCheckoutDetials())
   }, [totalPrice, dispatch])
 
+  const handleRemoveCoupon = () => {
+    dispatch(removeApplayCoupon())
+    .then(() => {
+      return dispatch(getCheckoutDetials())
+    })
+  }
 
   return (
     <div className="bg-white max-w-md mx-auto">
@@ -60,12 +66,23 @@ const CartCheckout = ({
             Apply Coupons
           </span>
         </div>
-        <button
+        {pricingDetails?.couponDiscount===0? <button
           className="px-3 py-1 font-semibold text-green-500 bg-green-50"
           onClick={() => setOpen(true)}
         >
           APPLY
-        </button>
+        </button>: <button
+          className="px-3 py-1 font-semibold text-red-500 bg-red-50"
+          onClick={handleRemoveCoupon}
+        >
+          REMOVE
+        </button>}
+        {/* <button
+          className="px-3 py-1 font-semibold text-green-500 bg-green-50"
+          onClick={() => setOpen(true)}
+        >
+          APPLY
+        </button> */}
       </div>}
 
       {!inPayment &&   <h2 className="text-2xl font-bold mb-4">ORDER SUMMARY</h2>}

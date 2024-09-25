@@ -15,6 +15,7 @@ const EditProfile = () => {
   const {user} = useSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
+  
 
   useEffect(() => {
     if(user){
@@ -188,12 +189,6 @@ const EditProfile = () => {
           Save Changes
         </button>
       )}
-      {/* <button 
-        className="bg-black text-white py-2 rounded-lg hover:bg-gray-900 transition duration-300 px-10"
-        onClick={handleSubmit}
-      >
-        Save Changes
-      </button> */}
     </div>
   );
 };

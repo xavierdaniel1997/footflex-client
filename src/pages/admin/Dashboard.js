@@ -54,6 +54,7 @@ const Dashboard = () => {
         noButton={false}
         componentLocation={"Dashboard"}
         location={location.pathname}
+        showSearch={false}
       />
       <div className="px-10">
         <div className="flex gap-6">

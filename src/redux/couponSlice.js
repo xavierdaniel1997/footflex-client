@@ -60,6 +60,18 @@ export const applyCouponPricingDetails = createAsyncThunk(
   }
 );
 
+export const removeApplayCoupon = createAsyncThunk(
+  "coupons/removeApplayCoupon",
+  async (_, {rejectWithValue}) => {
+    try{
+      const response = await api.post("coupons/remove-coupon")
+      return response?.data;
+    }catch(error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+)
+
 export const getCheckoutDetials = createAsyncThunk(
   "coupons/getCheckoutDetials",
   async (_, {rejectWithValue}) => {
@@ -140,6 +152,11 @@ const couponSlice = createSlice({
       // for the coupon adding and getting price detials
       .addCase(applyCouponPricingDetails.fulfilled, (state, action) => {
         state.applayedCoupon = action.payload;
+      })
+
+      // for remove the apply coupon
+      .addCase(removeApplayCoupon.fulfilled, (state, action) => {
+        state.status = "removed successfully";
       })
 
       .addCase(getCheckoutDetials.fulfilled, (state, action) => {

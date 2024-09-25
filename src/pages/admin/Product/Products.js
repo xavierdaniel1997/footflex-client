@@ -17,16 +17,17 @@ const Products = () => {
   const [openBlockModal, setOpenBlockModal] = useState(false);
   const [productToBlock, setProductToBlock] = useState(null);
   const [blockButtonName, setBlockButtonName] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const limit = 10;
 
-  const fetchProductDetials = async (currentPage) => {
+  const fetchProductDetials = async (currentPage, query = "") => {
     try {
       const response = await api.get(
-        `product/getProductsToAdmin?page=${currentPage}&limit=${limit}`
+        `product/getProductsToAdmin?page=${currentPage}&limit=${limit}&search=${query}`
       );
       console.log("this is frm the product page", response);
       setGetProducts(response?.data?.products);
@@ -40,6 +41,12 @@ const Products = () => {
   useEffect(() => {
     fetchProductDetials(page);
   }, [page]);
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setPage(1);
+    fetchProductDetials (1, query);
+  };
 
   const columns = [
     {
@@ -174,6 +181,8 @@ const Products = () => {
     setPage(value);
   };
 
+ 
+
   return (
     <div className="flex flex-col">
       <BreadCrumbWithButton
@@ -182,6 +191,8 @@ const Products = () => {
         buttonNavigate={"/dashboard/addNewProduct"}
         componentLocation={"Popular Brands"}
         location={location.pathname}
+        showSearch={true}
+        onSearch={handleSearch}
       />
       <div className="px-10">
         <ReusableTable

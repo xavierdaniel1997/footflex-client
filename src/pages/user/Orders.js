@@ -2,22 +2,34 @@ import React, {useEffect, useState} from "react";
 import OrderCard from "../../components/user/OrderCard";
 import api from "../../config/axiosConfig";
 import {useNavigate} from "react-router-dom";
+import { Pagination } from "@mui/material";
 
 const Orders = () => {
   const [myOrders, setMyOrders] = useState([]);
 
-  const getMyOrders = async () => {
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const limit = 8; 
+
+  const getMyOrders = async (currentPage) => {
     try {
-      const response = await api.get("/order/my-orders");
-      setMyOrders(response.data.order);
+      const response = await api.get(`/order/my-orders?page=${currentPage}&limit=${limit}`);
+      setMyOrders(response.data.orders);
+      setTotalPages(response.data.totalPages);
+      setTotalCount(response.data.totalCount);
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    getMyOrders();
-  }, []);
+    getMyOrders(page);
+  }, [page]);
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
 
   const handleCancelOrder = async (orderId, productId) => {
     try {
@@ -97,6 +109,14 @@ const Orders = () => {
           </div>
         ))}
       </div>
+      <Pagination
+        count={totalPages}  
+        page={page} 
+        onChange={handlePageChange}  
+        variant="outlined"
+        shape="rounded"
+        color="primary"
+      />
     </div>
   );
 };

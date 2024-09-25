@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../config/axiosConfig';
 import toast from 'react-hot-toast';
+import { FaCreditCard } from 'react-icons/fa';
 
 
 const RetryPayment = () => {
@@ -79,10 +80,21 @@ const RetryPayment = () => {
   if (!order) return <div>Loading...</div>;
 
   return (
-    <div>
-      <h1>Retry Payment for Order #{order._id}</h1>
-      <p>Total Amount: ₹{order.finalPrice}</p>
-      <button onClick={handleRetryPayment}>Retry Payment</button>
+    <div className="flex items-center justify-center p-4">
+      <div className=" p-6 max-w-md w-full flex flex-col items-center ">
+        {/* <h1 className="text-2xl font-semibold text-gray-800 mb-4">
+          Retry Payment for Order #{orderId}
+        </h1> */}
+        <p className="text-3xl font-bold text-gray-900 mb-6">
+          Total Amount: <span className="text-green-600">₹{order.finalPrice}</span>
+        </p>
+        <button
+          onClick={handleRetryPayment}
+          className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-sm shadow-sm hover:bg-blue-700 transition duration-200"
+        >
+          PAY NOW
+        </button>
+      </div>
     </div>
   );
 };

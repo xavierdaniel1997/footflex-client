@@ -27,12 +27,29 @@ const OfferPage = () => {
     }
   };
 
+  const handledeletOffer = async (offerId) => {
+    try{
+      const response = await api.delete(`/offers/remove-offer/${offerId}`)
+      fetchOffers()
+    }catch(error){
+      console.log(error)
+    }
+  }
+
+  const handleOfferAdded = (newOffer) => {
+    if (newOffer.offerType === "Products") {
+      setProductOffers(prevOffers => [...prevOffers, newOffer]);
+    } else if (newOffer.offerType === "Category") {
+      setCategoryOffers(prevOffers => [...prevOffers, newOffer]);
+    }
+  };
+
   const columns = [
     {label: "Offer", field: "name"},
     {label: "Starting Date", field: "startDate"},
     {label: "Ending Date", field: "endDate"},
     {label: "Discount", field: "discount"},
-    // {label: "Action", field: "action"},
+    {label: "Action", field: "action"},
   ];
 
   const prductOfferData = productOffers?.map((offer) => ({
@@ -43,13 +60,21 @@ const OfferPage = () => {
           className="w-12 h-12 object-cover"
         />
         <p>
-          {offer?.targetOfferId?.productName.split(" ").slice(0, 1).join(" ")}
+          {offer?.targetOfferId?.productName?.split(" ").slice(0, 1).join(" ")}
         </p>
       </div>
     ),
     startDate: new Date(offer?.startDate).toLocaleDateString(),
     endDate: new Date(offer?.endDate).toLocaleDateString(),
     discount: <div>{offer?.discountPercentage} %</div>,
+    action: (
+      <div>
+        <MdDeleteOutline
+          className="text-red-500 cursor-pointer text-xl"
+          onClick={() => handledeletOffer(offer?._id)}
+        />
+      </div>
+    ),
   }));
  
   const categoryOfferData = categoryOffers?.map((offer) => ({
@@ -59,7 +84,7 @@ const OfferPage = () => {
     discount: <div>{offer?.discountPercentage} %</div>,
     action: (
       <div>
-        <MdDeleteOutline className="text-red-500 cursor-pointer text-xl" />
+        <MdDeleteOutline className="text-red-500 cursor-pointer text-xl" onClick={() => handledeletOffer(offer?._id)}/>
       </div>
     ),
   }));
@@ -73,6 +98,7 @@ const OfferPage = () => {
         componentLocation={"All Offers"}
         location={location.pathname}
         onClick={() => setOpen(true)}
+        showSearch={false}
       />
       <div className="px-10">
         <div className="flex flex-row gap-7 w-full">
@@ -91,6 +117,7 @@ const OfferPage = () => {
         handleClose={() => setOpen(false)}
         productOffers={productOffers}
         categoryOffers={categoryOffers}
+        onOfferAdded={handleOfferAdded}
       />
     </div>
   );

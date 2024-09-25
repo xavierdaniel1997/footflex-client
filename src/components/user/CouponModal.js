@@ -10,7 +10,7 @@ import {
 import {FaTimes, FaCheckSquare, FaSquare} from "react-icons/fa";
 import {IoMdClose} from "react-icons/io";
 import api from "../../config/axiosConfig";
-import {applyCouponPricingDetails, fetchAvailableCoupons, getCheckoutDetials, selectCoupon} from "../../redux/couponSlice";
+import {applyCouponPricingDetails, fetchAvailableCoupons, getCheckoutDetials, removeApplayCoupon, selectCoupon} from "../../redux/couponSlice";
 import {useDispatch, useSelector} from "react-redux";
 
 const CouponModal = ({open, onClose, totalPrice}) => {
@@ -36,17 +36,6 @@ const CouponModal = ({open, onClose, totalPrice}) => {
 
 
 
-  // const handleApplyCoupon = () => {
-  //   if (selectedCoupon) {
-  //     dispatch(applyCouponPricingDetails(selectedCoupon._id))
-  //     // dispatch(getCheckoutDetials())
-  //     .then(() => {
-  //       onClose(); 
-  //     });
-  //   }
-  // };
-
-
   const handleApplyCoupon = () => {
     if (selectedCoupon) {
       dispatch(applyCouponPricingDetails(selectedCoupon._id))
@@ -58,6 +47,8 @@ const CouponModal = ({open, onClose, totalPrice}) => {
         });
     }
   };
+
+ 
   
 
   return (
@@ -81,6 +72,7 @@ const CouponModal = ({open, onClose, totalPrice}) => {
         }}
       >
         {/* Modal Header */}
+
         <Box
           display="flex"
           justifyContent="space-between"
