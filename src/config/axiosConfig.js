@@ -1,10 +1,7 @@
 import axios from "axios";
-import { logoutUser } from "../redux/authSlice";
-import store from "../redux/store"
-import toast from "react-hot-toast";
 
 const api = axios.create({
-    baseURL: "http://localhost:8000/api",
+    baseURL: `https://api.footflexonline.shop/api`,
     headers: {
         "Content-Type": "application/json"
     },
@@ -13,6 +10,8 @@ const api = axios.create({
   
 
 export default api;
+
+
 
 
 
