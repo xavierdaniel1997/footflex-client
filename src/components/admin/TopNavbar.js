@@ -5,14 +5,14 @@ import { FaBell } from 'react-icons/fa6';
 const TopNavbar = () => {
   return (
     <nav className=" top-0 left-0 right-0 bg-white shadow-md px-16 py-3 flex items-center justify-end space-x-6 gap-3">
-      <div className="relative">
+      {/* <div className="relative">
         <input
           type="text"
           placeholder="Search..."
           className="pr-8 pl-4 py-2 rounded-full border border-black focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent text-black"
         />
         <FiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2" />
-      </div>
+      </div> */}
       <button className="relative text-gray-600 hover:text-gray-800">
         <FaBell className="w-6 h-6" />
         <span className="absolute bottom-4 px-1.5 py-0.5 text-xs bg-red-500 text-white rounded-full">3</span>
