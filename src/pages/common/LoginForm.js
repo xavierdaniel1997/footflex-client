@@ -69,7 +69,7 @@ const LoginForm = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <Toaster position="top-right" reverseOrder={false} />
+      {/* <Toaster position="top-right" reverseOrder={false} /> */}
       <LoginRegisterLeftImg />
 
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
