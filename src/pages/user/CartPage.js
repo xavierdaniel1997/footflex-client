@@ -7,14 +7,13 @@ import {useLocation, useNavigate} from "react-router-dom";
 import EmptyItems from "../../components/user/EmptyItems";
 import toast from "react-hot-toast";
 import api from "../../config/axiosConfig";
-import { applyCouponPricingDetails } from "../../redux/couponSlice";
 
 const CartPage = () => {
   const dispatch = useDispatch();
   
-  const userName = useSelector((state) => state.auth.user);
+
+  const { userName } = useSelector((state) => state.auth);
   const cartItems = useSelector((state) => state.cart.cartItems);
-  // const {selectedCoupon} = useSelector((state) => state.coupons); 
   const [stockStatus, setStockStatus] = useState({});
 
   
@@ -69,58 +68,65 @@ const CartPage = () => {
   }
 
 
-  return (
-    <div className="py-48 md:p-8 lg:px-36">
-      <div className="flex flex-col lg:flex-row gap-8">
-        <div className="flex-1">
-          {/* cart title */}
+ return (
+  <div className="px-4 sm:px-6 md:px-8 lg:px-20 py-5">
+    <div className="flex flex-col lg:flex-row gap-10">
 
-          <div className="bg-white">
-            <div className="flex justify-between items-center bg-gray-100 p-5 rounded-sm">
-              <h1
-                className="text-xl font-bold"
-                style={{textTransform: "uppercase"}}
-              >
-                HELLO {userName?.firstName}
-              </h1>
-            </div>
+      {/* LEFT — CART ITEMS */}
+      <div className="flex-1">
 
-            <div className="mt-8">
-              <h2 className="text-3xl font-bold">YOUR BAG</h2>
-              <p className="text-gray-600 font-semibold mt-2">
-                TOTAL ({totalQty}) ₹{totalPrice}
-              </p>
-              <div className="flex justify-between">
-                <p className="text-gray-500 mt-2">
-                  Items in your bag are not reserved — check out now to make
-                  them yours.
-                </p>
-                {/* <button>CLEAR CART</button> */}
-              </div>
-            </div>
-          </div>
-          <div className="py-10">
-            {cartItems?.items?.map((cartItem) => (
-              <div className="mb-5" key={cartItem?._id}>
-                <CartCard
-                  cartItem={cartItem}
-                  stockStatus={stockStatus[cartItem.productId._id]}
-                />
-              </div> 
-            ))}
+        {/* Header Section */}
+        <div className="bg-white p-6">
+          {/* <div className="flex justify-between items-center bg-gray-100 p-4 sm:p-5 rounded-md">
+            <h1 className="text-lg sm:text-xl font-bold uppercase">
+              Hello {userName?.firstName}
+            </h1>
+          </div> */}
+
+          {/* Bag Summary */}
+          <div className="bg-gray-100 p-4 rounded-md">
+            <h2 className="text-2xl sm:text-3xl font-bold">Your Bag</h2>
+
+            <p className="text-gray-600 font-semibold mt-2 text-sm sm:text-base">
+              TOTAL ({totalQty}) • ₹{totalPrice}
+            </p>
+
+            <p className="text-gray-500 mt-2 text-sm sm:text-base leading-snug">
+              Items in your bag are not reserved — complete checkout to secure them.
+            </p>
           </div>
         </div>
-        <div className="lg:w-1/3">
-          <CartCheckout
-            cartCount={totalQty}
-            totalPrice={totalPrice}
-            navigateTo={handleNavAddress}
-            buttonName={"CHECKOUT"}
-          />
+
+        {/* Cart Items */}
+        <div className="mt-8 sm:mt-10">
+          {cartItems?.items?.map((cartItem) => (
+            <div
+              className="mb-6 sm:mb-8 border-b pb-6 lg:p-6"
+              key={cartItem?._id}
+            >
+              <CartCard
+                cartItem={cartItem}
+                stockStatus={stockStatus[cartItem.productId._id]}
+              />
+            </div>
+          ))}
         </div>
       </div>
+
+      {/* RIGHT — CHECKOUT BOX */}
+      <div className="w-full lg:w-1/3">
+        <CartCheckout
+          cartCount={totalQty}
+          totalPrice={totalPrice}
+          navigateTo={handleNavAddress}
+          buttonName={"CHECKOUT"}
+        />
+      </div>
+
     </div>
-  );
+  </div>
+);
+
 };
 
 export default CartPage;

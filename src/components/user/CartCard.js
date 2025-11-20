@@ -1,13 +1,10 @@
-import React, {useEffect, useState} from "react";
-import {MdDeleteForever} from "react-icons/md";
-import {useDispatch} from "react-redux";
-import {
-  removeFromCart,
-  updateCart,
-} from "../../redux/cartSlice";
+import React, { useEffect, useState } from "react";
+import { MdDeleteForever } from "react-icons/md";
+import { useDispatch } from "react-redux";
+import { removeFromCart, updateCart } from "../../redux/cartSlice";
 import { applyCouponPricingDetails } from "../../redux/couponSlice";
 
-const CartCard = ({cartItem, stockStatus}) => {
+const CartCard = ({ cartItem, stockStatus }) => {
   const dispatch = useDispatch();
   const [selectedSize, setSelectedSize] = useState(cartItem?.size);
   const [availableQty, setAvailableQty] = useState([]);
@@ -24,19 +21,14 @@ const CartCard = ({cartItem, stockStatus}) => {
     );
     if (selectedSizeObj) {
       const maxQty = selectedSizeObj.stock > 5 ? 5 : selectedSizeObj.stock;
-      setAvailableQty(Array.from({length: maxQty}, (_, i) => i + 1));
+      setAvailableQty(Array.from({ length: maxQty }, (_, i) => i + 1));
       setSelectedQty(cartItem?.quantity);
     }
   }, [selectedSize]);
 
-  const handleSizeChange = (e) => {
-    setSelectedSize(e.target.value);
-  };
+  const handleSizeChange = (e) => setSelectedSize(e.target.value);
 
-  const handleQtyChange = (e) => {
-    setSelectedQty(Number(e.target.value));
-    
-  };
+  const handleQtyChange = (e) => setSelectedQty(Number(e.target.value));
 
   const handleUpdateCart = () => {
     dispatch(
@@ -45,53 +37,59 @@ const CartCard = ({cartItem, stockStatus}) => {
         size: selectedSize,
         quantity: selectedQty,
       })
-    )
-    // dispatch(applyCouponPricingDetails());
+    );
   };
 
   useEffect(() => {
     handleUpdateCart();
-    
   }, [selectedSize, selectedQty]);
 
-
-  const itemPrice = cartItem?.discountedPrice || cartItem?.productId?.salePrice;
+  const itemPrice =
+    cartItem?.discountedPrice || cartItem?.productId?.salePrice;
   const finalPrice = itemPrice * selectedQty;
 
-  // console.log("this is from the cart card quantity", availableQty);
+  return (
+    <div className="border rounded-lg p-3 sm:p-4 flex flex-col sm:flex-row gap-4 sm:gap-6">
 
-  return (  
-    <div className="border rounded-lg flex">
-      {/* Image Section */}
-      <div className="w-1/3 h-52 px-4 bg-slate-100">
-        <img
-          src={cartItem?.productId?.thumbnail}
-          alt="Product"
-          className="w-full h-full object-cover rounded-lg"
-        />
+      {/* IMAGE */}
+      <div className="w-full sm:w-1/3">
+        <div className="w-full h-48 sm:h-52 rounded-lg overflow-hidden bg-slate-100">
+          <img
+            src={cartItem?.productId?.thumbnail}
+            alt="product"
+            className="w-full h-full object-cover"
+          />
+        </div>
       </div>
 
-      {/* Details Section */}
-      <div className="flex-1 ml-4 flex flex-col justify-between p-4">
+      {/* DETAILS */}
+      <div className="flex-1 flex flex-col justify-between">
+
+        {/* TOP ROW */}
         <div className="flex justify-between items-start">
-          <div>
-            <h2
-              className="font-bold text-lg"
-              style={{textTransform: "uppercase"}}
-            >
+
+          {/* LEFT */}
+          <div className="w-2/3">
+            <h2 className="font-bold text-lg uppercase">
               {cartItem?.productId?.brand?.brandName}
             </h2>
-            <p className="text-gray-600">{cartItem?.productId?.productName}</p>
 
-            {/* size and quatity updating */}
-            <p className="text-yellow-600 font-semibold">Low in stock</p>
-            <div className="flex gap-2">
-              <div className="flex items-center gap-2 rounded-sm max-w-fit bg-gray-100 px-1 my-2">
-                <label>Size</label>
+            <p className="text-gray-600 text-sm">
+              {cartItem?.productId?.productName}
+            </p>
+
+            <p className="text-yellow-600 font-semibold text-sm mt-1">
+              Low in stock
+            </p>
+
+            {/* SIZE + QTY */}
+            <div className="flex gap-3 mt-3 flex-wrap">
+
+              {/* SIZE */}
+              <div className="flex items-center gap-2 bg-gray-100 px-2 py-1 rounded-md">
+                <label className="text-sm">Size</label>
                 <select
-                  className="outline-none bg-gray-100"
-                  name=""
-                  id=""
+                  className="outline-none bg-gray-100 text-sm"
                   value={selectedSize}
                   onChange={handleSizeChange}
                 >
@@ -103,10 +101,11 @@ const CartCard = ({cartItem, stockStatus}) => {
                 </select>
               </div>
 
-              <div className="flex items-center gap-2 rounded-sm max-w-fit bg-gray-100 px-1 my-2">
-                <label>Qty :</label>
+              {/* QTY */}
+              <div className="flex items-center gap-2 bg-gray-100 px-2 py-1 rounded-md">
+                <label className="text-sm">Qty</label>
                 <select
-                  className="outline-none bg-gray-100"
+                  className="outline-none bg-gray-100 text-sm"
                   value={selectedQty}
                   onChange={handleQtyChange}
                 >
@@ -119,26 +118,34 @@ const CartCard = ({cartItem, stockStatus}) => {
               </div>
             </div>
           </div>
+
+          {/* RIGHT PRICE + DELETE */}
           <div className="text-right">
-            <div className="flex items-center space-x-2">
-              {/* <p className="line-through text-gray-500">₹4 599.00</p> */}
+            <div className="flex items-center justify-end gap-2">
+
+              {/* ORIGINAL / DISCOUNTED PRICE */}
               <p
-                className={`text-green-500 font-bold ${
-                  cartItem?.discountedPrice ? "line-through" : ""
+                className={`font-bold ${
+                  cartItem?.discountedPrice ? "text-green-500 line-through" : "text-green-500"
                 }`}
               >
-                ₹{cartItem?.discountedPrice ? cartItem?.originalPrice : finalPrice}
+                ₹
+                {cartItem?.discountedPrice
+                  ? cartItem?.originalPrice
+                  : finalPrice}
               </p>
 
-              {cartItem.discountedPrice  && (
-                <div className="flex gap-1">
-                  <p className="text-red-500 font-bold">
-                    {finalPrice}
+              {/* DISCOUNTED FINAL PRICE */}
+              {cartItem.discountedPrice && (
+                <div className="flex items-center gap-1">
+                  <p className="text-red-500 font-bold">{finalPrice}</p>
+                  <p className="text-gray-600 text-sm">
+                    {cartItem?.offerPercentage}% OFF
                   </p>
-                  <p className="text-gray-600">{cartItem?.offerPercentage}%OFF</p>
                 </div>
               )}
 
+              {/* DELETE */}
               <button
                 className="text-gray-500 hover:text-black"
                 onClick={handleRemoveCartItem}
@@ -149,25 +156,29 @@ const CartCard = ({cartItem, stockStatus}) => {
           </div>
         </div>
 
-        {/* gender section */}
-        <div className="flex items-center gap-4">
+        {/* GENDER + STOCK MESSAGE */}
+        <div className="flex items-center gap-4 mt-3">
           <h2
-            className={`font-semibold 
-    ${cartItem?.productId?.gender === "Men" ? "bg-blue-100 text-blue-500" : ""} 
-    ${
-      cartItem?.productId?.gender === "Women" ? "bg-pink-100 text-pink-500" : ""
-    } 
-    ${
-      cartItem?.productId?.gender === "Kids"
-        ? "bg-green-100 text-green-500"
-        : ""
-    } 
-    max-w-fit px-1 rounded-md`}
+            className={`font-semibold px-2 py-1 rounded-md text-sm
+              ${
+                cartItem?.productId?.gender === "Men" &&
+                "bg-blue-100 text-blue-600"
+              }
+              ${
+                cartItem?.productId?.gender === "Women" &&
+                "bg-pink-100 text-pink-600"
+              }
+              ${
+                cartItem?.productId?.gender === "Kids" &&
+                "bg-green-100 text-green-600"
+              }
+            `}
           >
             {cartItem?.productId?.gender}
           </h2>
+
           {stockStatus && !stockStatus.inStock && (
-            <p className="text-red-500 text-md font-semibold">
+            <p className="text-red-500 font-semibold text-sm">
               {stockStatus.message}
             </p>
           )}
