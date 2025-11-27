@@ -39,7 +39,7 @@ const StatusCard = ({ cardName, color , progressValueProp, totalAmout}) => {
   };
 
   return (
-    <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
+    <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200 w-full">
       <div className="flex justify-between items-center">
         <div>
           <h3 className="text-gray-500 text-lg font-semibold">{cardName}</h3>
