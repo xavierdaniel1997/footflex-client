@@ -2,8 +2,11 @@
 
 import axios from "axios";
 
+console.log(process.env.REACT_APP_SERVER_ORIGIN);
+const API_URL = process.env.REACT_APP_SERVER_ORIGIN;
+
 const api = axios.create({
-    baseURL: `http://localhost:8000/api`,
+    baseURL: API_URL,
     headers: {
         "Content-Type": "application/json"
     },
@@ -14,37 +17,4 @@ const api = axios.create({
 export default api;
 
 
-
-
-
-
- 
-
-
-
-
-
-
-
-
-
-// import axios from "axios";
-// import { logoutUser } from "../../redux/slices/authSlice";
-// import store from "../../redux/store/store";
-
-// const api = axios.create({
-// 	baseURL: "http://localhost:5000/api",
-// 	withCredentials: true,
-// });
-
-// api.interceptors.response.use(
-// 	(response) => response,
-// 	(error) => {
-// 		if (error.response && error.response.status === 401) {
-// 			store.dispatch(logoutUser());
-// 			window.location.href = "/login";
-// 		}
-// 		return Promise.reject(error);
-// 	}
-// );
 
