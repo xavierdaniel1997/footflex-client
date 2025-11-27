@@ -7,7 +7,7 @@ console.log("process.env.REACT_APP_SERVER_ORIGIN", process.env.REACT_APP_SERVER_
 const API_URL = process.env.REACT_APP_SERVER_ORIGIN;
 
 const api = axios.create({
-    baseURL: API_URL,
+    baseURL: "https://footflex-server.onrender.com/api",
     headers: {
         "Content-Type": "application/json"
     },
