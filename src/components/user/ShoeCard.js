@@ -14,8 +14,7 @@ const ShoeCard = ({productData, inUserProfile}) => {
   const wishlistItems = useSelector((state) => state.wishList.items);
   const [isWishListed, setIsWishListed] = useState(false);
 
-  // Example rating
-  const rating = 4.5;
+
 
   const handleProductDetials = () => {
     navigate(`/productDetials/${productData?._id}`);
@@ -83,10 +82,6 @@ const ShoeCard = ({productData, inUserProfile}) => {
               </p>
             )}
           </div>
-        </div>
-        <div className="text-gray-600 font-medium">
-          {/* Displaying the rating */}
-          {rating}
         </div>
       </div>
     </div>
