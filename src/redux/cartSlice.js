@@ -22,7 +22,7 @@ export const addToCart = createAsyncThunk(
           productId,
           size,
         })
-      return response.data;
+      return response.data.cart;
     } catch (error) {
       return rejectWithValue(error.response.data.message);
     }
@@ -65,6 +65,7 @@ export const clearCart = createAsyncThunk(
   }
 )
 
+
 const cartSlice = createSlice({
   name: "cart",
   initialState: {
@@ -89,6 +90,7 @@ const cartSlice = createSlice({
       })
       .addCase(addToCart.fulfilled, (state, action) => {
         state.loading = false;
+        state.cartItems = action.payload;
       })
       .addCase(removeFromCart.fulfilled, (state, action) => {
         state.loading = false;

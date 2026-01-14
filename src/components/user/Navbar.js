@@ -1,203 +1,223 @@
 import React, { useEffect, useState } from "react";
-import { AiOutlineHome, AiOutlineSearch, AiOutlineDown } from "react-icons/ai";
-import { BsCreditCard, BsPerson } from "react-icons/bs";
+import { AiOutlineHome, AiOutlineSearch } from "react-icons/ai";
+import { BsCreditCard, BsPerson, BsCart3 } from "react-icons/bs";
 import { BiHeart } from "react-icons/bi";
 import { FiMenu } from "react-icons/fi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCartDetails } from "../../redux/cartSlice";
-import { BsCart3 } from "react-icons/bs";
 
 const NavBar = () => {
   const dispatch = useDispatch();
-  const [menuVisible, setMenuVisible] = useState(false);
-  const cartItems = useSelector((state) => state.cart.cartItems);
-  const cartItemsCount = useSelector((state) => state.cart.cartItems?.items?.length || 0);
-  const address = useSelector((state) => state.address.selectedAddress)
-  
-
+  const navigate = useNavigate();
   const location = useLocation();
-  const [currentStep, setCurrentStep] = useState(1); 
+
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const cartItemsCount = useSelector(
+    (state) => state.cart.cartItems?.items?.length || 0
+  );
+  const address = useSelector((state) => state.address.selectedAddress);
+
+  const [currentStep, setCurrentStep] = useState(1);
 
   useEffect(() => {
-    
-
-    if (location.pathname === "/cart") {
-      setCurrentStep(1);
-    } else if (location.pathname === "/address") {
-      setCurrentStep(2);
-    } else if (location.pathname === "/payment") {
-      setCurrentStep(3);
-    }
+    if (location.pathname === "/cart") setCurrentStep(1);
+    else if (location.pathname === "/address") setCurrentStep(2);
+    else if (location.pathname === "/payment") setCurrentStep(3);
   }, [location]);
 
   useEffect(() => {
     dispatch(fetchCartDetails());
-  }, [dispatch, ])
- 
-  const toggleMenu = () => {
-    setMenuVisible(!menuVisible);
+  }, [dispatch]);
+
+  const toggleMenu = () => setMenuVisible(!menuVisible);
+
+  const handleNavgate = () => {
+    if (cartItemsCount > 0) navigate("/address");
   };
 
-  const navigate = useNavigate()
-  const handleNavgate = () => {
-    if(cartItemsCount>0){
-      navigate("/address")
-    }
-  }
-
   const handleNavgatePymt = () => {
-    if(cartItemsCount > 0 && address){
-      navigate("/payment")
+    if (cartItemsCount > 0 && address) navigate("/payment");
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim() !== "") {
+      navigate(`/shop?search=${encodeURIComponent(searchQuery)}`);
     }
-  }
+  };
+
+  const isCheckout =
+    location.pathname === "/cart" ||
+    location.pathname === "/address" ||
+    location.pathname === "/payment";
 
   return (
-    <nav className="fixed top-0 left-0 right-0 px-7 py-6 shadow-md lg:mx-auto lg:px-20 bg-white z-10">
-      <div className="container mx-auto flex justify-between items-center">
-        {/* Hamburger Menu for Mobile */}
-        <div className="lg:hidden">
-          <button className="text-2xl" onClick={toggleMenu}>
-            <FiMenu />
-          </button>
-        </div>
+    <>
+      {/* MAIN NAVBAR */}
+      <nav className="fixed top-0 left-0 right-0 bg-white shadow-md px-5 md:px-10 lg:px-20 py-5 z-20">
+        {/* 3 COLUMN DESKTOP LAYOUT */}
+        <div className="flex items-center justify-between lg:grid lg:grid-cols-3">
 
-        {/* Logo (Centered on Small Devices) */}
-        <Link to="/">
-          <div className="text-black text-2xl font-bold">
-            FOOT<span className="text-blue-500">FLEX</span>
+          {/* LEFT SECTION */}
+          <div className="flex items-center gap-4 lg:justify-start">
+            {/* MOBILE ONLY MENU BUTTON */}
+            <button className="text-2xl lg:hidden" onClick={toggleMenu}>
+              <FiMenu />
+            </button>
+
+            {/* LOGO */}
+            <Link to="/">
+              <div className="text-black text-2xl font-bold">
+                FOOT<span className="text-blue-500">FLEX</span>
+              </div>
+            </Link>
           </div>
-        </Link>
 
-        {/* Profile Button (Right-aligned) */}
-        <div className="lg:hidden">
-          <button className="text-2xl">
-            <BsPerson />
-          </button>
-        </div>
-
-        {/* Navigation Links */}
-        {menuVisible && (
-          <div className="lg:hidden bg-white text-gray-600 absolute top-20 left-0 right-0 py-10 px-10">
-            <ul className="flex flex-col gap-5 justify-center items-center font-semibold text-xl">
-              <Link to="/menshop">
-                <li>MENS</li>
-              </Link>
-              <Link to="/womenshop">
-                <li>WOMENS</li>
-              </Link>
-              <Link to="/kidshop">
-                <li>KIDS</li>
-              </Link>
+          {/* CENTERED MEN / WOMEN / KIDS — DESKTOP ONLY */}
+          {!isCheckout && (
+            <ul className="hidden lg:flex gap-10 font-semibold text-xl text-gray-700 justify-center">
+              <Link to="/menshop"><li>MENS</li></Link>
+              <Link to="/womenshop"><li>WOMENS</li></Link>
+              <Link to="/kidshop"><li>KIDS</li></Link>
             </ul>
-          </div>
-        )}
+          )}
 
-        {/* Breadcrumb Navigation - Centered with More button on Right */}
-        {["/cart", "/address", "/payment"].includes(location.pathname) ? (
-          <div className="flex justify-between w-full">
-          <div className="hidden lg:flex justify-center items-center w-full relative">
-            {/* Flexbox container with centered breadcrumb */}
-            
-
-            <div className="flex items-center gap-2 mx-auto" >
-              <Link to="/cart">
-                <div
-                  className={`flex items-center gap-2 ${
-                    currentStep >= 1 ? "text-green-600" : "text-gray-400"
-                  }`}
-                >
-                  <BsCart3 className="text-2xl" />
-                  <span>Cart</span>
-                </div>
-              </Link>
-              <hr className={`w-8 border-t-2 border-gray-300 ${currentStep >=1 ? "border-green-600" : "border-gray-300"}`} />
-              {/* <Link to="/address"> */}
-                <div
-                  className={`flex items-center gap-2  ${
-                    currentStep >= 2 ? "text-green-600 cursor-pointer" : "text-gray-400"
-                  }`}
-                  onClick={handleNavgate}
-                >
-                  <AiOutlineHome className="text-2xl" />
-                  <span>Delivery Details</span>
-                </div>
-              {/* </Link> */}
-              <hr className={`w-8 border-t-2 border-gray-300 ${currentStep >=2 ? "border-green-600" : "border-gray-300"}`} />
-              {/* <Link to="/payment"> */}
-                <div
-                  className={`flex items-center gap-2 ${
-                    currentStep >= 3 ? "text-green-600 cursor-pointer" : "text-gray-400"
-                  }`}
-                  onClick={handleNavgatePymt}
-                >
-                  <BsCreditCard className="text-2xl" />
-                  <span>Payment</span>
-                </div>
-              {/* </Link> */}
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link to="/userProfile"><span>More</span></Link>
-            <AiOutlineDown/>
-          </div>
-          </div>
-        ) : (
-          <div className="hidden lg:flex text-gray-600 justify-center items-center gap-10">
-            {/* Search Bar and Other Links (Hidden when breadcrumb is shown) */}
-            <ul className="flex justify-around gap-10 font-semibold text-xl">
-              <Link to="/menshop">
-                <li>MENS</li>
-              </Link>
-              <Link to="/womenshop">
-                <li>WOMENS</li>
-              </Link>
-              <Link to="/kidshop">
-                <li>KIDS</li>
-              </Link>
-            </ul>
-            <div className="hidden lg:block bg-gray-100 text-gray-800 rounded-full p-2">
-              <div className="flex justify-center items-center gap-3">
+          {/* RIGHT SIDE ICONS + SEARCH (DESKTOP) */}
+          {!isCheckout && (
+            <div className="hidden lg:flex items-center justify-end gap-8">
+              {/* SEARCH */}
+              <form
+                onSubmit={handleSearch}
+                className="bg-gray-100 rounded-full px-4 py-2 flex items-center gap-2"
+              >
                 <AiOutlineSearch className="text-2xl text-gray-400" />
                 <input
                   type="text"
-                  placeholder="What you looking for?"
-                  className="w-full outline-none bg-inherit"
+                  placeholder="Search..."
+                  className="bg-inherit outline-none"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
-              </div>
-            </div>
-            <div className="flex justify-around gap-10 text-xl">
-              <Link to="/userProfile">
-                <button className="flex flex-col justify-center items-center text-2xl">
-                  <BsPerson />
-                  <span className="text-xs">Profile</span>
-                </button>
-              </Link>
+              </form>
 
-              <Link to="/wishList">
-                <button className="flex flex-col justify-center items-center">
-                  <BiHeart size={24}/>
-                  <span className="text-xs">Wishlist</span>
-                </button>
-              </Link>
-              <Link to="/cart">
-                <button className="relative flex flex-col justify-center items-center">
+              {/* ICONS */}
+              <div className="flex gap-6 text-xl">
+                <Link to="/userProfile">
+                  <BsPerson />
+                </Link>
+
+                <Link to="/wishList">
+                  <BiHeart />
+                </Link>
+
+                <Link to="/cart">
                   <div className="relative">
-                    <BsCart3 size={24} />
+                    <BsCart3 />
                     {cartItemsCount > 0 && (
-                      <div className="absolute -top-2 -right-4 flex items-center justify-center w-5 h-5 bg-blue-500 text-white text-xs font-bold rounded-full">
+                      <span className="absolute -top-2 -right-3 bg-blue-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                         {cartItemsCount}
-                      </div>
+                      </span>
                     )}
                   </div>
-                  <span className="text-xs mt-1">Cart</span>
-                </button>
-              </Link>
+                </Link>
+              </div>
             </div>
+          )}
+
+          {/* RIGHT SIDE — MOBILE PROFILE ICON */}
+          {!isCheckout && (
+            <Link to="/userProfile" className="text-2xl lg:hidden">
+              <BsPerson />
+            </Link>
+          )}
+        </div>
+
+        {/* MOBILE DROPDOWN MENU */}
+        {menuVisible && !isCheckout && (
+          <div className="lg:hidden absolute top-20 left-0 right-0 bg-white shadow-md py-8 px-10 text-center">
+            <ul className="flex flex-col gap-6 font-semibold text-xl">
+              <Link to="/menshop"><li>MENS</li></Link>
+              <Link to="/womenshop"><li>WOMENS</li></Link>
+              <Link to="/kidshop"><li>KIDS</li></Link>
+              <Link to="/wishList"><li>Wishlist</li></Link>
+              <Link to="/cart"><li>Cart</li></Link>
+            </ul>
+
+            {/* MOBILE SEARCH */}
+            <form
+              onSubmit={handleSearch}
+              className="flex items-center gap-3 bg-gray-100 mt-6 rounded-full p-3"
+            >
+              <AiOutlineSearch className="text-2xl text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search products..."
+                className="w-full outline-none bg-inherit"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </form>
           </div>
         )}
-      </div>
-    </nav>
+      </nav>
+
+      {/* CHECKOUT STEPS — DESKTOP + MOBILE */}
+      {isCheckout && (
+        <div className="fixed top-20 left-0 right-0 bg-white shadow-sm z-10 py-3 px-5 flex justify-center">
+          <div className="flex items-center gap-5 sm:gap-10 text-sm sm:text-base">
+
+            {/* CART */}
+            <Link to="/cart">
+              <div
+                className={`flex items-center gap-1 ${
+                  currentStep >= 1 ? "text-green-600" : "text-gray-400"
+                }`}
+              >
+                <BsCart3 className="text-xl" />
+                <span>Cart</span>
+              </div>
+            </Link>
+
+            <div
+              className={`w-6 sm:w-10 border-t-2 ${
+                currentStep >= 1 ? "border-green-600" : "border-gray-300"
+              }`}
+            />
+
+            {/* ADDRESS */}
+            <div
+              className={`flex items-center gap-1 ${
+                currentStep >= 2 ? "text-green-600 cursor-pointer" : "text-gray-400"
+              }`}
+              onClick={handleNavgate}
+            >
+              <AiOutlineHome className="text-xl" />
+              <span>Address</span>
+            </div>
+
+            <div
+              className={`w-6 sm:w-10 border-t-2 ${
+                currentStep >= 2 ? "border-green-600" : "border-gray-300"
+              }`}
+            />
+
+            {/* PAYMENT */}
+            <div
+              className={`flex items-center gap-1 ${
+                currentStep >= 3 ? "text-green-600 cursor-pointer" : "text-gray-400"
+              }`}
+              onClick={handleNavgatePymt}
+            >
+              <BsCreditCard className="text-xl" />
+              <span>Payment</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

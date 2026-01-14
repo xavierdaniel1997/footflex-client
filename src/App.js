@@ -30,6 +30,10 @@ import PaymentPage from "./pages/user/PaymentPage";
 import EditOrder from "./pages/admin/Order/EditOrder";
 import CouponsPage from "./pages/admin/CouponsPage";
 import OfferPage from "./pages/admin/OfferPage";
+import SalesReportPage from "./pages/admin/SalesReportPage";
+import ResetPassword from "./pages/common/ResetPassword";
+import ViewOrderDetials from "./pages/user/ViewOrderDetials";
+import RetryPayment from "./components/user/RetryPayment";
 
 
 function App() {
@@ -43,14 +47,16 @@ function App() {
   return (
     
     <BrowserRouter> 
-      <Toaster position="top-right" reverseOrder={false} />
+      <Toaster position="top-center" reverseOrder={false} />
       <Routes>
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/login" element={<LoginForm />} />
+        <Route path="/reset-password/:token" element={<ResetPassword/>}/>
         <Route path="/otp" element={<OTPVerification />} />
 
         <Route path="/" element={<UserLayout />}>
           <Route index element={<HomePage />} />
+          <Route path="/shop" element={<ShopPage showFilter={false}/>} />
           <Route path="/menshop" element={<ShopPage gender={"Men"} />} />
           <Route path="/womenshop" element={<ShopPage gender={"Women"} />} />
           <Route path="/kidshop" element={<ShopPage gender={"Kids"} />} />
@@ -65,6 +71,8 @@ function App() {
               <Route path="/cart" element={<CartPage/>}/>
               <Route path="/address" element={<DeliveryDetails/>} />
               <Route path="/payment" element={<PaymentPage/>}/>
+              <Route path="/payment-failed/:orderId" element={<RetryPayment/>}/>
+              <Route path="/view-order-detial/:orderId" element={<ViewOrderDetials/>}/>
             </Route>
           </Route>
         </Route>
@@ -77,6 +85,7 @@ function App() {
               <Route path="addNewProduct" element={<ProductForm />} />
               <Route path="editproduct/:productId" element={<ProductForm />} />
               <Route path="customers" element={<Customers />} />
+              <Route path="sales-report" element={<SalesReportPage/>} />
               <Route path="orders" element={<Orders />} />
               <Route path="editOrder/:orderId" element={<EditOrder/>}/>
               <Route path="category" element={<Category />} />

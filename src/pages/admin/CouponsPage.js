@@ -81,16 +81,12 @@ const CouponsPage = () => {
         componentLocation={"All Coupons"}
         location={location.pathname}
         onClick={() => setOpen(true)}
+        showSearch={false}
       />
       <div className="px-10">
         <ReusableTable
           columns={columns}
           data={couponData}
-          //   page={page}
-          //   rowsPerPage={limit}
-          //   totalCount={totalCount}
-          //   onPageChange={handlePageChange}
-          //   isPagination={true}
         />
       </div>
       <CouponModal open={open} handleClose={() => setOpen(false)} />

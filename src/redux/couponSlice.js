@@ -28,21 +28,59 @@ export const addCoupon = createAsyncThunk(
 export const removeCoupon = createAsyncThunk(
   "coupons/removeCoupon",
   async (couponId, {rejectWithValue}) => {
-    try{
-      await api.delete(`coupons/delete-coupon/${couponId}`)
+    try {
+      await api.delete(`coupons/delete-coupon/${couponId}`);
       return couponId;
-    }catch(error){
+    } catch (error) {
       return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// for the user
+export const fetchAvailableCoupons = createAsyncThunk(
+  "coupons/fetchAvailableCoupons",
+  async (totalPrice) => {
+    const response = await api.get(
+      `/coupons/avlible-coupons?totalPrice=${totalPrice}`
+    );
+    return response.data.coupons;
+  }
+);
+
+export const applyCouponPricingDetails = createAsyncThunk(
+  "coupons/applyCouponPricingDetails",
+  async (couponId, {rejectWithValue}) => {
+    try {
+      const response = await api.post("coupons/apply-coupon", {couponId});
+      return response?.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const removeApplayCoupon = createAsyncThunk(
+  "coupons/removeApplayCoupon",
+  async (_, {rejectWithValue}) => {
+    try{
+      const response = await api.post("coupons/remove-coupon")
+      return response?.data;
+    }catch(error) {
+      return rejectWithValue(error.response.data.message);
     }
   }
 )
 
-// for the user
-export const fetchAvailableCoupons = createAsyncThunk(
-  'coupons/fetchAvailableCoupons',
-  async (totalPrice) => {
-    const response = await api.get(`/coupons/avlible-coupons?totalPrice=${totalPrice}`);
-    return response.data.coupons;
+export const getCheckoutDetials = createAsyncThunk(
+  "coupons/getCheckoutDetials",
+  async (_, {rejectWithValue}) => {
+    try {
+      const response = await api.get("/cart/checkout");
+      return response?.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
   }
 );
 
@@ -50,14 +88,22 @@ const couponSlice = createSlice({
   name: "coupons",
   initialState: {
     coupons: [],
+    applayedCoupon: {},
+    pricingDetails: {
+      originalTotalPrice: 0,
+      totalPriceAfterDiscount: 0,
+      savedTotal: 0,
+      couponDiscount: 0,
+      finalPrice: 0,
+    },
     selectedCoupon: null,
     loading: false,
     error: null,
   },
   reducers: {
-    selectCoupon : (state, action) => {
-      state.selectedCoupon = action.payload
-    }
+    selectCoupon: (state, action) => {
+      state.selectedCoupon = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -78,7 +124,7 @@ const couponSlice = createSlice({
         state.error = null;
       })
       .addCase(addCoupon.fulfilled, (state, action) => {
-        state.coupons.unshift(action.payload); 
+        state.coupons.unshift(action.payload);
         state.loading = false;
       })
       .addCase(addCoupon.rejected, (state, action) => {
@@ -88,22 +134,36 @@ const couponSlice = createSlice({
       .addCase(removeCoupon.fulfilled, (state, action) => {
         state.coupons = state.coupons.filter(
           (coupon) => coupon._id !== action.payload
-        )
+        );
       })
       //for users
       .addCase(fetchAvailableCoupons.pending, (state) => {
-        state.status = 'loading';
+        state.status = "loading";
       })
       .addCase(fetchAvailableCoupons.fulfilled, (state, action) => {
-        state.status = 'succeeded';
+        state.status = "succeeded";
         state.coupons = action.payload;
       })
       .addCase(fetchAvailableCoupons.rejected, (state, action) => {
-        state.status = 'failed';
+        state.status = "failed";
         state.error = action.error.message;
+      })
+
+      // for the coupon adding and getting price detials
+      .addCase(applyCouponPricingDetails.fulfilled, (state, action) => {
+        state.applayedCoupon = action.payload;
+      })
+
+      // for remove the apply coupon
+      .addCase(removeApplayCoupon.fulfilled, (state, action) => {
+        state.status = "removed successfully";
+      })
+
+      .addCase(getCheckoutDetials.fulfilled, (state, action) => {
+        state.pricingDetails = action.payload;
       });
   },
 });
 
-export const { selectCoupon } = couponSlice.actions;
+export const {selectCoupon} = couponSlice.actions;
 export default couponSlice.reducer;

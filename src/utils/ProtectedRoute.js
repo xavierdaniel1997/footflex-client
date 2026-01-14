@@ -24,7 +24,7 @@ const ProtectedRoute = () => {
       } 
     };
 
-    if(status === "idle"){
+    if(status === "idle"){ 
       validateUser();
     }
   }, []);

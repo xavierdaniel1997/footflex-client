@@ -15,7 +15,7 @@ import {AiFillCloseCircle} from "react-icons/ai";
 import api from "../../config/axiosConfig";
 import toast from "react-hot-toast";
 
-const OfferModal = ({open, handleClose, productOffers, categoryOffers}) => {
+const OfferModal = ({open, handleClose, productOffers, categoryOffers, onOfferAdded}) => {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
 
@@ -103,6 +103,7 @@ const OfferModal = ({open, handleClose, productOffers, categoryOffers}) => {
     try {
       const response = await api.post("offers/add-offer", payload);
       toast.success(response?.data?.message);
+      onOfferAdded(response.data.offer);
       setFormData({
         offerType: "Category",
         selectedCategory: "",

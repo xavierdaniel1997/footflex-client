@@ -1,280 +1,328 @@
-import React, {useEffect, useState} from "react";
-import {FaStar, FaWallet} from "react-icons/fa";
-import {MdPayment} from "react-icons/md";
-import {BsCashStack, BsCreditCard2Back} from "react-icons/bs";
-import {SiPhonepe} from "react-icons/si";
-import {IoMdRefresh} from "react-icons/io";
-import {useDispatch, useSelector} from "react-redux";
+import React, { useEffect, useState } from "react";
+import { FaStar, FaWallet } from "react-icons/fa";
+import { MdPayment } from "react-icons/md";
+import { BsCashStack } from "react-icons/bs";
+import { SiRazorpay } from "react-icons/si";
+import { IoMdRefresh } from "react-icons/io";
+import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import api from "../../config/axiosConfig";
-import {clearCart} from "../../redux/cartSlice";
+import { clearCart } from "../../redux/cartSlice";
 import SuccessModal from "./SuccessModal";
+import FailureModal from "./FailureModal";
+import { useNavigate } from "react-router-dom";
 
+// Captcha generator
 const generateCaptcha = () => {
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let captcha = "";
-  for (let i = 0; i < 6; i++) {
-    captcha += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return captcha;
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  return Array.from({ length: 6 }, () =>
+    characters.charAt(Math.floor(Math.random() * characters.length))
+  ).join("");
 };
 
-const PaymentOptions = ({totalPrice}) => {
+const PaymentOptions = ({ totalPrice }) => {
   const [selectedOption, setSelectedOption] = useState("recommended");
   const [openCashOnDel, setOpenCashOnDel] = useState(false);
   const [captcha, setCaptcha] = useState(generateCaptcha());
   const [captchaInput, setCaptchaInput] = useState("");
   const [isCaptchaValid, setIsCaptchaValid] = useState(false);
-  const cartItems = useSelector((state) => state.cart.cartItems);
-  const address = useSelector((state) => state.address.selectedAddress);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const dispatch = useDispatch();
 
+  const cartItems = useSelector((state) => state.cart.cartItems);
+  const pricingDetails = useSelector((state) => state.coupons.pricingDetails);
+  const address = useSelector((state) => state.address.selectedAddress);
+  const { user } = useSelector((state) => state.auth);
+
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showFailureModal, setShowFailureModal] = useState(false);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // Sidebar menu options
   const options = [
-    {id: "recommended", label: "Recommended", icon: <FaStar />},
-    {id: "cash", label: "Cash On Delivery", icon: <BsCashStack />},
-    {id: "upi", label: "UPI (Pay via any App)", icon: <MdPayment />},
-    {id: "card", label: "Credit/Debit Card", icon: <BsCreditCard2Back />},
-    {id: "wallet", label: "Wallets", icon: <FaWallet />},
+    { id: "recommended", label: "Recommended", icon: <FaStar /> },
+    { id: "cash", label: "Cash On Delivery", icon: <BsCashStack /> },
+    { id: "upi", label: "Online Payments", icon: <SiRazorpay /> },
+    { id: "wallet", label: "Wallets", icon: <FaWallet /> },
   ];
 
-  const error = totalPrice < 5000 ? "Cash On Delivery is not available" : "";
-
-  const handleCaptchaValidation = () => {
-    setIsCaptchaValid(captchaInput === captcha);
-  };
+  const error = totalPrice > 10000 ? "Cash On Delivery is not available" : "";
 
   useEffect(() => {
-    handleCaptchaValidation();
+    setIsCaptchaValid(captchaInput === captcha);
   }, [captchaInput]);
 
-  const handleConfirmCOD = async () => {
-    if (cartItems && address) {
+  // Create orderData object
+  const createOrderData = () => ({
+    items: cartItems?.items.map((item) => ({
+      product: item.productId._id,
+      productName: item.productId.productName,
+      productBrand: item.productId.brand.brandName,
+      description: item.productId.description,
+      price: item.productId.salePrice,
+      regularPrice: item.productId.regularPrice,
+      quantity: item.quantity,
+      size: item.size,
+      totalPrice: item.quantity * item.productId.salePrice,
+      thumbnail: item.productId.thumbnail,
+    })),
+    address,
+    totalPrice,
+    deliveryCharge: pricingDetails.deliveryCharge,
+    originalTotalPrice: pricingDetails.originalTotalPrice,
+    totalPriceAfterDiscount: pricingDetails.totalPriceAfterDiscount,
+    savedTotal: pricingDetails.savedTotal,
+    couponDiscount: pricingDetails.couponDiscount,
+    finalPrice: pricingDetails.finalPrice,
+  });
+
+  // Handle COD, Wallet, and failed orders
+  const handlePayment = async (paymentMethod) => {
+    if (!cartItems || !address) {
+      toast.error("Please select an address.");
+      return;
+    }
+
+    try {
       const response = await api.get("cart/check-items");
-      if (response?.data?.allItemsInStock) {
-        const orderData = {
-          items: cartItems?.items.map((item) => ({
-            product: item.productId._id,
-            productName: item.productId.productName,
-            productBrand: item.productId.brand.brandName,
-            description: item.productId.description,
-            price: item.productId.salePrice,
-            regularPrice: item.productId.regularPrice,
-            quantity: item.quantity,
-            size: item.size,
-            totalPrice: item.quantity * item.productId.salePrice,
-            thumbnail: item.productId.thumbnail,
-          })),
-          address: address,
-          totalPrice: totalPrice,
-          payment: {
-            method: "Cash on Delivery",
-            status: "Pending",
-          },
-        };
-        const createOrderResponse = await api.post(
-          "order/place-order",
-          orderData
-        );
-        console.log("this is the resposne of order", createOrderResponse);
-        if (createOrderResponse.status === 200) {
-          setShowSuccessModal(true);
-          dispatch(clearCart());
-          setCaptchaInput("");
-        } else {
-          toast.error("Failed to place order. Please try again.");
-        }
-      } else {
-        toast.error("Some items in your cart are out of stock or unavailable.");
+      if (!response?.data?.allItemsInStock) {
+        toast.error("Some items in your cart are out of stock.");
+        return;
       }
-    } else {
-      toast.error("Select an address");
+
+      const orderData = {
+        ...createOrderData(),
+        payment: { method: paymentMethod, status: "Pending" },
+      };
+
+      const res = await api.post("order/place-order", orderData);
+
+      if (res.status === 200) {
+        setShowSuccessModal(true);
+        dispatch(clearCart());
+        setCaptchaInput("");
+      }
+    } catch (error) {
+      toast.error("Failed to place order.");
+      console.log(error);
     }
   };
 
+  const handleRazorpay = async () => {
+    if (!cartItems || !address) {
+      toast.error("Please select an address.");
+      return;
+    }
+
+    try {
+      const { data } = await api.post("order/create-razorpay-order", {
+        totalPrice: pricingDetails.finalPrice,
+      });
+
+      const options = {
+        key: process.env.REACT_APP_RAZORPAY_KEY,
+        amount: pricingDetails.finalPrice * 100,
+        currency: "INR",
+        name: user?.firstName,
+        description: "Online payment",
+        order_id: data.orderId,
+        handler: async (response) => {
+          const verifyRes = await api.post("order/verify-razorpay-order", {
+            razorpayOrderId: response.razorpay_order_id,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpaySignature: response.razorpay_signature,
+            orderData: createOrderData(),
+          });
+
+          if (verifyRes.status === 200) {
+            setShowSuccessModal(true);
+            dispatch(clearCart());
+          }
+        },
+        theme: { color: "#F37254" },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      toast.error("Failed to initiate payment.");
+      console.log(error);
+    }
+  };
+
+  // Handle payment failure state
+  const handlePaymentFailure = async (response) => {
+    try {
+      await api.post("order/payment-failed", {
+        response,
+        orderData: createOrderData(),
+      });
+
+      navigate("/userProfile/orders");
+      toast.error("Payment failed. Try again.");
+    } catch (err) {
+      toast.error("Error processing failure.");
+    }
+  };
+
+  // Render payment content
   const renderContent = () => {
     switch (selectedOption) {
       case "recommended":
         return (
-          <div className="flex flex-col space-y-4">
-            <div className="flex items-center space-x-2">
-              <input
-                type="radio"
-                id="cod"
-                name="payment"
-                className="form-radio"
-              />
-              <label htmlFor="cod">Cash on Delivery (Cash/UPI)</label>
-              <BsCashStack className="ml-auto" />
+          <div className="space-y-4 text-sm">
+            <div className="flex justify-between">
+              <span>Cash on Delivery</span>
+              <BsCashStack />
             </div>
-            <div className="flex items-center space-x-2">
-              <input
-                type="radio"
-                id="phonepe"
-                name="payment"
-                className="form-radio"
-              />
-              <label htmlFor="phonepe">PhonePe</label>
-              <SiPhonepe className="ml-auto text-purple-600 text-2xl" />
+            <div className="flex justify-between">
+              <span>Razorpay</span>
+              <SiRazorpay className="text-blue-700" />
+            </div>
+            <div className="flex justify-between">
+              <span>Wallet</span>
+              <FaWallet />
             </div>
           </div>
         );
+
       case "cash":
         return (
-          <div className="flex items-center space-x-2">
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-3">
-                <input
-                  type="radio"
-                  id="cod"
-                  name="payment"
-                  className="form-radio"
-                  onClick={() => {
-                    setOpenCashOnDel(!openCashOnDel);
-                    setCaptcha(generateCaptcha());
-                  }}
-                  disabled={error ? true : false}
-                />
-                <label htmlFor="cod">Cash on Delivery</label>
-                <BsCashStack className="ml-auto" />
-              </div>
-              <span className="text-red-600">{error}</span>
-              {openCashOnDel && (
-                <div className="w-full flex flex-col gap-4">
-                  <div className="flex items-center justify-center gap-2 ">
-                    <span
-                      className="font-bold italic text-2xl text-orange-600"
-                      style={{userSelect: "none", pointerEvents: "none"}}
-                      disabled={true}
-                    >
-                      {captcha}
-                    </span>
-                    <button
-                      onClick={() => {
-                        setCaptcha(generateCaptcha());
-                        setCaptchaInput("");
-                      }}
-                      className="text-gray-600 underline"
-                    >
-                      <IoMdRefresh />
-                    </button>
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Enter captch"
-                    className="outline-none px-2 py-2 border w-full"
-                    value={captchaInput}
-                    onChange={(e) => setCaptchaInput(e.target.value)}
-                  />
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <input
+                type="radio"
+                onClick={() => {
+                  setOpenCashOnDel(true);
+                  setCaptcha(generateCaptcha());
+                }}
+                disabled={!!error}
+              />
+              <span>Cash on Delivery</span>
+              <BsCashStack className="ml-auto" />
+            </div>
+            {error && <span className="text-red-600">{error}</span>}
+
+            {openCashOnDel && (
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-center gap-2">
+                  <span className="font-bold italic text-2xl text-orange-600">
+                    {captcha}
+                  </span>
                   <button
-                    className={`px-3 py-2 font-semibold text-lg ${
-                      isCaptchaValid
-                        ? "bg-blue-700 text-white cursor-pointer"
-                        : "bg-gray-400 text-gray-700 cursor-not-allowed"
-                    }`}
-                    disabled={!isCaptchaValid}
-                    onClick={handleConfirmCOD}
+                    onClick={() => {
+                      setCaptcha(generateCaptcha());
+                      setCaptchaInput("");
+                    }}
+                    className="text-gray-600 underline"
                   >
-                    Confirm Order
+                    <IoMdRefresh />
                   </button>
                 </div>
-              )}
-            </div>
+
+                <input
+                  type="text"
+                  className="border p-2 outline-none"
+                  placeholder="Enter captcha"
+                  value={captchaInput}
+                  onChange={(e) => setCaptchaInput(e.target.value)}
+                />
+
+                <button
+                  disabled={!isCaptchaValid}
+                  onClick={() => handlePayment("Cash on Delivery")}
+                  className={`px-4 py-2 font-semibold text-white rounded 
+                    ${
+                      isCaptchaValid
+                        ? "bg-blue-700 cursor-pointer"
+                        : "bg-gray-400 cursor-not-allowed"
+                    }`}
+                >
+                  Confirm Order
+                </button>
+              </div>
+            )}
           </div>
         );
+
       case "upi":
         return (
-          <div className="flex items-center space-x-2">
-            <input
-              type="radio"
-              id="upi"
-              name="payment"
-              className="form-radio"
-            />
-            <label htmlFor="upi">UPI (Pay via any App)</label>
-            <MdPayment className="ml-auto" />
+          <div className="space-y-4">
+            <div className="flex justify-between">
+              <span>Razorpay</span>
+              <SiRazorpay />
+            </div>
+
+            <button
+              onClick={handleRazorpay}
+              className="bg-blue-700 text-white px-4 py-2 rounded font-semibold w-32"
+            >
+              PAY NOW
+            </button>
           </div>
         );
-      case "card":
-        return (
-          <div className="flex items-center space-x-2">
-            <input
-              type="radio"
-              id="card"
-              name="payment"
-              className="form-radio"
-            />
-            <label htmlFor="card">Credit/Debit Card</label>
-            <BsCreditCard2Back className="ml-auto" />
-          </div>
-        );
+
       case "wallet":
         return (
-          <div className="flex items-center space-x-2">
-            <input
-              type="radio"
-              id="wallet"
-              name="payment"
-              className="form-radio"
-            />
-            <label htmlFor="wallet">Wallets</label>
-            <FaWallet className="ml-auto" />
+          <div className="space-y-4">
+            <div className="flex justify-between">
+              <span>Wallets</span>
+              <FaWallet />
+            </div>
+
+            <button
+              onClick={() => handlePayment("Wallet")}
+              className="bg-blue-700 text-white px-4 py-2 rounded font-semibold w-32"
+            >
+              PAY NOW
+            </button>
           </div>
         );
+
       default:
         return <p>Select a payment option</p>;
     }
   };
 
   return (
-    <div className="flex overflow-hidden">
-      <div className="w-1/3 bg-gray-100">
-        <ul>
+    <div
+      className="
+        flex flex-col 
+        md:flex-row 
+        rounded-md border bg-white shadow-sm overflow-hidden
+      "
+    >
+      {/* SIDEBAR */}
+      <div className="w-full md:w-1/3 bg-gray-100 border-r">
+        <ul className="text-sm">
           {options.map((option) => (
             <li
               key={option.id}
-              className={`p-4 flex items-center cursor-pointer hover:bg-gray-200 ${
+              className={`p-4 flex items-center gap-3 cursor-pointer hover:bg-gray-200 ${
                 selectedOption === option.id
-                  ? "border-l-4 border-blue-600 text-blue-600 bg-white"
+                  ? "border-l-4 border-blue-600 bg-white text-blue-600"
                   : ""
               }`}
               onClick={() => setSelectedOption(option.id)}
             >
-              <span
-                className={`mr-3 ${
-                  selectedOption === option.id ? "text-blue-600" : ""
-                }`}
-              >
-                {option.icon}
-              </span>
-              <span
-                className={`${
-                  selectedOption === option.id ? "text-blue-600" : ""
-                }`}
-              >
-                {option.label}
-              </span>
-              {option.offers && (
-                <span className="ml-auto text-xs text-green-600">
-                  {option.offers}
-                </span>
-              )}
+              <span>{option.icon}</span>
+              <span>{option.label}</span>
             </li>
           ))}
         </ul>
       </div>
-      <div className="w-2/3">
-        <h2 className="text-xl font-semibold px-10 py-3">
-          {selectedOption === "recommended"
-            ? "Recommended Payment Options"
-            : "Payment Option "}
-        </h2>
-        <div className="px-10 py-3">{renderContent()}</div>
-      </div>
+
+      {/* CONTENT */}
+      <div className="w-full md:w-2/3 p-5">{renderContent()}</div>
+
+      {/* MODALS */}
       <SuccessModal
         isOpen={showSuccessModal}
         onClose={() => setShowSuccessModal(false)}
+      />
+      <FailureModal
+        isOpen={showFailureModal}
+        onClose={() => setShowFailureModal(false)}
       />
     </div>
   );

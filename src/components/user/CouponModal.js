@@ -3,14 +3,14 @@ import {
   Modal,
   Box,
   Typography,
-  Button,
+  Button, 
   Checkbox,
   IconButton,
 } from "@mui/material";
 import {FaTimes, FaCheckSquare, FaSquare} from "react-icons/fa";
 import {IoMdClose} from "react-icons/io";
 import api from "../../config/axiosConfig";
-import {fetchAvailableCoupons, selectCoupon} from "../../redux/couponSlice";
+import {applyCouponPricingDetails, fetchAvailableCoupons, getCheckoutDetials, removeApplayCoupon, selectCoupon} from "../../redux/couponSlice";
 import {useDispatch, useSelector} from "react-redux";
 
 const CouponModal = ({open, onClose, totalPrice}) => {
@@ -34,7 +34,23 @@ const CouponModal = ({open, onClose, totalPrice}) => {
     }
   };
 
-  console.log("this is frm the coupon modal", coupons)
+
+
+  const handleApplyCoupon = () => {
+    if (selectedCoupon) {
+      dispatch(applyCouponPricingDetails(selectedCoupon._id))
+        .then(() => {
+          return dispatch(getCheckoutDetials());
+        })
+        .then(() => {
+          onClose(); 
+        });
+    }
+  };
+
+ 
+  
+
   return (
     <Modal
       open={open}
@@ -56,6 +72,7 @@ const CouponModal = ({open, onClose, totalPrice}) => {
         }}
       >
         {/* Modal Header */}
+
         <Box
           display="flex"
           justifyContent="space-between"
@@ -103,8 +120,8 @@ const CouponModal = ({open, onClose, totalPrice}) => {
                 backgroundColor: "black",
               },
             }}
-            onClick={onClose}
-         
+            onClick={handleApplyCoupon}
+          
           >
             APPLY
           </Button>
